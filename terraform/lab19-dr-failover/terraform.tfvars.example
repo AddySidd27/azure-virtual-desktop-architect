@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner                          = "your.name@domain.com"
+location                       = "westus2"
+location_short                 = "wus2"
+environment                    = "lab"
+deletion_date                  = "2026-12-31"
+deploy_active                  = false # true only during an active failover exercise
+host_count                     = 1
+admin_password                 = "ReplaceWithYourOwnPassword1!"
+enable_capacity_reservation      = false # true bills continuously at full VM rate, whether or not a VM is deployed - see the README
+primary_state_resource_group    = "rg-tfstate-lab-eus2-01"
+primary_state_storage_account   = "REPLACE_WITH_YOUR_STORAGE_ACCOUNT"

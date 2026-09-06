@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Project 07 scaling architecture" id="project07c">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1180" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Project 07 - autoscale behaviour across three shifts" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Project 07 | Related: Chapter 26 | Scaling plan schedule drives the pool, not the other way around" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zDem" value="AGENT DEMAND" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="340" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="Shift 1&#10;520 agents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="Shift 2&#10;610 agents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="205" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="Shift 3&#10;180 agents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="270" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="surge" value="Emergency Surge&#10;300 agents, manual trigger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="335" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zPlan" value="SCALING PLAN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="420" y="100" width="340" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="ru" value="Ramp-up" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="140" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="pk" value="Peak" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="205" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="rd" value="Ramp-down" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="270" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="op" value="Off-peak" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="335" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zPools" value="HOST POOLS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="800" y="100" width="340" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="core" value="Core Pool&#10;25 to 30 hosts, always on" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="150" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="shift" value="Shift Pool&#10;0 to 120 hosts, scaled to demand" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="srg" value="Surge Pool&#10;0 to 50 hosts, manual only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="300" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="1100" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Shift 1 (520) and Shift 2 (610) demand -&gt; Ramp-up" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Shift 3 (180, lowest) demand -&gt; Off-peak directly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="520" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Emergency Surge (300) -&gt; Surge Pool, manual trigger only (not part of the automatic schedule)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="560" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Ramp-up, Peak, Ramp-down -&gt; Shift Pool (0 to 120 hosts, the pool that actually flexes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Off-peak -&gt; Core Pool (25 to 30 hosts, the floor that never goes to zero)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="640" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  Core Pool and Shift Pool share the same workspace and application groups (users see one desktop, not two pools)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="680" width="1060" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against scenarios/project-07-call-centre-high-density.md. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

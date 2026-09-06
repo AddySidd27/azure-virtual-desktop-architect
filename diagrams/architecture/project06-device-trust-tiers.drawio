@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Project 06 device trust tiers" id="project06">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="920" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Project 06 - Trentham Group: device trust tiers" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Project 06 | Related: Chapter 9 | Same Conditional Access decision, three different pools, three different RDP property sets" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEP" value="ENDPOINTS" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="340" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="corp" value="Corporate Laptop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="byod" value="Contractor Device" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="190" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cli" value="Client Device" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="240" width="300" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEntra" value="MICROSOFT ENTRA ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="420" y="100" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="ca" value="Conditional Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="140" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="comp" value="Device Compliance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="200" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zCtrl" value="CONTROL PLANE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="760" y="100" width="340" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="rdp" value="Host Pool RDP Properties&#10;channel gate per pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="780" y="140" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="intune" value="Intune Policy&#10;narrows behaviour further" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="780" y="200" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zAZ" value="CUSTOMER AZURE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="1420" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="managed" value="Managed Pool&#10;compliant corporate devices, full redirection allowed by exception" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="320" width="440" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="restricted" value="Restricted Pool&#10;unmanaged devices, narrow RDP properties, no drive redirection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="530" y="320" width="440" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="clipool" value="Client-Device Pool&#10;client-owned devices, narrowest policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="990" y="320" width="440" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="500" width="1420" height="375" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Corporate Laptop -&gt; Conditional Access, evaluated against Device Compliance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Contractor Device -&gt; Conditional Access, evaluated as unmanaged" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Client Device -&gt; Conditional Access, evaluated as client-owned" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="620" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Compliant result -&gt; Managed Pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="660" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Unmanaged result -&gt; Restricted Pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="700" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  Client-owned result -&gt; Client-Device Pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="740" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" value="7  Host Pool RDP Properties gate every pool's channels (Managed Pool: broadest allow, Restricted/Client: narrow)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="780" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f7" value="8  Intune Policy narrows Restricted and Client-Device Pool behaviour further, beyond the RDP property gate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="820" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against scenarios/project-06-byod-remote-workforce.md. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="880" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

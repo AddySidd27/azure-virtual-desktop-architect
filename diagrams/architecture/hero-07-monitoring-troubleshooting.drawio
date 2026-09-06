@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Monitoring and troubleshooting" id="hero-07">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1580" pageHeight="750" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Monitoring and troubleshooting architecture" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 7 | Related: Project 02, Lab 10 | From symptom to root cause" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zColl" value="DATA COLLECTION - OPT IN, NOT AUTOMATIC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="1500" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="c0" value="Host Pool Diagnostics&#10;Connection, Error, Checkpoint, HostRegistration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="340" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="c1" value="Session Host Perf Counters&#10;CPU, memory, disk queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="140" width="340" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="Storage Metrics&#10;latency, transactions, throttling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="140" width="340" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="Entra Sign-in Logs&#10;auth + Conditional Access outcome" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="140" width="340" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="zLaw" value="LOG ANALYTICS WORKSPACE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="1500" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="law" value="Central Workspace&#10;single source of truth for triage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="620" y="325" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="de0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="c0" target="law">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="c1" target="law">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="c2" target="law">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="de3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="c3" target="law">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zTri" value="TRIAGE - THE DECOMPOSITION THAT SAVES HOURS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4FAF4;strokeColor=#107C10;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="1500" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="t0" value="1. Errors by type&#10;WVDErrors, ranked - start here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="340" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1" value="2. Which hosts&#10;distinguishes one-host vs estate-wide" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="460" width="340" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="3. Logon duration&#10;decompose: profile vs auth vs host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="460" width="340" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3" value="4. Disconnect clustering&#10;one host = fault, spread = network" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="460" width="340" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="t5" value="5. Storage latency during burst&#10;confirms/rules out storage as cause" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="555" width="700" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="t6" value="6. Compare working vs failing host/user&#10;fastest way to isolate scope" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="555" width="700" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Six-query sequence from Project 02. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="710" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

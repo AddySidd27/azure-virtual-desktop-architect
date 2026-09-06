@@ -1,0 +1,11 @@
+---
+title: Lab 9 - two host pools, two delivery models
+---
+flowchart LR
+    WS["Workspace (Lab 7)"] --> AGD["Desktop App Group\n(Lab 7 pool)"]
+    WS --> AGR["RemoteApp App Group\n(this lab's pool)"]
+    AGD --> HPD["Host Pool: Desktop\npreferred_app_group_type = Desktop"]
+    AGR --> HPR["Host Pool: RemoteApp\npreferred_app_group_type = RemoteApp"]
+
+    classDef az fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    class WS,AGD,AGR,HPD,HPR az

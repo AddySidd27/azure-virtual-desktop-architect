@@ -1,0 +1,50 @@
+---
+title: AVD object model
+---
+flowchart TB
+
+    subgraph IDENT["ENTRA ID"]
+        direction LR
+        G1["Office Users"]
+        G2["Finance Users"]
+    end
+
+    subgraph PRES["PRESENTATION"]
+        WS["Workspace"]
+    end
+
+    subgraph PUB["PUBLISHING"]
+        direction LR
+        AG1["Desktop App Group"]
+        AG2["RemoteApp Group"]
+    end
+
+    subgraph COMP["COMPUTE"]
+        direction LR
+        HP1["Host Pool A"]
+        HP2["Host Pool B"]
+        SH1["Session Hosts"]
+        SH2["Session Hosts"]
+    end
+
+    WS --> AG1
+    WS --> AG2
+    AG1 --> HP1
+    AG2 --> HP2
+    HP1 --- SH1
+    HP2 --- SH2
+    G1 -.->|"assigned"| AG1
+    G2 -.->|"assigned"| AG2
+
+    classDef ident fill:#f0ece4,stroke:#8a7a5c,color:#1b2a3a
+    classDef pres fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    classDef pub fill:#2b6cb0,stroke:#2b6cb0,color:#ffffff
+    classDef comp fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    class G1,G2 ident
+    class WS pres
+    class AG1,AG2 pub
+    class HP1,HP2,SH1,SH2 comp
+    style IDENT fill:#faf8f3,stroke:#8a7a5c,stroke-dasharray:4 3
+    style PRES fill:#eaf1f8,stroke:#0f4c81,stroke-width:2px
+    style PUB fill:#eff5fb,stroke:#2b6cb0,stroke-width:2px
+    style COMP fill:#f6f9fc,stroke:#2b6cb0,stroke-width:2px

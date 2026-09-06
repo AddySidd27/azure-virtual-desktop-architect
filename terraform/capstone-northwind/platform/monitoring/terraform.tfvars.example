@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+environment = "prd"
+owner       = "your.name@northwind.example"
+cost_centre = "REPLACE_WITH_REAL_COST_CENTRE"
+# log_retention_days defaults to 90 - a general Azure default, NOT a
+# confirmed SOX-compliant figure. See variables.tf and Part D section 6.

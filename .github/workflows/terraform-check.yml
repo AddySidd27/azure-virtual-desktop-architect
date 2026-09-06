@@ -1,0 +1,49 @@
+name: Terraform structural check
+
+on:
+  pull_request:
+    paths: ["terraform/**"]
+  push:
+    branches: [main]
+    paths: ["terraform/**"]
+  workflow_dispatch:
+
+jobs:
+  fmt-and-parse:
+    name: Format check and HCL parse per module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive -diff terraform/
+
+      - name: terraform init and validate every module
+        run: |
+          set -e
+          find terraform -name versions.tf -print0 | while IFS= read -r -d '' versions_file; do
+            dir=$(dirname "$versions_file")
+            echo "::group::$dir"
+            (
+              cd "$dir"
+              terraform init -backend=false -input=false
+              terraform validate
+            )
+            echo "::endgroup::"
+          done
+
+  secret-scan:
+    name: Scan for committed secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Production architecture" id="Production architecture">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" page="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="gU" value="USERS" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#605E5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="260" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="gM" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="260" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="gA" value="CUSTOMER AZURE - UK SOUTH" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="640" y="60" width="640" height="480" as="geometry"/>
+        </mxCell>
+        <mxCell id="gO" value="OPERATIONAL CONTROLS" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#107C10;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="560" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="uk" value="UK engineers&#10;205 users" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.user;" vertex="1" parent="1">
+          <mxGeometry x="100" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="in" value="Bengaluru engineers&#10;35 users, 130 to 150 ms" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.user;" vertex="1" parent="1">
+          <mxGeometry x="100" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="entra" value="Microsoft Entra ID" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.identity.azure_active_directory;" vertex="1" parent="1">
+          <mxGeometry x="400" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="avd2" value="Azure Virtual Desktop" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machines;" vertex="1" parent="1">
+          <mxGeometry x="400" y="220" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="intune" value="Microsoft Intune" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.management_portal;" vertex="1" parent="1">
+          <mxGeometry x="400" y="300" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="Alignment pool&#10;95 hosts, half A10" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine_scale_sets;" vertex="1" parent="1">
+          <mxGeometry x="700" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="Structures pool&#10;70 hosts, half A10" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine_scale_sets;" vertex="1" parent="1">
+          <mxGeometry x="900" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="Signalling pool&#10;40 hosts, one sixth A10" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine_scale_sets;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="Bengaluru pool&#10;35 hosts, UK hosted" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine_scale_sets;" vertex="1" parent="1">
+          <mxGeometry x="700" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5" value="Large model hosts&#10;4 hosts, full A10" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine_scale_sets;" vertex="1" parent="1">
+          <mxGeometry x="900" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="anf" value="Azure NetApp Files&#10;Model data" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.storage.azure_netapp_files;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="files" value="Azure Files&#10;FSLogix profiles" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.storage.azure_files;" vertex="1" parent="1">
+          <mxGeometry x="700" y="390" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="law" value="Log Analytics&#10;AVD Insights" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.analytics.log_analytics_workspaces;" vertex="1" parent="1">
+          <mxGeometry x="900" y="390" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="c1" value="Pinned GRID driver&#10;Vendor certified version, set in the image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4FAF4;strokeColor=#107C10;fontSize=11;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="70" y="460" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="Start VM on Connect&#10;Roughly 200 hours per host per month" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4FAF4;strokeColor=#107C10;fontSize=11;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="460" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="Monthly driver report and GPU utilisation check under load" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4FAF4;strokeColor=#107C10;fontSize=11;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="70" y="540" width="500" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="x1" value="RDP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="uk" target="avd2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x2" value="RDP over UDP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="in" target="avd2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x3" value="sign in" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="uk" target="entra">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x4" value="broker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="avd2" target="p1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x5" value="broker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="avd2" target="p4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x6" value="policy" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;" edge="1" parent="1" source="intune" target="p1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x7" value="model data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="p1" target="anf">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x8" value="model data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="p4" target="anf">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="x9" value="profiles" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="p1" target="files">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

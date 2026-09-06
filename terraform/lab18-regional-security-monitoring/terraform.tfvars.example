@@ -1,0 +1,10 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner                          = "your.name@domain.com"
+location                       = "centralus"
+location_short                 = "cus"
+environment                    = "lab"
+deletion_date                  = "2026-12-31"
+log_retention_days             = 30
+deploy_firewall                = false # true costs ~$900/month running - see the README before changing this
+primary_state_resource_group   = "rg-tfstate-lab-eus2-01"
+primary_state_storage_account  = "REPLACE_WITH_YOUR_STORAGE_ACCOUNT"

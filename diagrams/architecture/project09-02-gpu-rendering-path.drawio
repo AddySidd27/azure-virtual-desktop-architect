@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="GPU rendering path" id="GPU rendering path">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" page="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="gEP" value="ENGINEER ENDPOINT" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#605E5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="260" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="gMS" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="60" width="260" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="gAZ" value="CUSTOMER AZURE - SESSION HOST" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="640" y="60" width="620" height="460" as="geometry"/>
+        </mxCell>
+        <mxCell id="gFAIL" value="THE THREE FAILURE POINTS" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#A4262C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="560" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="client" value="Windows App&#10;Three monitors" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.workstation;" vertex="1" parent="1">
+          <mxGeometry x="100" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="disp" value="Local display&#10;Decode and present" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.user;" vertex="1" parent="1">
+          <mxGeometry x="100" y="240" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="avd" value="Azure Virtual Desktop&#10;Gateway and broker" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machines;" vertex="1" parent="1">
+          <mxGeometry x="400" y="110" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="rc" value="Reverse connect&#10;RDP over TCP or UDP" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.networking.connections;" vertex="1" parent="1">
+          <mxGeometry x="400" y="240" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="app" value="CAD application" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.all_resources;" vertex="1" parent="1">
+          <mxGeometry x="700" y="120" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="pol" value="Graphics policy&#10;Intune or Group Policy" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.subscriptions;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="120" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="drv" value="NVIDIA GRID driver&#10;Not CUDA" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.management_portal;" vertex="1" parent="1">
+          <mxGeometry x="700" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="gpu" value="A10 GPU&#10;Half GPU, 12 GiB" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machine;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="250" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="enc" value="Frame encoder" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.general.information;" vertex="1" parent="1">
+          <mxGeometry x="700" y="380" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="host" value="Session host&#10;Windows 11 multi-session" style="sketch=0;html=1;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fontSize=11;fontColor=#243A5E;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0]];shape=mxgraph.azure2.compute.virtual_machines;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="380" width="68" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="1. Wrong VM series&#10;NC and ND do not accelerate the desktop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="70" y="450" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="2. CUDA driver&#10;Only GRID accelerates applications" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="330" y="450" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="3. Policy not configured&#10;Sessions render on CPU by default. GPU present and unused" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="70" y="530" width="500" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="RDP" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="client" target="avd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="broker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="avd" target="app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="render" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="app" target="drv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="enables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;" edge="1" parent="1" source="pol" target="drv">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="drv" target="gpu">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="frames" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="gpu" target="enc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="encoded stream" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="enc" target="rc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="stream" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="rc" target="disp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

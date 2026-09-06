@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Golden image lifecycle" id="hero-06">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1660" pageHeight="610" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Golden image lifecycle - build, validate, roll out, roll back" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 6 | Related: Chapter 23 | The gallery version, not the running host, is the unit of change" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="s0" value="Marketplace image&#10;clean source, never registered" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="Build VM&#10;apps, agents, VDI optimised" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="260" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s0" target="s1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="Sysprep, capture&#10;generalise, no identity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s1" target="s2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="Gallery version&#10;new, excluded from latest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s2" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4" value="Pilot pool&#10;2-3 hosts, user validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="920" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s3" target="s4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5" value="Promote to latest&#10;full rollout, batched" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s4" target="s5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="s6" value="Previous version&#10;kept as rollback path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#605E5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="se6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="s5" target="s6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rollback" value="rollback: redeploy from previous version" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#A4262C;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" edge="1" parent="1" source="s3" target="s0">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zwarn" value="WHAT BREAKS THIS CYCLE IF SKIPPED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="1580" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="w70" value="Captured from a live host&#10;Registered agent + expired token baked in" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="70" y="440" width="360" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="w455" value="No pilot before promotion&#10;A defect reaches every host at once" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="455" y="440" width="360" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="w840" value="No previous version kept&#10;No fast rollback when something breaks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="840" y="440" width="360" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1225" value="Driver/version not pinned&#10;Silent drift out of vendor support" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1225" y="440" width="360" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Related: Project 09. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

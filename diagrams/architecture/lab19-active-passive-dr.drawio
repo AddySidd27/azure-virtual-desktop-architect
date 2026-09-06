@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 19 active-passive DR corrected" id="lab19a">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 19 - active-passive DR topology (corrected)" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1000" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 19 | Matches terraform/lab19-dr-failover exactly | westus2 peers to BOTH eastus2 and centralus - no failed-region-only identity dependency" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1300" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEus2" value="EASTUS2 - PROTECTED REGION (LABS 1-10)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="440" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="hp-avd-lab-eus2-01&#10;Active, serving live users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="ws-avdlab-lab-eus2-01&#10;Single shared workspace" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="vm-avdlab-dc01&#10;DNS secondary for DR hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="400" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zCus" value="CENTRALUS - IDENTITY BACKSTOP FOR DR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3FAF3;strokeColor=#107C10;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="530" y="100" width="440" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="c1" value="hp-avd-lab-cus-01&#10;Active, unaffected by eastus2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="550" y="140" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="vm-avdlab-dc02&#10;DNS PRIMARY for DR hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="550" y="200" width="400" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="c3" value="centralus-Site&#10;westus2 subnet mapped here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="550" y="260" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zWus2" value="WESTUS2 - DR TARGET (LAB 19)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6EC;strokeColor=#B77300;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#B77300;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="100" width="440" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1" value="hp-avd-dr-lab-wus2-01&#10;Standing, host count = 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="140" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2" value="peer-wus2-to-cus&#10;PRIMARY identity path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="200" width="400" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3" value="peer-wus2-to-eus2&#10;Secondary, not depended on alone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="260" width="400" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS AND DESIGN NOTES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  CORRECTED: westus2 peers to BOTH centralus and eastus2 - the original design peered to eastus2 only, which had no working identity path during an eastus2 outage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="400" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  DR session host DNS order: centralus DC first (10.20.1.4), eastus2 DC second - centralus survives an eastus2 failure, so it is the primary path, not a fallback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  westus2's subnet (10.30.0.0/16) is mapped to centralus-Site in AD Sites and Services - no dedicated westus2 domain controller needed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  During an eastus2 outage: DR session hosts authenticate via centralus only - the failed region is never in the authentication path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="520" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Capacity reservation is OFF by default (enable_capacity_reservation=false) - bills continuously at full VM rate when enabled, confirmed against Microsoft's own documentation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="560" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  No new workspace: a failed-over user's desktop entry is the SAME one they always had, now pointing at westus2 infrastructure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Corrected pass: identity dependency on failed region removed. Verified against terraform/lab19-dr-failover, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="635" width="1300" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

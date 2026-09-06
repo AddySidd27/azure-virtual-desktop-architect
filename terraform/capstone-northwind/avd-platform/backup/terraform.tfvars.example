@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and edit. Apply once per region. For each apply,
+# run: terraform init -backend-config="key=avdplt-backup-eastus2.tfstate"
+# (or westeurope) - see backend.tf.
+avd_prod_subscription_id  = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment                = "prd"
+location                   = "eastus2"
+location_short              = "eus2"
+fslogix_state_key            = "avdplt-fslogix-eastus2.tfstate" # must match the key used for THIS region's fslogix apply
+# retention_daily_count defaults to 30 - a general-purpose figure, NOT a
+# confirmed SOX-compliant retention period. See variables.tf and Part D
+# section 6's identical open item for the platform monitoring workspace.
+# backup_time_utc, avdplt_state_resource_group, and
+# avdplt_state_storage_account all have defaults - see variables.tf.

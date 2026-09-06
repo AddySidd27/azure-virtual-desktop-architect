@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and edit. Apply once per region. For each apply,
+# run: terraform init -backend-config="key=avdplt-monitoring-eastus2.tfstate"
+# (or westeurope) - see backend.tf.
+avd_prod_subscription_id  = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment                = "prd"
+location                   = "eastus2"
+location_short              = "eus2"
+host_pools_state_key        = "avdplt-host-pools-eastus2.tfstate" # must match the key used for THIS region's host-pools apply
+owner                        = "your.name@northwind.example"
+cost_centre                  = "REPLACE_WITH_REAL_COST_CENTRE"
+# avdlz_state_resource_group, avdlz_state_storage_account,
+# avdplt_state_resource_group, avdplt_state_storage_account, and
+# log_retention_days all have defaults - see variables.tf.

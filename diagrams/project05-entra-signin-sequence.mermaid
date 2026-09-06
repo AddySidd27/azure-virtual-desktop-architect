@@ -1,0 +1,27 @@
+---
+title: Entra joined session host sign-in
+---
+sequenceDiagram
+    autonumber
+    participant U as Windows App
+    participant E as Microsoft Entra ID
+    participant S as AVD Service
+    participant H as Session Host
+    participant F as Azure Files
+
+    U->>E: Authenticate, Conditional Access evaluated
+    E-->>U: Token
+    U->>S: Request feed
+    S-->>U: Assigned desktops
+
+    Note over U,H: Authorization to sign in is an Azure role
+    U->>E: Request RDP token, Windows Cloud Login
+    E-->>U: RDP token
+    U->>H: Connect
+    H->>E: Validate token and Virtual Machine User Login role
+    H-->>U: Windows session starts
+
+    Note over H,F: Profile uses Entra Kerberos, not domain Kerberos
+    H->>E: Request Kerberos ticket for the file share
+    E-->>H: Ticket
+    H->>F: Mount profile container

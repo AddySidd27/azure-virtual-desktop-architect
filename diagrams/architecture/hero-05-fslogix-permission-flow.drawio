@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="FSLogix permission flow" id="hero-05">
+    <mxGraphModel dx="1700" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1360" pageHeight="870" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="FSLogix and Azure Files - four-layer permission and network path" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 5 | Related: Chapter 20, Lab 5 | Self-contained shapes, no remote icon dependency" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1000" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="z1" value="1. USER IDENTITY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0ECE4;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="220" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="user" value="AVD User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="180" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="entra" value="Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="215" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="z2host" value="SESSION HOST" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="100" width="260" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="host" value="Session Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="150" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="fslogix" value="FSLogix Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="455" y="150" width="105" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhd" value="VHDX Container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="215" width="220" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="z2net" value="2. STORAGE-NETWORK ACCESS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="620" y="100" width="280" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="dns" value="Private DNS Zone&#10;privatelink.file.core.windows.net" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="645" y="150" width="240" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pe" value="Private Endpoint&#10;Public access: Disabled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="645" y="225" width="240" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="z3" value="3. AZURE RBAC - SHARE LEVEL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="320" y="320" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="rbac" value="Storage File Data&#10;SMB Share Contributor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="345" y="365" width="250" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="z4" value="4. NTFS PERMISSIONS - FILE LEVEL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="660" y="320" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="ntfs" value="NTFS ACL&#10;user profile folder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="685" y="365" width="250" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zstor" value="STORAGE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="100" width="300" height="370" as="geometry"/>
+        </mxCell>
+        <mxCell id="sa" value="Storage Account&#10;Premium FileStorage, ZRS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="155" width="250" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="share" value="File Share&#10;profiles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="240" width="250" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="Domain Controller&#10;AD Kerberos source" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="360" width="250" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zfail" value="COMMON FAILURE POINTS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="500" width="1280" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="1. RBAC ok, NTFS missing&#10;Access denied inside the share" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="290" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="2. DNS resolves publicly&#10;Private endpoint not actually used" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="370" y="540" width="290" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="3. Kerberos ticket fails&#10;Every user fails at once" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="540" width="290" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="4. Container locked&#10;Repeated failure, one user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="990" y="540" width="290" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="user" target="entra">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="sign in" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="entra" target="host">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=1.5;endArrow=none;" edge="1" parent="1" source="host" target="fslogix">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="mount" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="fslogix" target="vhd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="SMB 445" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="vhd" target="dns">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="resolves" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="dns" target="pe">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="pe" target="sa">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="checked first" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="vhd" target="rbac">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" value="checked second" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="rbac" target="ntfs">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=1.5;endArrow=none;dashed=1;" edge="1" parent="1" source="ntfs" target="share">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" value="Kerberos" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="host" target="dc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=1.5;endArrow=none;" edge="1" parent="1" source="sa" target="share">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg" value="Legend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D8DDE3;fontSize=11;fontStyle=1;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="662" width="700" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="l1" value="Session/data path" style="text;fontSize=10.5;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="697" width="200" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="l2" value="Permission check order" style="text;fontSize=10.5;fontColor=#107C10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="300" y="697" width="220" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="l3" value="Blocked/failure" style="text;fontSize=10.5;fontColor=#A4262C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="55" y="717" width="200" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="835" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

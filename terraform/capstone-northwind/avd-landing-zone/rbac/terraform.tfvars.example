@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+avd_prod_subscription_id             = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+avd_platform_engineer_principal_id   = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+session_host_operator_principal_id   = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+service_desk_principal_id            = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+# pim_eligibility_start/end have defaults - see variables.tf

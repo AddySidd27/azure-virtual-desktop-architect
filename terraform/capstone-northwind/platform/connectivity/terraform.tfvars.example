@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+connectivity_subscription_id = "REPLACE_WITH_SUB-NORTHWIND-CONNECTIVITY_ID"
+environment                  = "prd"
+owner                        = "your.name@northwind.example"
+cost_centre                  = "REPLACE_WITH_REAL_COST_CENTRE"
+# eastus2_hub_address_space and westeurope_hub_address_space have sensible defaults

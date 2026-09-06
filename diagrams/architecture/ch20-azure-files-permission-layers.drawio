@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Azure Files identity choice" id="ch20a">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1260" pageHeight="660" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Azure Files access path for FSLogix - the identity choice" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Chapter 20 | Related: Hero diagram 5 | Two supported identity paths to the same share, chosen once at design time" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zId" value="IDENTITY - CHOOSE ONE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8F3;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="460" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="Domain Controller&#10;AD DS Kerberos, hybrid join" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="420" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="entra" value="Microsoft Entra ID&#10;Entra Kerberos, any join model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="205" width="420" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zAZ" value="CUSTOMER AZURE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="100" width="300" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="sh" value="Session Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="160" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zStor" value="STORAGE ACCOUNT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="880" y="100" width="340" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="share" value="File Share" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="140" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ntfs" value="NTFS ACL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="195" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="vhd" value="Profile Container" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="250" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="1180" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1a  Session Host -&gt; Domain Controller, Kerberos 88 (if AD DS Kerberos chosen)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="400" width="1140" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="1b  Session Host -&gt; Microsoft Entra ID, Entra Kerberos (if Entra Kerberos chosen)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="1140" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="2  Session Host -&gt; File Share, SMB 445" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="1140" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="3  File Share -&gt; NTFS ACL, share RBAC checked first" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="520" width="1140" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="4  NTFS ACL -&gt; Profile Container, file ACL checked second" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="560" width="1140" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

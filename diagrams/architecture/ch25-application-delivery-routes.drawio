@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Application delivery routes" id="ch25">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1320" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Application delivery routes to a session host" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Chapter 25 | Related: Project 10 | Four delivery routes converge on one host; two publishing routes diverge to the user" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zSrc" value="DELIVERY SOURCE - CHOOSE PER APP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="340" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="img" value="Golden Image&#10;baked in" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="pkg" value="App Attach Package&#10;attach at sign-in" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="205" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="intune" value="Microsoft Intune&#10;system context" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="270" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="loc" value="Locally Installed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="335" width="300" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="zAZ" value="CUSTOMER AZURE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="420" y="100" width="260" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="host" value="Session Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="230" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zPub" value="PUBLISHING" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="720" y="100" width="300" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="dag" value="Desktop App Group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="740" y="180" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="rag" value="RemoteApp App Group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="740" y="250" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEP" value="USER ENDPOINT" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="100" width="220" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="wa" value="Windows App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="230" width="180" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="1240" height="375" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Golden Image -&gt; Session Host, baked in (in the image, always present)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="470" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  App Attach Package -&gt; Session Host, attach at sign-in (per-user, no image rebuild)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="510" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Microsoft Intune -&gt; Session Host, system context install (Required intent only)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="550" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Locally Installed -&gt; Session Host (installed directly, outside the image pipeline)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="590" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Session Host -&gt; Desktop App Group, full desktop published" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  Session Host -&gt; RemoteApp App Group, individual apps published" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="670" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" value="7  Desktop App Group -&gt; Windows App, full desktop delivered" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="710" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f7" value="8  RemoteApp App Group -&gt; Windows App, individual apps delivered" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="750" width="1200" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="810" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner          = "your.name@domain.com"
+location       = "eastus2"
+location_short = "eus2"
+environment    = "lab"
+deletion_date  = "2026-12-31"

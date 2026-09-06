@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner                          = "your.name@domain.com"
+location                       = "centralus"
+location_short                 = "cus"
+environment                    = "lab"
+deletion_date                  = "2026-12-31"
+primary_state_resource_group   = "rg-tfstate-lab-eus2-01"
+primary_state_storage_account  = "REPLACE_WITH_YOUR_STORAGE_ACCOUNT"

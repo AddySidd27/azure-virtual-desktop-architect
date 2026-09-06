@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 8 session host join" id="lab08">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="680" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 8 - session host deployment and extension sequence" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 8 | Matches terraform/lab08-session-hosts exactly | rg-avd-hosts-lab-eus2-01. See Hero diagram 10 for the full environment." style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zHosts" value="RG-AVD-HOSTS-LAB-EUS2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="700" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="nic" value="nic-avdlab-h1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="vm" value="vm-avdlab-h1&#10;computer name: AVDLABH1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="dj" value="domainJoin extension&#10;JsonADDomainExtension" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar" value="avdAgentRegistration extension&#10;DSC, depends_on domainJoin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zDep" value="DEPENDS ON (PRIOR LABS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="100" width="680" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="vm-avdlab-dc01&#10;Lab 4 domain controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="145" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="hp" value="hp-avd-lab-eus2-01&#10;Lab 7 host pool + token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sa" value="stfslogixlabeus201&#10;Lab 5 profile storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="snet" value="snet-hosts-lab-eus2-01&#10;Lab 3 subnet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Terraform creates nic-avdlab-h1 in snet-hosts-lab-eus2-01, then vm-avdlab-h1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  domainJoin extension runs: vm-avdlab-h1 joins avdlab.local, using vm-avdlab-dc01 as DNS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  avdAgentRegistration extension runs after domainJoin completes (depends_on enforces this order)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  avdAgentRegistration registers vm-avdlab-h1 into hp-avd-lab-eus2-01 using the Lab 7 registration token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Manual step (Lab 8 Step 4): FSLogix registry configuration from Lab 6 applied via az vm run-command" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  vm-avdlab-h1 -&gt; stfslogixlabeus201, SMB 445 (profile mount at first sign-in)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab08-session-hosts, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

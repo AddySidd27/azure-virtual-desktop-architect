@@ -1,0 +1,10 @@
+---
+title: Lab 7 - AVD object model, no hosts yet
+---
+flowchart LR
+    WS["Workspace"] --> AG["Desktop Application Group"]
+    AG --> HP["Host Pool\n(empty - no session hosts until Lab 8)"]
+    GRP["avd-lab-users group"] -->|"Desktop Virtualization User"| AG
+
+    classDef az fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    class WS,AG,HP,GRP az

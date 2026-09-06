@@ -1,0 +1,22 @@
+---
+title: Broker session host selection
+---
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant B as Broker
+    participant H1 as Session host 1
+    participant H2 as Session host 2
+
+    U->>B: Launch desktop
+    B->>B: Existing session for this user?
+
+    Note over B,H1: Reconnect wins, even on a draining host
+    B-->>U: Redirect to existing session
+    U->>H1: Reconnect
+
+    Note over B,H2: New session only
+    B->>B: Filter hosts accepting connections
+    B->>B: Apply breadth-first or depth-first
+    B-->>U: Selected host
+    U->>H2: New session

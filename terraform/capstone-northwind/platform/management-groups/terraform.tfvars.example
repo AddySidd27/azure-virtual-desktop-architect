@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+# All three subscription IDs must already exist - see the README.
+tenant_root_management_group_id = "REPLACE_WITH_YOUR_TENANT_ID"
+identity_subscription_id        = "REPLACE_WITH_SUB-NORTHWIND-IDENTITY_ID"
+management_subscription_id      = "REPLACE_WITH_SUB-NORTHWIND-MANAGEMENT_ID"
+connectivity_subscription_id    = "REPLACE_WITH_SUB-NORTHWIND-CONNECTIVITY_ID"

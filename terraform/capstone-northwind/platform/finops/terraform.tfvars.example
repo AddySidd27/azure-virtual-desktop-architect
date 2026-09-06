@@ -1,0 +1,10 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+identity_subscription_id       = "REPLACE_WITH_SUB-NORTHWIND-IDENTITY_ID"
+connectivity_subscription_id   = "REPLACE_WITH_SUB-NORTHWIND-CONNECTIVITY_ID"
+management_subscription_id     = "REPLACE_WITH_SUB-NORTHWIND-MANAGEMENT_ID"
+avd_prod_subscription_id       = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+avd_nonprod_subscription_id    = "REPLACE_WITH_SUB-NORTHWIND-AVD-NONPROD_ID"
+budget_alert_email             = "REPLACE_WITH_REAL_ALERT_EMAIL"
+# All *_monthly_budget variables default to PLACEHOLDER figures - see
+# variables.tf. No real on-premises baseline cost exists yet to size these
+# against. Replace before applying, not after.

@@ -1,0 +1,30 @@
+---
+title: Which policy authority set this value
+---
+flowchart TB
+    START["Setting behaves unexpectedly"]
+    Q1{"Configured in GPO?"}
+    Q2{"Configured in Intune?"}
+    Q3{"MDMWinsOverGP set?"}
+    Q4{"Policy CSP setting?"}
+
+    START --> Q1
+    Q1 -->|"No"| Q2
+    Q1 -->|"Yes"| Q2
+    Q2 -->|"Only one authority"| SINGLE["Check delivery and scope"]
+    Q2 -->|"Both"| Q3
+    Q3 -->|"No"| GPOWINS["Group Policy wins"]
+    Q3 -->|"Yes"| Q4
+    Q4 -->|"Yes"| MDMWINS["Intune wins"]
+    Q4 -->|"No"| GPOWINS
+
+    SINGLE --> VERIFY["Verify actual value on device"]
+    GPOWINS --> VERIFY
+    MDMWINS --> VERIFY
+
+    classDef q fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef out fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    classDef verify fill:#e6f0e8,stroke:#2f855a,color:#1b2a3a
+    class Q1,Q2,Q3,Q4,START q
+    class GPOWINS,MDMWINS,SINGLE out
+    class VERIFY verify

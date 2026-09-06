@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Capstone Part E AVD Landing Zone" id="capstonee">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="805" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Northwind AVD Landing Zone: architecture at a glance" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1100" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Capstone Part E | The first part to build AVD-specific infrastructure - everything before this was platform, consumed not owned" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1300" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="corp" value="Landing Zones / Corp (Part B, reserved empty)&#10;Now populated with two AVD subscriptions - policy inheritance from Part B applies automatically" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=13;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="500" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEus2" value="SUB-NORTHWIND-AVD-PROD - EAST US 2 SPOKE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="660" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="AVD spoke VNet, peered to platform hub&#10;Uses East US 2 hub's ExpressRoute + Firewall - owns nothing platform-level" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="250" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="Host pool naming policy (custom)&#10;hp-&lt;persona&gt;-&lt;env&gt;-&lt;region&gt;-&lt;instance&gt; enforced at subscription level" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=13;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="315" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="AVD-specific RBAC&#10;Platform Engineer + Session Host Operator: PIM-eligible&#10;Service Desk: STANDING, deliberately - see section 7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=13;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="380" width="600" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="zWeu" value="SUB-NORTHWIND-AVD-PROD - WEST EUROPE SPOKE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="210" width="660" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="w1" value="AVD spoke VNet, peered to platform hub&#10;Uses West Europe hub's ExpressRoute + Firewall" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="810" y="250" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w2" value="Serves Amsterdam directly&#10;Via ExpressRoute, same as East US 2 serves Chicago" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="810" y="315" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="w3" value="Bangalore's decision, made here&#10;Internet path + Conditional Access (compliant device + MFA)&#10;No new region, no new hub - a workload decision, not a platform one" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=13;fontColor=#B77300;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="810" y="380" width="600" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="HOW TO READ THIS IN 60 SECONDS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Corp was reserved, empty, since Part B - this is the part that finally populates it, and Part B's 3 tenant-wide policies now apply automatically." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="590" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Every AVD RBAC role is built with its correct type from the start - the PIM remediation exists because Parts B/D didn't do this the first time; this part doesn't repeat that mistake." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Bangalore's resolution required nothing new at the platform layer - the entire decision lives inside this AVD Landing Zone's Conditional Access policy and workspace assignment." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="670" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  No AVD workload resource - host pools, session hosts, images - exists yet. This part builds the landing zone Part F's workload will live inside, nothing more." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#605E5C;fontSize=11;fontColor=#605E5C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="710" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram for this capstone, not Microsoft's. Verified against terraform/capstone-northwind/avd-landing-zone and Part E, August 2026. Self-contained, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="785" width="1400" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

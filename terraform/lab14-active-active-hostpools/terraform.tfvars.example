@@ -1,0 +1,10 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner                           = "your.name@domain.com"
+location                        = "centralus"
+location_short                  = "cus"
+environment                     = "lab"
+deletion_date                   = "2026-12-31"
+admin_password                  = "ReplaceWithYourOwnPassword1!"
+avd_users_group_object_id       = "00000000-0000-0000-0000-000000000000" # replace with your Entra group's object ID
+primary_state_resource_group    = "rg-tfstate-lab-eus2-01"
+primary_state_storage_account   = "REPLACE_WITH_YOUR_STORAGE_ACCOUNT"

@@ -1,0 +1,21 @@
+---
+title: Session host OS decision
+---
+flowchart TB
+    Q1{"Shared desktop?"}
+    Q2{"Requires Windows Server?"}
+
+    Q1 -->|"Yes"| MS["Windows 11 multi-session"]
+    Q1 -->|"No"| SS["Windows 11 single-session"]
+    Q1 -->|"App constrained"| Q2
+    Q2 -->|"Yes"| WS["Windows Server"]
+    Q2 -->|"No"| MS
+
+    MS --> L1["No RDS CAL"]
+    SS --> L1
+    WS --> L2["RDS CAL required"]
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    class MS,SS,L1 ok
+    class WS,L2 warn

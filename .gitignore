@@ -1,0 +1,32 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+.terraform.lock.hcl
+
+# Secrets
+*.pem
+*.key
+.env
+secrets/
+
+# Generated outputs
+build/
+*.docx
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db

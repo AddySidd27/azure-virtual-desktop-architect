@@ -1,0 +1,2 @@
+owner                      = "your.name@domain.com"
+avd_users_group_object_id  = "00000000-0000-0000-0000-000000000000" # replace with your Entra group's object ID

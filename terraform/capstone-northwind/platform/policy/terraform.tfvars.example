@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+northwind_management_group_id             = "REPLACE_WITH_OUTPUT_FROM_MANAGEMENT_GROUPS_MODULE"
+log_analytics_workspace_id                = "REPLACE_WITH_WORKSPACE_RESOURCE_ID_ONCE_BUILT"
+diagnostic_settings_policy_definition_id  = "REPLACE_AFTER_VERIFYING_CURRENT_BUILT_IN_ID"
+# allowed_locations and required_tags have sensible defaults - see variables.tf

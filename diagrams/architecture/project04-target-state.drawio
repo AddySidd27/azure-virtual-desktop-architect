@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Project 04 target state" id="project04c">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1480" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Project 04 - Halbrook Retail Group: target state" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Project 04 | Related: Chapter 11, Chapter 24 | Split GPO by OU. Split policy ownership. Local Azure DC authentication." style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zOP" value="ON-PREMISES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8F3;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="420" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="Domain Controllers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="gpo1" value="Group Policy - Physical Estate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="gpo2" value="Group Policy - AVD OU&#10;AD-dependent settings only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="lap" value="Physical Laptops" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="320" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEntra" value="MICROSOFT ENTRA ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="300" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="conn" value="Entra Connect" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="520" y="150" width="260" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="intune" value="Microsoft Intune&#10;FSLogix, baseline, session limits" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="520" y="220" width="260" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zAZ" value="CUSTOMER AZURE - SITE: AZURE-UKSOUTH" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="840" y="100" width="600" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="azdc" value="Domain Controllers&#10;now the primary auth path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="860" y="140" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="sh" value="Session Hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="140" width="240" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="files" value="Profile Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="860" y="220" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="420" width="1400" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  On-prem Domain Controllers -&gt; Entra Connect, sync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Group Policy - Physical Estate -&gt; Physical Laptops, policy (unchanged)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Group Policy - AVD OU -&gt; Session Hosts, AD-dependent settings only - a narrowed, deliberate scope (the fix)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Microsoft Intune -&gt; Session Hosts, FSLogix, baseline, session limits (everything else moves here)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Microsoft Intune -&gt; Physical Laptops, policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="620" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  Session Hosts -&gt; Azure Domain Controllers, Kerberos 88 and DNS (now local, not over ExpressRoute - the fix)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="660" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" value="7  Azure Domain Controllers -- replication -- On-premises Domain Controllers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="700" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f7" value="8  Session Hosts -&gt; Profile Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="740" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against scenarios/project-04-hybrid-active-directory.md. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

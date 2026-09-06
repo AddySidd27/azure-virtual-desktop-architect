@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Join model comparison" id="hero-03">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1520" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Hybrid join versus Microsoft Entra join for session hosts" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 3 | Related: Chapter 7 | Neither model is universally correct" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="900" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zHybrid" value="HYBRID ENTRA JOINED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8F3;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="660" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="h0" value="Domain Controllers&#10;Required, in every region hosts run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="150" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h1" value="AD Sites and Services&#10;Azure subnets must be registered" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="228" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h2" value="Session host sign-in&#10;Domain account + Kerberos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="306" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h3" value="Profile storage auth&#10;AD DS Kerberos or Entra Kerberos, both supported" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="384" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h4" value="Intune enrolment&#10;GPO auto-enrolment, device credentials" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="462" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h5" value="Legacy on-premises apps&#10;Full support, Kerberos/NTLM to on-prem resources" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="540" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="h6" value="Best fit&#10;On-premises dependencies exist, or cannot be removed this year" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="618" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEntra" value="MICROSOFT ENTRA JOINED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="100" width="660" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="Domain Controllers&#10;None required" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="150" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="DNS dependency&#10;None for sign-in. Azure-provided DNS is enough" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="228" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="Session host sign-in&#10;Azure RBAC role: Virtual Machine User Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="306" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="Profile storage auth&#10;Entra Kerberos only. Hybrid, cloud-only, external identities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="384" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="Intune enrolment&#10;Automatic, part of AVD deployment. No GPO needed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="462" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Legacy on-premises apps&#10;Not supported directly. No domain Kerberos ticket available" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="540" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="Best fit&#10;Cloud-native estate, no on-prem Kerberos/NTLM dependency" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="618" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="vs" value="vs" style="text;fontSize=16;fontStyle=1;fontColor=#605E5C;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="370" width="60" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against Chapter 7. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="685" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

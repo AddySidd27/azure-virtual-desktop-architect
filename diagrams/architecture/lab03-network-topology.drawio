@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 3 network topology" id="lab03">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 3 - network topology" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 3 | Matches terraform/lab03-network exactly | rg-avd-network-lab-eus2-01, region eastus2" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zVnet" value="VNET-AVD-LAB-EUS2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="1420" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="snet-identity-lab-eus2-01&#10;domain controller (Lab 4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="140" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="snet-hosts-lab-eus2-01&#10;session hosts (Lab 8, 9)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="140" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="snet-storage-lab-eus2-01&#10;private endpoints (Lab 5)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="750" y="140" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4" value="snet-mgmt-lab-eus2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="140" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5" value="AzureBastionSubnet&#10;reserved name, mandatory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="n1" value="nsg-identity-lab-eus2-01&#10;attached to snet-identity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="n2" value="nsg-hosts-lab-eus2-01&#10;attached to snet-hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="750" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="n3" value="Internet / Azure&#10;outside the VNet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zRules" value="NSG-HOSTS-LAB-EUS2-01 RULES (PRIORITY ORDER)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1420" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0" value="Priority 140  Allow-RDP-Shortpath-STUN-TURN  (inbound, UDP, from AzureCloud)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1" value="Priority 150  Allow-Windows-Activation-KMS  (outbound, TCP 1688)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" value="Priority 160  Allow-Certificates-And-Platform-HTTP  (outbound, TCP 80)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" value="Priority 4000  Deny-Inbound-RDP-From-Internet  (inbound, TCP 3389, explicit deny)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="r4" value="nsg-identity-lab-eus2-01: Allow-Domain-Services-From-Hosts  (inbound, AD DS ports, from snet-hosts only)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1360" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab03-network, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

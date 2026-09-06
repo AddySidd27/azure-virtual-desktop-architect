@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="AVD egress architecture" id="ch13">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1400" pageHeight="880" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Controlled outbound egress for Azure Virtual Desktop" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Chapter 13 | Related: Chapters 11, 12 | Outbound only. No inbound RDP, no public IP on any session host." style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zUser" value="USER" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="180" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="wa" value="Windows App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="55" y="140" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zMS" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="260" y="100" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="avdgw" value="AVD Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="280" y="140" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m365" value="Microsoft 365" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="280" y="200" width="260" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="zHub" value="CUSTOMER AZURE - HUB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="600" y="100" width="420" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="fw" value="Azure Firewall" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="620" y="140" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ergw" value="ExpressRoute GW" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="820" y="140" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="blocked" value="Blocked (deny)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="620" y="200" width="380" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="zOnprem" value="ON-PREMISES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8F3;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="100" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="fs" value="File Servers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="145" width="260" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="zSpoke" value="CUSTOMER AZURE - AVD SPOKE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="1320" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="sh" value="Session Hosts&#10;no public IP, outbound only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="310" width="620" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="rt" value="Route Table&#10;UDR: 0.0.0.0/0 -&gt; firewall" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="710" y="310" width="620" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="1320" height="215" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Windows App -&gt; AVD Gateway, RDP (reverse connect, no inbound)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="520" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Session Hosts -&gt; Route Table, outbound 443" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="720" y="520" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Route Table -&gt; Azure Firewall, 0.0.0.0/0 (annotation, not a hop)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="560" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Azure Firewall -&gt; AVD Gateway, allow (AVD FQDN tag)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="720" y="560" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Azure Firewall -&gt; Microsoft 365, allow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f5" value="6  Azure Firewall -&gt; Blocked, deny (everything else)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="720" y="600" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f6" value="7  Azure Firewall -&gt; ExpressRoute Gateway, corporate traffic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="640" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f7" value="8  ExpressRoute Gateway -&gt; File Servers, ExpressRoute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="720" y="640" width="630" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

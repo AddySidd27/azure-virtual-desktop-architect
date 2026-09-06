@@ -1,0 +1,21 @@
+---
+title: Session host enrolment by join model
+---
+flowchart TB
+    Q{"Join model"}
+
+    Q -->|"Entra join"| E["Enable enrolment in Azure portal"]
+    Q -->|"Hybrid join"| H["Group Policy auto-enrolment"]
+    Q -->|"AD DS only"| D["Configuration Manager"]
+
+    E --> C["Device credentials"]
+    H --> C
+    C --> R["Device group membership"]
+    D --> G["Group Policy scope"]
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef key fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    classDef alt fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    class E,H,R ok
+    class C key
+    class D,G alt

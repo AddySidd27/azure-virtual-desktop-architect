@@ -1,0 +1,18 @@
+---
+title: Where AVD egress rules are enforced
+---
+flowchart TB
+    Q{"Service tag available?"}
+
+    Q -->|"Yes"| NSG["Network Security Group"]
+    Q -->|"No"| FW["Azure Firewall"]
+    Q -->|"Platform address"| FAB["Azure Fabric"]
+
+    NSG --> V["Verify from session host"]
+    FW --> V
+    FAB --> V
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef verify fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    class NSG,FW,FAB ok
+    class V verify

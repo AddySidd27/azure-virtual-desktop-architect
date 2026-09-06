@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars and edit. Apply once per region, matching the
+# host-pools module's own per-region application pattern.
+avd_prod_subscription_id  = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment               = "prd"
+location                  = "eastus2"
+location_short             = "eus2"
+friendly_region_name       = "Chicago"
+host_pools_state_key       = "avdplt-host-pools-eastus2.tfstate" # must match the key used for THIS region's host-pools apply
+end_user_principal_ids     = { } # REPLACE with real Entra group object IDs, one per persona, for THIS region only - non-overlapping with the other region's groups
+# avd_resource_group is now resolved automatically via terraform_remote_state
+# (remote-state.tf) - see Part G, section 2.
+# avdplt_state_resource_group, avdplt_state_storage_account,
+# avdlz_state_resource_group, and avdlz_state_storage_account all have
+# defaults - see variables.tf.

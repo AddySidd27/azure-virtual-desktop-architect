@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Capstone Part H Operations DR" id="capstoneh">
+    <mxGraphModel dx="1600" dy="1300" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="1130" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Northwind Operations and DR: what exists versus what is designed only" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Capstone Part H | Solid = Terraform implemented | Dashed amber = architecturally designed, not built" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1300" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zBuilt" value="BUILT IN THIS PART - TERRAFORM IMPLEMENTED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3FAF3;strokeColor=#107C10;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="1380" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1" value="Regional AVD monitoring&#10;2 workspaces + host pool diagnostics (H1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="90" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="6 autoscaling plans&#10;Task/know/fin x 2 regions, wider W.Europe window (H4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="430" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3" value="FSLogix Azure Backup&#10;Real backup, distinct from Cloud Cache (H3)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="770" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="t4" value="FinOps, 5 subscriptions&#10;Extended to both AVD subs (H5)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="t5" value="Two independently active regions + cross-region FSLogix redundancy (Parts E/F, unchanged)&#10;Real, built - but NOT disaster recovery, see below" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="90" y="215" width="1340" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zGap" value="DESIGNED ONLY - NO TERRAFORM EXISTS ANYWHERE (THE CENTRAL PART H FINDING)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6EC;strokeColor=#B77300;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#B77300;" vertex="1" parent="1">
+          <mxGeometry x="60" y="330" width="1380" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="g1" value="Active-passive cross-region failover&#10;For ANY of the five personas, in EITHER direction: no warm-standby host pool, no reserved capacity, no workspace reassignment, no rehearsed runbook. Lab 19's proven pattern exists - not applied here yet." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="90" y="370" width="660" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="g2" value="Recommendation: finance-first (ADR-CAP-07)&#10;Smallest pooled persona, highest compliance weight - but CONDITIONAL on Northwind's business and compliance approval. Not built speculatively, not decided by this document alone." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="770" y="370" width="660" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="zRto" value="PER-COMPONENT RECOVERY, TIED TO AN ACTUAL MECHANISM OR EXPLICITLY TO NONE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#243A5E;strokeWidth=1.8;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#243A5E;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="1380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl0" value="AVD control plane" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="620" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv0" value="N/A - Microsoft managed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="480" y="620" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl1" value="Session hosts, SAME region" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="660" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv1" value="~2hrs via terraform apply - mechanism exists" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="480" y="660" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl2" value="Session hosts, CROSS region" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="700" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv2" value="NO MECHANISM - the gap this part names" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=8;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="480" y="700" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl3" value="Golden image replication" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="740" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv3" value="Designed only, no Terraform (Part F16)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=8;dashed=1;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="480" y="740" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl4" value="FSLogix data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="780" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv4" value="Azure Backup exists - restore never tested" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="480" y="780" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl5" value="Application data (SAP etc.)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="90" y="820" width="380" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="rv5" value="Out of scope, owned by those systems" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#605E5C;fontSize=11;fontColor=#605E5C;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="480" y="820" width="930" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="HOW TO READ THIS IN 60 SECONDS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="875" width="1420" height="215" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Two active regions is a scale/locality decision, NOT a resilience decision - each serves its own population, neither stands ready for the other's failure." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="915" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Cloud Cache redundancy and Azure Backup are genuinely different things, doing different jobs - this part built the backup half that was missing." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=10.5;fontColor=#107C10;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="955" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  If East US 2 disappeared today, Chicago's users would have no path back - their data would survive in West Europe with nothing configured to serve them." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=10.5;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="995" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  The finance-first DR recommendation is conditional, not decided - it requires Northwind's own cost approval, exactly as Project 14's DR engagement required." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=10.5;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1035" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram for this capstone, not Microsoft's. Verified against terraform/capstone-northwind/avd-platform and Part H, August 2026. Self-contained, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1105" width="1400" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

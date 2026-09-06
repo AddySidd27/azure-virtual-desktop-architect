@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars and edit. Apply once per region. For each apply,
+# run: terraform init -backend-config="key=avdplt-autoscaling-eastus2.tfstate"
+# (or westeurope) - see backend.tf.
+
+# --- eastus2 instance ---
+avd_prod_subscription_id  = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment                = "prd"
+location                   = "eastus2"
+location_short              = "eus2"
+host_pools_state_key        = "avdplt-host-pools-eastus2.tfstate"
+time_zone                    = "Eastern Standard Time" # [VERIFY BEFORE IMPLEMENTATION] - confirmed correct in Lab 17; for westeurope, "W. Europe Standard Time" is the commonly-cited Windows ID for CET/Amsterdam but has not been independently re-verified in this pass
+# eastus2_schedule, westeurope_schedule, avdlz_state_resource_group,
+# avdlz_state_storage_account, avdplt_state_resource_group,
+# avdplt_state_storage_account, and exclusion_tag_name all have
+# defaults - see variables.tf.

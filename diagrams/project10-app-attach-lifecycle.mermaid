@@ -1,0 +1,21 @@
+---
+title: App Attach package lifecycle on a session host
+---
+sequenceDiagram
+    autonumber
+    participant S as AVD Service
+    participant H as Session Host
+    participant F as Package Share
+    participant U as User Session
+
+    Note over S,F: Machine level, before any user signs in
+    S->>H: Package assigned to host pool
+    H->>F: Mount disk image, computer account
+    F-->>H: Image mounted
+    H->>H: Stage package
+
+    Note over S,U: User level, at sign-in
+    U->>S: Sign in
+    S->>H: User assigned to this package
+    H->>U: Register package for this user
+    U->>U: Application appears

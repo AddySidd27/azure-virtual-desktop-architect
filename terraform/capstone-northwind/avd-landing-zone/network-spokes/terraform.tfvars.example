@@ -1,0 +1,11 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+avd_prod_subscription_id     = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+avd_nonprod_subscription_id  = "REPLACE_WITH_SUB-NORTHWIND-AVD-NONPROD_ID"
+environment                   = "prd"
+owner                          = "your.name@northwind.example"
+cost_centre                    = "REPLACE_WITH_REAL_COST_CENTRE"
+# corp_management_group_id and all eastus2_hub_*/westeurope_hub_* values are
+# now resolved automatically via terraform_remote_state (remote-state.tf) -
+# see Part G, section 2. No longer manually supplied here.
+# platform_state_resource_group, platform_state_storage_account, and both
+# *_avd_address_space variables all have defaults - see variables.tf.

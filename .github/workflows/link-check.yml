@@ -1,0 +1,92 @@
+name: Markdown link check
+
+on:
+  pull_request:
+    paths: ["**/*.md"]
+  push:
+    branches: [main]
+    paths: ["**/*.md"]
+  workflow_dispatch:
+
+jobs:
+  local-links:
+    name: Check local Markdown links resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify every local link target exists
+        run: |
+          python3 - << 'PYEOF'
+          import re, pathlib, sys
+
+          md_files = list(pathlib.Path(".").rglob("*.md"))
+          link_re = re.compile(r'\[([^\]]+)\]\(((?!https?://|mailto:)[^)#]+)(#[^)]*)?\)')
+          broken = []
+
+          for f in md_files:
+              text = f.read_text(errors="ignore")
+              for m in link_re.finditer(text):
+                  target = m.group(2)
+                  if not target or target.startswith("#"):
+                      continue
+                  resolved = (f.parent / target).resolve()
+                  try:
+                      resolved.relative_to(pathlib.Path(".").resolve())
+                  except ValueError:
+                      continue
+                  if not resolved.exists():
+                      broken.append(f"{f} -> {target}")
+
+          if broken:
+              print(f"::error::{len(broken)} broken local link(s) found")
+              for b in broken:
+                  print(f"  {b}")
+              sys.exit(1)
+          print(f"OK: no broken local links across {len(md_files)} Markdown files")
+          PYEOF
+
+  prohibited-strings:
+    name: Check for prohibited strings
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail on citation artifacts and drafting placeholders
+        run: |
+          set -e
+          FOUND=0
+
+          check() {
+            local pattern="$1"
+            local desc="$2"
+            local matches
+            matches=$(grep -rn "$pattern" --include="*.md" . || true)
+            if [ -n "$matches" ]; then
+              echo "::error::Prohibited pattern found ($desc):"
+              echo "$matches"
+              FOUND=1
+            fi
+          }
+
+          check '<cite index=' "unresolved citation artifact"
+          check '\bTODO\b' "TODO placeholder"
+          check '\bTBD\b' "TBD placeholder"
+
+          if [ "$FOUND" -eq 1 ]; then
+            exit 1
+          fi
+          echo "OK: no prohibited strings found"
+
+  external-links:
+    name: Check external links (best effort)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          check-modified-files-only: 'yes'
+          config-file: '.github/workflows/mlc-config.json'

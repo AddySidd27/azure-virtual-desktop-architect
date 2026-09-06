@@ -1,0 +1,23 @@
+---
+title: Session host join model decision
+---
+flowchart TB
+    Q{"Needs on-premises AD?"}
+
+    Q -->|"No"| EJ["Entra join"]
+    Q -->|"Yes, with Entra device"| HJ["Entra hybrid join"]
+    Q -->|"Yes, AD only"| DJ["AD DS domain join"]
+
+    EJ --> E1["No domain controller"]
+    HJ --> E2["Domain controller required"]
+    DJ --> E2
+
+    E1 --> R["Users must exist in Entra ID"]
+    E2 --> R
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    classDef rule fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    class EJ,E1 ok
+    class HJ,DJ,E2 warn
+    class R rule

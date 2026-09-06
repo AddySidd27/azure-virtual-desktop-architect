@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+northwind_management_group_id        = "REPLACE_WITH_MANAGEMENT_GROUPS_MODULE_OUTPUT"
+identity_subscription_id             = "REPLACE_WITH_SUB-NORTHWIND-IDENTITY_ID"
+connectivity_subscription_id         = "REPLACE_WITH_SUB-NORTHWIND-CONNECTIVITY_ID"
+key_vault_id                         = "REPLACE_WITH_SECURITY_MODULE_OUTPUT"
+platform_engineer_principal_id       = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+subscription_owner_principal_id      = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+security_reader_principal_id         = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+identity_administrator_principal_id  = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+network_administrator_principal_id   = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+security_administrator_principal_id  = "REPLACE_WITH_REAL_GROUP_OBJECT_ID"
+# pim_eligibility_start and pim_eligibility_end have defaults - see variables.tf

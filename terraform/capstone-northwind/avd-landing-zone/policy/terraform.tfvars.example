@@ -1,0 +1,2 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+avd_prod_subscription_id = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"

@@ -1,0 +1,118 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Connection and authentication flow" id="hero-02">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1550" pageHeight="1052" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="End-to-end AVD connection and authentication flow" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 2 | Related: Chapters 4, 8, 9, 19 | Steps run in order, top to bottom" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1000" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge1" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#605E5C;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="110" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step1" value="Windows App launches the connection&#10;User endpoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="94" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge2" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="208" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step2" value="Entra ID evaluates Conditional Access on the Azure Virtual Desktop app&#10;Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="192" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge1" target="badge2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge3" value="3" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="306" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step3" value="Feed authorization: which application groups is this user assigned to&#10;Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="290" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge2" target="badge3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge4" value="4" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="404" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step4" value="Broker selects a session host in the target host pool&#10;Microsoft managed - AVD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="388" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge3" target="badge4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge5" value="5" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="502" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step5" value="Gateway establishes reverse connect. No inbound RDP from the internet&#10;Microsoft managed - AVD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="486" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge4" target="badge5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge6" value="6" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="600" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step6" value="Entra ID evaluates Conditional Access again, this time on Windows Cloud Login&#10;Microsoft Entra ID" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="584" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge5" target="badge6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge7" value="7" style="ellipse;whiteSpace=wrap;html=1;fillColor=#243A5E;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="698" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step7" value="Session host validates the sign-in token and the Virtual Machine User Login role&#10;Customer Azure - session host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="682" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge6" target="badge7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge8" value="8" style="ellipse;whiteSpace=wrap;html=1;fillColor=#243A5E;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="796" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step8" value="RDP transport negotiates Shortpath, falling back to reverse connect over TCP&#10;Customer Azure - session host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="780" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge7" target="badge8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge9" value="9" style="ellipse;whiteSpace=wrap;html=1;fillColor=#243A5E;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="894" width="36" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="step9" value="FSLogix agent mounts the user's profile container over SMB 445&#10;Customer Azure - session host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=12;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="878" width="900" height="68" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="badge8" target="badge9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zleg" value="LEGEND" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D8DDE3;fontSize=11;fontStyle=1;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="110" width="260" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="lb1" value="N" style="ellipse;whiteSpace=wrap;html=1;fillColor=#605E5C;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="145" width="28" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="ll1" value="User endpoint" style="text;fontSize=11;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="152" width="190" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="lb2" value="N" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0078D4;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="180" width="28" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="ll2" value="Microsoft managed / Entra" style="text;fontSize=11;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="187" width="190" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="lb3" value="N" style="ellipse;whiteSpace=wrap;html=1;fillColor=#243A5E;strokeColor=none;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="215" width="28" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="ll3" value="Customer Azure" style="text;fontSize=11;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="222" width="190" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1012" width="1000" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

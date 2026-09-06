@@ -1,0 +1,142 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Final MVP lab architecture" id="hero-10">
+    <mxGraphModel dx="1700" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="1140" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Final MVP lab architecture - Labs 1 through 10" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 10 | Resource names match terraform/lab02-foundation through lab10-operations exactly | Self-contained shapes" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zUser" value="USER" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="150" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="client" value="Windows App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="55" y="145" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zMS" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="220" y="100" width="270" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="entra" value="Microsoft Entra ID&#10;identity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="240" y="145" width="230" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="avd" value="AVD Service&#10;broker + gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="240" y="200" width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="zRG" value="CUSTOMER AZURE - LAB SUBSCRIPTION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FBFE;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="1420" height="800" as="geometry"/>
+        </mxCell>
+        <mxCell id="zNet" value="rg-avd-network-lab-eus2-01 (Lab 3)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="70" y="310" width="1360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="snetid" value="snet-identity&#10;domain controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="95" y="345" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="snethost" value="snet-hosts&#10;session hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="415" y="345" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="snetstor" value="snet-storage&#10;private endpoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="735" y="345" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="snetmgmt" value="snet-mgmt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="1055" y="345" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zId" value="rg-avd-identity-lab-eus2-01 (Lab 4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="70" y="445" width="660" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="vm-avdlab-dc01&#10;avdlab.local, AD DS + DNS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="95" y="480" width="610" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zStor" value="rg-avd-storage-lab-eus2-01 (Lab 5)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="750" y="445" width="680" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="sa" value="stfslogixlabeus201&#10;Premium FileStorage, ZRS, share: profiles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="775" y="480" width="630" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zSvc" value="rg-avd-service-lab-eus2-01 (Labs 7, 9, 10)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="70" y="590" width="1360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="ws" value="ws-avd-lab-eus2-01&#10;workspace" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="95" y="625" width="340" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="hpd" value="hp-avd-lab-eus2-01&#10;Desktop pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="465" y="625" width="440" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="hpr" value="hp-avd-remoteapp&#10;RemoteApp pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="935" y="625" width="470" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zHosts" value="rg-avd-hosts-lab-eus2-01 (Labs 8, 9)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="70" y="725" width="1360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="vmh1" value="vm-avdlab-h1&#10;FSLogix + AVD agent, domain joined" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="95" y="760" width="660" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="vmh2" value="RemoteApp host&#10;FSLogix + AVD agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="785" y="760" width="620" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zMon" value="rg-avd-monitoring-lab-eus2-01 (Lab 10)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1F5B96;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="70" y="860" width="1360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="law" value="log-avd-lab-eus2-01&#10;Log Analytics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="95" y="895" width="420" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="sp" value="sp-avd-lab-eus2-01&#10;Scaling plan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="545" y="895" width="420" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="diag" value="Diagnostic settings&#10;on hp-avd-lab-eus2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="995" y="895" width="410" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zPolicy" value="MANUAL / POLICY, NOT TERRAFORM (LAB 6)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6EC;strokeColor=#B77300;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#B77300;" vertex="1" parent="1">
+          <mxGeometry x="40" y="985" width="700" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="fslogixconf" value="FSLogix registry + exclusions&#10;Produced Lab 6, applied via run-command in Lab 8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=10.5;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1015" width="660" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="client" target="avd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="broker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="avd" target="hpd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="registers" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="hpd" target="vmh1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="registers" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B77300;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="hpr" target="vmh2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" value="Kerberos, DNS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="vmh1" target="dc">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" value="SMB 445 FSLogix" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="vmh1" target="sa">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" value="diagnostics" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="hpd" target="law">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="scales" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="sp" target="hpd">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" value="applied to" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B77300;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="fslogixconf" target="vmh1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg" value="Legend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D8DDE3;fontSize=11;fontStyle=1;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="985" width="620" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="l1" value="Session/broker path" style="text;fontSize=10.5;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="795" y="1020" width="280" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="l2" value="Terraform control/telemetry" style="text;fontSize=10.5;fontColor=#107C10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="795" y="1040" width="280" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="l3" value="Manual/policy, not Terraform" style="text;fontSize=10.5;fontColor=#B77300;align=left;" vertex="1" parent="1">
+          <mxGeometry x="795" y="1060" width="280" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1100" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

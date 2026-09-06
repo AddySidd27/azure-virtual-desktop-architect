@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 5 storage topology" id="lab05">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 5 - profile storage topology" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 5 | Matches terraform/lab05-storage exactly | rg-avd-storage-lab-eus2-01" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zVnet" value="VNET-AVD-LAB-EUS2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="700" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="vm-avdlab-dc01&#10;Domain Controller (Lab 4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="snet" value="snet-storage-lab-eus2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pe" value="pe-stfslogix-lab-eus2-01&#10;Private Endpoint NIC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="psc" value="psc-stfslogix-lab-eus2-01&#10;Private Service Connection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zStor" value="STORAGE ACCOUNT (OUTSIDE THE VNET)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="100" width="680" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="sa" value="stfslogixlabeus201&#10;Premium FileStorage, ZRS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="145" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="share" value="profiles&#10;file share" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="145" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="dns" value="privatelink.file.core.windows.net&#10;Private DNS Zone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="225" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="link" value="link-files-lab-eus2-01&#10;DNS zone VNet link" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="225" width="300" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  vm-avdlab-dc01 -&gt; stfslogixlabeus201, Kerberos (AD DS identity for Azure Files authentication)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  vm-avdlab-dc01 -&gt; privatelink.file.core.windows.net, DNS query for stfslogixlabeus201.file.core.windows.net" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  privatelink.file.core.windows.net -&gt; pe-stfslogix-lab-eus2-01, resolves to the private IP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  pe-stfslogix-lab-eus2-01 -- psc-stfslogix-lab-eus2-01 -- stfslogixlabeus201, private connection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  vm-avdlab-h1 (Lab 8) -&gt; stfslogixlabeus201, SMB 445 to the profiles share (after Lab 5 Step 4 domain join)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab05-storage, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

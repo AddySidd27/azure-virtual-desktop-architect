@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Multi-region HA-DR" id="hero-08">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1580" pageHeight="690" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Multi-region HA and DR architecture for AVD" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Hero diagram 8 | Related: Project 09, Chapter 20 | Data location can matter more than latency" style="text;fontSize=13;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zPri" value="PRIMARY REGION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="700" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="Host Pool - Primary&#10;Desktop + RemoteApp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="Session Hosts&#10;3 availability zones" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="Profile Storage&#10;Premium, ZRS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="220" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="Domain Controllers&#10;1 per zone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="220" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5" value="Users near this region&#10;lower latency path" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#107C10;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="310" width="660" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="zSec" value="SECONDARY / DR REGION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAF8F3;strokeColor=#8A7A5C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#8A7A5C;" vertex="1" parent="1">
+          <mxGeometry x="840" y="100" width="700" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="Host Pool - Secondary&#10;warm standby or rebuild-on-failover" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="Session Hosts&#10;provisioned on failover" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="140" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="Profile Storage&#10;GZRS if HDD, or separate DR copy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="220" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="s4" value="Domain Controllers&#10;replica, or rebuild via IaC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A7A5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="220" width="320" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="s5" value="Remote users accept latency&#10;for a single copy of the data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="310" width="660" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="er1" value="async replication (if GZRS)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2;dashed=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="p3" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zForce" value="THE DECISION THIS DIAGRAM FORCES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6F6;strokeColor=#A4262C;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#A4262C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="1500" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="Premium storage + geo-redundancy&#10;Not available together on one Azure Files share" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="470" width="480" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="Option A: Standard HDD + GZRS&#10;Native geo-redundancy, lower IOPS ceiling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="470" width="480" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="Option B: Premium + ZRS + Cloud Cache&#10;High IOPS, DR via a second Cloud Cache provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="470" width="480" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Storage constraint verified in Chapter 20. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="1300" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

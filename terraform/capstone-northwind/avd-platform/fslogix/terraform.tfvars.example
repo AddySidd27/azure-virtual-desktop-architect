@@ -1,0 +1,18 @@
+# Copy to terraform.tfvars and edit. Apply once per region. For each apply,
+# run: terraform init -backend-config="key=avdplt-fslogix-eastus2.tfstate"
+# (or westeurope) - see backend.tf for why this is required.
+avd_prod_subscription_id           = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment                        = "prd"
+location                           = "eastus2"
+location_short                     = "eus2"
+non_finance_users_group_object_id  = "REPLACE_WITH_REAL_ENTRA_GROUP_OBJECT_ID"
+finance_users_group_object_id      = "REPLACE_WITH_REAL_ENTRA_GROUP_OBJECT_ID"
+# avd_resource_group and avd_hosts_subnet_id are now resolved automatically
+# via terraform_remote_state (remote-state.tf) - see Part G, section 2.
+# avdlz_state_resource_group and avdlz_state_storage_account have defaults.
+# enable_finance_dedicated_storage defaults to false - see ADR-CAP-06.
+# BUSINESS/COMPLIANCE DECISION REQUIRED before setting this to true.
+# finance_file_share_quota_gb only applies if that flag is true.
+# file_share_quota_gb defaults to 5000 - sized only from the task-worker
+# worked example (Chapter 20). The other four personas' storage needs have
+# not been separately worked through - see the module README.

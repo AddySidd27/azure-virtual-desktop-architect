@@ -1,0 +1,22 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+# Apply this module TWICE - once per region - matching the explicit-repetition
+# pattern used throughout this book (see Labs 11-20). For each apply, run:
+#   terraform init -backend-config="key=avdplt-host-pools-eastus2.tfstate"
+# (or westeurope) - see backend.tf for why this is required.
+
+# --- eastus2 instance ---
+avd_prod_subscription_id = "REPLACE_WITH_SUB-NORTHWIND-AVD-PROD_ID"
+environment               = "prd"
+location                  = "eastus2"
+location_short            = "eus2"
+admin_username            = "REPLACE_WITH_REAL_ADMIN_USERNAME"
+admin_password            = "ReplaceWithYourOwnPassword1!"
+# avd_hosts_subnet_id, avd_resource_group, eastus2_dc_ip, westeurope_dc_ip, and
+# monitoring_workspace_id are now resolved automatically via
+# terraform_remote_state (remote-state.tf) - see Part G, section 2. No longer
+# manually supplied here.
+# avdlz_state_resource_group, avdlz_state_storage_account,
+# platform_state_resource_group, platform_state_storage_account, and
+# regional_split_percent all have defaults - see variables.tf.
+# regional_split_percent's default (50) is an EXPLICIT PLACEHOLDER, not a
+# confirmed figure - confirm with Northwind before applying.

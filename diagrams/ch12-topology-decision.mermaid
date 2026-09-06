@@ -1,0 +1,19 @@
+---
+title: Landing zone topology decision
+---
+flowchart TB
+    Q{"More than two regions with transit?"}
+
+    Q -->|"No"| HS["Hub and Spoke"]
+    Q -->|"Yes"| VW["Virtual WAN"]
+
+    HS --> H1["Customer operated hub"]
+    VW --> V1["Microsoft operated hub"]
+
+    H1 --> A["AVD is a spoke"]
+    V1 --> A
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef out fill:#0f4c81,stroke:#0f4c81,color:#ffffff
+    class HS,VW,H1,V1 ok
+    class A out

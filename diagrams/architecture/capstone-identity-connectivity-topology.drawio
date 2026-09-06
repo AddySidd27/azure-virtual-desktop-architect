@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Capstone Part C Identity Connectivity" id="capstonec">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Northwind Identity and Connectivity Foundation: architecture at a glance" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Capstone Part C | Two regional hubs, four domain controllers, hybrid identity - Bangalore explicitly out of scope for this part" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1300" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="chicago" value="Chicago&#10;On-premises AD forest, ExpressRoute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="bangalore" value="Bangalore&#10;No ExpressRoute - out of scope, Part C sec. 6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=13;fontColor=#605E5C;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="100" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="amsterdam" value="Amsterdam&#10;On-premises AD forest, ExpressRoute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="100" width="300" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEus2" value="EAST US 2 - SERVES CHICAGO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="205" width="660" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="hubEus2" value="Hub VNet - GatewaySubnet, AzureFirewallSubnet&#10;ErGwScale gateway, Azure Firewall (AZFW_VNet)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="245" width="600" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="spokeEus2" value="Identity spoke&#10;vm-dc-eus2-01, vm-dc-eus2-02 - joins existing forest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=13;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="320" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="syncEus2" value="Entra Connect Sync server&#10;ADR-CAP-01: not Cloud Sync - hybrid join still preview" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=13;fontColor=#B77300;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="400" width="600" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="zWeu" value="WEST EUROPE - SERVES AMSTERDAM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="780" y="205" width="660" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="hubWeu" value="Hub VNet - GatewaySubnet, AzureFirewallSubnet&#10;ErGwScale gateway, Azure Firewall (AZFW_VNet)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=13;fontColor=#243A5E;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="810" y="245" width="600" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="spokeWeu" value="Identity spoke&#10;vm-dc-weu-01, vm-dc-weu-02 - joins existing forest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#107C10;fontSize=13;fontColor=#107C10;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="810" y="320" width="600" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="syncWeu" value="Entra Connect Sync server&#10;ADR-CAP-01: not Cloud Sync - hybrid join still preview" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#B77300;fontSize=13;fontColor=#B77300;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="810" y="400" width="600" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="ExpressRoute" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#0078D4;strokeWidth=2.4;endArrow=blockThin;endFill=1;fontColor=#0078D4;" edge="1" parent="1" source="chicago" target="hubEus2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="ExpressRoute" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#0078D4;strokeWidth=2.4;endArrow=blockThin;endFill=1;fontColor=#0078D4;" edge="1" parent="1" source="amsterdam" target="hubWeu">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="hub-to-hub peering" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#107C10;strokeWidth=2.4;endArrow=blockThin;endFill=1;fontColor=#107C10;" edge="1" parent="1" source="hubEus2" target="hubWeu">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zNotes" value="HOW TO READ THIS IN 60 SECONDS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=12;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="565" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Two regional hubs, direct peering - not Virtual WAN. Northwind has two regions; Chapter 12's own cited trigger for Virtual WAN needs more than two." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="605" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  ADR-CAP-01: Microsoft Entra Connect Sync, not Cloud Sync - Cloud Sync's hybrid-join device sync reached preview in July 2026, no SLA, no support commitment yet." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="645" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  Bangalore has no ExpressRoute and no platform-level presence in this part - Part A scopes its resolution as an AVD Landing Zone decision, made in Part E." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#605E5C;fontSize=11;fontColor=#605E5C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="685" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  A DC failure in one region fails over to the other region's DC via hub peering - designed resilience, validated by deliberately breaking ExpressRoute in a test window (Part C sec. 8)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="725" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  Azure Firewall is a platform-shared resource here, justified differently from Lab 18's single-lab rejection of it - see Part C section 5 for why the same component gets two different answers." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="765" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram for this capstone, not Microsoft's. Verified against terraform/capstone-northwind/platform/connectivity and /identity, and Part C, August 2026. Self-contained, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="835" width="1400" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

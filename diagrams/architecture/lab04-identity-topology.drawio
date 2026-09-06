@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 4 identity topology" id="lab04">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 4 - identity topology" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 4 | Matches terraform/lab04-identity exactly | rg-avd-identity-lab-eus2-01, domain avdlab.local" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zOp" value="OPERATOR" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="260" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="run" value="az vm run-command&#10;no RDP needed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="zMS" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="100" width="300" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="arm" value="Azure Resource Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="360" y="155" width="260" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="zVnet" value="VNET-AVD-LAB-EUS2-01, SNET-IDENTITY-LAB-EUS2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="700" y="100" width="760" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc" value="vm-avdlab-dc01&#10;computer name: AVDLAB-DC01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="720" y="150" width="340" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="nic" value="nic-avdlab-dc01&#10;static IP: 10.10.1.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="150" width="340" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="1420" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Operator -&gt; Azure Resource Manager, az vm run-command (no interactive RDP session used)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="340" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  Azure Resource Manager -&gt; vm-avdlab-dc01, control plane (extension execution)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  vm-avdlab-dc01 promoted to domain controller for avdlab.local, static IP 10.10.1.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  nic-avdlab-dc01 (10.10.1.4) becomes the VNet's DNS server for snet-hosts and snet-storage (configured in Lab 3/8)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  osdisk-avdlab-dc01: OS disk, 15-character NetBIOS limit is why the computer name is AVDLAB-DC01, not vm-avdlab-dc01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab04-identity, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

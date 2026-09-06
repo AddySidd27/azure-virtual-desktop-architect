@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+owner             = "your.name@domain.com"
+dc_admin_password = "ReplaceWithAStrongPassword1!"
+
+# Optional overrides
+# dc_vm_size    = "Standard_B2s"
+# dc_private_ip = "10.10.1.4"

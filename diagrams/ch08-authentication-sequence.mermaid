@@ -1,0 +1,28 @@
+---
+title: AVD authentication sequence
+---
+sequenceDiagram
+    autonumber
+    participant U as Windows App
+    participant E as Entra ID
+    participant S as AVD service
+    participant H as Session host
+    participant K as Domain controller
+
+    Note over U,E: Stage 1 · service authentication
+    U->>E: Sign in
+    E->>E: Conditional Access, MFA
+    E-->>U: Token
+
+    Note over U,S: Authorization
+    U->>S: Request feed
+    S-->>U: Assigned desktops and apps
+
+    Note over U,H: Stage 2 · session host authentication
+    U->>E: Request RDP token
+    E-->>U: RDP token (SSO)
+    U->>H: Windows sign-in
+    H->>K: Kerberos ticket
+
+    Note over H,K: Stage 3 · in-session authentication
+    H->>K: Integrated auth to shares and apps

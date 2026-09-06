@@ -1,0 +1,22 @@
+---
+title: Host pool management approach decision
+---
+flowchart TB
+    Q1{"Host pool type"}
+    Q2{"Session hosts on Azure"}
+    Q3{"External tooling owns lifecycle"}
+
+    Q1 -->|"Personal"| STD["Standard Management"]
+    Q1 -->|"Pooled"| Q2
+    Q2 -->|"No"| STD
+    Q2 -->|"Yes"| Q3
+    Q3 -->|"Yes"| STD
+    Q3 -->|"No"| SHC["Session Host Configuration"]
+
+    SHC --> A1["Service managed lifecycle"]
+    STD --> A2["Customer managed lifecycle"]
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    class SHC,A1 ok
+    class STD,A2 warn

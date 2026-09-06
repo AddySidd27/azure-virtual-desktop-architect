@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net" agent="azure-virtual-desktop-architect">
+  <diagram name="Lab 12 regional identity" id="lab12">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1500" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Lab 12 - regional identity topology" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="Lab 12 | Matches terraform/lab12-regional-identity exactly | one forest, avdlab.local, two domain controllers, two AD sites" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="zEus2" value="EASTUS2 - AD SITE: DEFAULT-FIRST-SITE-NAME (LAB 4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="660" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc1" value="vm-avdlab-dc01&#10;10.10.1.4, computer name AVDLAB-DC01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="145" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s1" value="snet-identity-lab-eus2-01&#10;10.10.1.0/24" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="220" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="zCus" value="CENTRALUS - AD SITE: CENTRALUS-SITE (LAB 12)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3FAF3;strokeColor=#107C10;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#107C10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="100" width="660" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="dc2" value="vm-avdlab-dc02&#10;10.20.1.4, computer name AVDLAB-DC02" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="810" y="145" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="s2" value="snet-identity-lab-cus-01&#10;10.20.1.0/24" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#605E5C;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="810" y="220" width="600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="AD replication (RPC/SMTP)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B77300;strokeWidth=3;endArrow=blockThin;endFill=1;fontColor=#B77300;" edge="1" parent="1" source="dc1" target="dc2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B77300;strokeWidth=3;endArrow=blockThin;endFill=1;fontColor=#B77300;" edge="1" parent="1" source="dc2" target="dc1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="zFlow" value="FLOWS, IN ORDER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#1F5B96;strokeWidth=1.5;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#1F5B96;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1400" height="255" as="geometry"/>
+        </mxCell>
+        <mxCell id="f0" value="1  Install-ADDSDomainController joins vm-avdlab-dc02 to the existing avdlab.local forest, not a new forest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f1" value="2  New-ADReplicationSite creates centralus-Site; New-ADReplicationSubnet maps 10.20.0.0/16 to it" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f2" value="3  vm-avdlab-dc01 and vm-avdlab-dc02 replicate the directory to each other over the Lab 11 peering link" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f3" value="4  Once replication is confirmed, both VNets' DNS servers are updated: eastus2 primary 10.10.1.4 / secondary 10.20.1.4, centralus primary 10.20.1.4 / secondary 10.10.1.4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="500" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="f4" value="5  A session host in either region now resolves against its own local DC first, falling back to the other region's DC only if the local one is unavailable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="540" width="1380" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab12-regional-identity, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="615" width="1200" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

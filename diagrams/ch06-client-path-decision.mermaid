@@ -1,0 +1,18 @@
+---
+title: AVD client path decision
+---
+flowchart TB
+    Q{"Device managed?"}
+
+    Q -->|"Corporate"| A["Windows App"]
+    Q -->|"Unmanaged"| B["Browser"]
+    Q -->|"Thin client"| C["Vendor Client"]
+
+    A --> A1["Intune deployment"]
+    B --> B1["No install"]
+    C --> C1["Vendor constrained"]
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    class A,B,A1,B1 ok
+    class C,C1 warn

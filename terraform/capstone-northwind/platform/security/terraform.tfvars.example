@@ -1,0 +1,19 @@
+# Copy to terraform.tfvars and edit. terraform.tfvars is gitignored.
+management_subscription_id             = "REPLACE_WITH_SUB-NORTHWIND-MANAGEMENT_ID"
+environment                            = "prd"
+tenant_id                              = "REPLACE_WITH_YOUR_TENANT_ID"
+eastus2_hub_resource_group             = "REPLACE_WITH_CONNECTIVITY_MODULE_OUTPUT"
+westeurope_hub_resource_group          = "REPLACE_WITH_CONNECTIVITY_MODULE_OUTPUT"
+eastus2_hub_vnet_name                  = "REPLACE_WITH_CONNECTIVITY_MODULE_OUTPUT"
+westeurope_hub_vnet_name               = "REPLACE_WITH_CONNECTIVITY_MODULE_OUTPUT"
+dc_admin_username                      = "REPLACE_MATCH_IDENTITY_MODULE"
+dc_admin_password                      = "ReplaceWithYourOwnPassword1!"
+connect_sync_service_account_username  = "REPLACE_WITH_REAL_SERVICE_ACCOUNT"
+connect_sync_service_account_password  = "ReplaceWithYourOwnPassword2!"
+owner                                   = "your.name@northwind.example"
+cost_centre                             = "REPLACE_WITH_REAL_COST_CENTRE"
+break_glass_domain                      = "REPLACE_WITH_YOUR_ONMICROSOFT_DOMAIN"
+# identity_administrator_principal_id, network_administrator_principal_id, and
+# security_administrator_principal_id moved to terraform/capstone-northwind/platform/rbac/
+# as part of the PIM remediation - see that module's terraform.tfvars.example instead.
+# break_glass_account_count defaults to 2, per Microsoft's documented guidance

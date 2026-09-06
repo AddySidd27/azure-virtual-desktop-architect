@@ -1,0 +1,22 @@
+---
+title: Pooled or personal host pool
+---
+flowchart TB
+    Q1{"Can users share a host?"}
+    Q2{"Local admin required?"}
+    Q3{"GPU or heavy load?"}
+
+    Q1 -->|"Yes"| POOL["Pooled"]
+    Q1 -->|"No"| Q2
+    Q2 -->|"Yes"| PERS["Personal"]
+    Q2 -->|"No"| Q3
+    Q3 -->|"Yes"| PERS
+    Q3 -->|"No"| POOL
+
+    POOL --> C1["Autoscale"]
+    PERS --> C2["Always allocated"]
+
+    classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
+    classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
+    class POOL,C1 ok
+    class PERS,C2 warn
