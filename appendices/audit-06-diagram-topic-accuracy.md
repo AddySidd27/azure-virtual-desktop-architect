@@ -1,5 +1,7 @@
 # Audit 06 - Diagram Audit Against the Architecture Artifact Standard
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** All 29 diagrams, Chapters 1 to 22 and Labs 3 and 4
 **Test applied:** Remove the chapter title, show only the diagram, and ask what topic it appears to explain. If the answer is not the chapter topic, rebuild.

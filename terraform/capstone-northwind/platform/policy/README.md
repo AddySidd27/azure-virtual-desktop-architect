@@ -27,8 +27,8 @@ terraform apply tfplan
 ```
 
 > This Terraform has not been run against a live Azure subscription. The
-> allowed-locations policy definition ID is confirmed directly against Microsoft
-> Learn's own documentation during this capstone's research pass. The
+> allowed-locations policy definition ID is confirmed against Microsoft
+> Learn's own documentation. The
 > required-tags and diagnostic-settings policy definition IDs are **not**
 > independently confirmed - both are marked `[VERIFY BEFORE IMPLEMENTATION]` in
 > `variables.tf` and `policy-assignments.tf`, with the required-tags default set

@@ -1,5 +1,7 @@
 # Audit 09 - August 2026 Publication Remediation
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** A full professional remediation pass ahead of public GitHub publication, MVP evidence, and MVP-track review. This is the report of what was actually done, with the commands used, not a claim of completion where none exists.
 

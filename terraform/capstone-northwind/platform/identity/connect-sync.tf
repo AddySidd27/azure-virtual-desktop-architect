@@ -6,15 +6,15 @@
 # "installed on a dedicated, domain-joined server," but no such
 # server - no VM, no resource of any kind - existed anywhere in this
 # Terraform. Only its future credentials existed, as placeholders in
-# Part D's Key Vault. This file closes that gap: the VM
-# infrastructure now exists. The Connect Sync SOFTWARE installation
-# and configuration remains an imperative post-deployment step,
-# exactly like AD DS promotion on the domain controllers - not a
+# the platform Key Vault. This file provisions that VM infrastructure.
+# The Connect Sync SOFTWARE installation and configuration remains an
+# imperative post-deployment step, exactly like AD DS promotion on
+# the domain controllers - not a
 # regression from this book's established pattern, a consistent
 # application of it.
 #
-# ARCHITECTURE DECISION, new in this remediation: one primary server
-# in East US 2, one staging-mode secondary in West Europe. Microsoft
+# Architecture decision: one primary server in East US 2, one
+# staging-mode secondary in West Europe. Microsoft
 # documents a "staging mode" configuration for exactly this HA
 # scenario - a second server configured identically but not actively
 # exporting to Entra ID until deliberately enabled. Given Part C's

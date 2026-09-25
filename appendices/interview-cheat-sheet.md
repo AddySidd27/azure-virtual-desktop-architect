@@ -40,4 +40,4 @@ Use this structure for architecture and operations questions.
 - State assumptions and open decisions.
 - If a feature changes quickly, say that you confirm current Microsoft guidance before implementation.
 
-For all 196 questions and five mock interviews, use the [interview index](../interviews/interview-index.md).
+For all 193 questions and five mock interviews, use the [interview index](../interviews/interview-index.md).

@@ -1,5 +1,7 @@
 # Audit 08 - Repository-Wide Diagram Coverage
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** A repository-wide diagram correction, mandatory before further chapters or projects. The draw.io MCP connector is now available and is the tool of record for every tier 2 diagram. See the [locked style guide](../DIAGRAM-STYLE-GUIDE.md).
 **Scope:** All 48 diagrams from Chapter 1 through Project 10.

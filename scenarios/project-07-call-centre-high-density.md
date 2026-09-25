@@ -491,27 +491,3 @@ Escalation:     If actual exceeds expected with no drain or agent issue, raise t
 
 **Honest answer**
 "Two things. I designed the handover peak to spill into the surge pool and never implemented a mechanism to make that happen, so for three weeks agents queued at 14:00 while a design document said they would not. The arithmetic was right and nothing delivered it, which is a gap I should have caught in validation rather than in production. And I would have set the time limit policy for disconnected sessions on day one rather than waiting for the saving to fall short. It was predictable from the formula, and I knew the agent behaviour before we went live."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The capacity formula, the rule that autoscale takes the higher of the formula result and the minimum percentage setting, the treatment of disconnected sessions as active, the requirement for zero sessions to reach zero hosts, the Desktop Virtualization Power On Off Contributor role requirement, force logoff behaviour including drain mode and notification, the carry-over of capacity threshold from ramp-down into peak and off-peak, the weekend carry-over for unselected days, the time limit policy as a complementary control, and the difference between power management and dynamic autoscaling were all verified against the current Microsoft autoscale scenarios, autoscale FAQ, create and assign scaling plan, autoscale glossary and autoscale troubleshooting pages. A currency flag records the discrepancy between the June 2026 general availability note for dynamic autoscaling and pages still carrying a preview label. Cost figures carry a verification marker. KQL carries a verification marker for table naming.
-
-**Pass 2, human readability review.** Written in engagement order: the workload, the requirements, what exists, the concept needed to proceed, the decisions, the design, what went wrong, and the handover. The autoscale concept section sits before the decisions because none of the decisions make sense without the formula. Sentences kept short. No long dash characters. Read back as an architect handed a contact centre, and the density economics table was moved out of the decision section into its own section, because it is the single most reusable artefact in the project.
-
-**Pass 3, visual and topic accuracy review.** Three diagrams, each earning its place. The existing environment diagram communicates why the migration is happening, fixed capacity that cannot be switched off. The scaling architecture diagram communicates the relationship between three shifts, four phases and three pools, which is the core of the engagement and is genuinely hard to hold in text. The production architecture diagram shows the finished platform including the on-premises application dependency and the operational ownership path. Topic test applied to each: with titles removed they read as an on-premises VDI estate, an autoscale design for a shifted workload, and a call centre AVD platform. None reads as a generic AVD diagram. Every node is a component name. All three carry classification labels.
-
-**Concepts introduced, for the coverage map.** Scaling plan phases and which settings carry over. The autoscale capacity formula and both of its traps. Power management against dynamic autoscaling. Force logoff behaviour and the time limit policy. Density economics as a commercial calculation. Capacity planning per time of day rather than against a single peak.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed as assumption, measurement or decision | Yes throughout |
-| Competing requirements resolved | Cost against handling time, resolved with measurement |
-| Constraints that cannot be designed away | Regulatory surge, call recording, vendor version lock, shift overlap |
-| Decision against the obvious answer | Three pools for one homogeneous workload. Breadth-first through peak |
-| Problems that actually happen | Disconnected sessions eroding the saving, capacity design not implemented |
-| Operational ownership addressed | Yes. Runbook, seasonal review, surge test |
-| New concepts taught practically | Yes, at the point they are needed |
-| No repetition of concept chapters | Checked. Load balancing, sizing, monitoring all referenced |

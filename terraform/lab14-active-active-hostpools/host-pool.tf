@@ -4,7 +4,7 @@
 # Standard host-pool management, matching Lab 7 exactly. NOT Session
 # Host Configuration / Automated Host Pool. See the ADR:
 # appendices/adr-shc-vs-standard-host-pools.md for why - no stable
-# Terraform resource exists for SHC as of this book's research pass.
+# Terraform resource exists for SHC as of this writing.
 ############################################
 
 resource "azurerm_virtual_desktop_host_pool" "centralus" {

@@ -75,7 +75,7 @@ resource "azurerm_monitor_diagnostic_setting" "hostpool_avd_regional" {
 # published Terraform using this identical category set, that
 # Checkpoint/Error/Management/Connection/HostRegistration/
 # AgentHealthStatus/NetworkData/SessionHostManagement are genuine,
-# current AVD diagnostic categories - not fabricated. [VERIFY BEFORE
+# current AVD diagnostic categories. [VERIFY BEFORE
 # IMPLEMENTATION] whether this is the complete, currently-recommended
 # set for AVD Insights specifically (one source additionally used
 # ConnectionGraphicsData) - confirm against Microsoft Learn's current

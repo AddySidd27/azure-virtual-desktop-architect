@@ -457,35 +457,3 @@ Chapter 23 opens Part VI with golden image engineering, which is where most of t
 
 **Interview preparation carried forward**
 Q62 separates candidates quickly. Most describe Cloud Cache as replication. Describing it as a local cache with periodic writes, and naming the session host cost, is the accurate answer.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The Cloud Cache description including the local cache mechanism, its design intent for short-term storage issues, its BCDR use with remote providers and its performance and storage cost on the virtual machine were verified against the current Microsoft Cloud Cache overview. The read and write behaviour across providers, the four provider limit, the SMB and Azure Blob support, and the rule that `CCDLocations` and `VHDLocations` must not both be present were verified against the FSLogix configuration settings reference. The high availability guidance favouring unique storage platforms over two of the same was verified against the container high availability page. Provider ordering by proximity then preference was verified against the Cloud Cache overview. Compaction settings and the exclusion list carry verification markers because names and caveats vary by FSLogix version. No setting value or command was invented.
-
-**Pass 2, human readability review.** The chapter opens with what Cloud Cache actually is, because the misconception is the main obstacle to using it well. The decision section presents both options with impacts rather than recommending one. Corruption options are a three row table because there genuinely are only three, and pretending otherwise would be padding. Sentences kept short, scenario narrative rather than bullets, no long dash characters. Read back as an engineer running this service, and the lock section was moved before corruption because locks are far more frequent and the two are often confused.
-
-**Pass 3, visual and diagram review.** One diagram, on the Cloud Cache flow, because the read from one provider and write to all behaviour is the thing people get wrong and a picture makes it immediate. Every node is a component name. The dashed secondary provider boundary and the dotted conditional read line carry the meaning that a table would need a paragraph to explain. Storage redundancy against Cloud Cache stays a table since it is a multi dimension comparison. Checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The lock procedure references the commands already given in [Chapter 19](ch19-why-profiles-cause-avd-failure.md#8-production-scenarios) rather than repeating them. The exclusion requirement is consistent with [Chapter 21](ch21-fslogix-production-implementation.md#3-antivirus-and-security-tool-exclusions), and Scenario 1 extends it to new storage paths rather than restating it. The statement that multiple `VHDLocations` entries are not resiliency, from [Chapter 21](ch21-fslogix-production-implementation.md#2-the-settings-that-matter), is the reason Cloud Cache appears here, and the link between them is made explicit. Session host disk cost references the sizing method in [Chapter 17](ch17-session-host-sizing-compute-selection.md). Storage platform capabilities reference [Chapter 20](ch20-profile-storage-architecture.md#2-the-platform-comparison). The disposable host model explaining why locks recur references [Chapter 16](ch16-automated-host-pools-session-host-configuration.md). No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft FSLogix pages |
-| Current capability verified | Yes, August 2026, with a currency flag on Cloud Cache configuration |
-| Supported versus unsupported separated | Yes. The CCDLocations and VHDLocations exclusivity rule stated explicitly |
-| Commands, registry paths, PowerShell | Exact, with verification markers where version dependent |
-| Production scenarios | Three, in the extended format |
-| Architect decision structure | Section 2, with impacts, recommendation and when not to use it |
-| Architect's Reality Check | Section 8 |
-| Architect's four questions | Section 10 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 7 |
-| Diagrams | One, deliberately, to the locked standard |
-| Architecture consistency | Consistent with Chapters 16, 17, 19, 20 and 21 |
-| Cost statements | Session host cost of Cloud Cache and the compaction trade stated |
-| Security implications | New storage paths as new exclusion requirements |
-| Interview answers | Read aloud |
-| Duplicate content | Lock commands referenced to Chapter 19, exclusions to Chapter 21 |
-| Simple English | Reviewed |
-| Long dash characters | None |

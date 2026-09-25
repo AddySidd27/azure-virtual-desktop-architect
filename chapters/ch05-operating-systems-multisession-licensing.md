@@ -421,30 +421,3 @@ Chapter 6 covers clients and the endpoint story - Windows App, the web client, t
 
 **Interview preparation carried forward**
 Q12 is the one to practise. Most candidates answer it with a number and lose the point. Practise the version that refuses the number and supplies the method instead.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Multi-session as a separate OS edition, density guidance, activation rules for Azure and Azure Local, and the Entra join prerequisites verified against the AVD prerequisites, multi-session FAQ and licensing pages. Currency flag on the Windows 10 lifecycle position.
-
-**Pass 2, readability.** Three production scenarios and the architect's four questions added during the audit, covering Intune policy applicability, an unbudgeted RDS CAL and delayed activation failures.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes |
-| Commands, portal paths, KQL | Exact paths given where the chapter includes investigation steps |
-| Production scenarios | Three, in the required format |
-| Architect's four questions | Present |
-| Mermaid diagram | Renders and matches the text |
-| Architecture consistency | Naming conventions, lab environment and Northwind design consistent with other chapters |
-| Links and cross references | Checked |
-| Cost statements | Accurate, with running and deallocated figures where compute is involved |
-| Security implications | Stated |
-| Interview answers | Read aloud |
-| Duplicate content | Cross referenced rather than repeated |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

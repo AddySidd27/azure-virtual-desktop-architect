@@ -78,8 +78,8 @@ Check the transport type shown in the client's connection info.
 
 Is this specific to Teams calls?
 ├── Yes → Confirm the WebRTC redirector is installed and current version
-│         (evidence step 3). Check host CPU during call hours (KQL query)
-│: rising CPU during calls with no other explanation is the
+│         (evidence step 3). Check host CPU during call hours (KQL query);
+│         rising CPU during calls with no other explanation is the
 │         signature of optimisation not engaging, meaning media is being
 │         processed on the host instead of redirected to the endpoint.
 └── No, general session quality → Broader network path issue, likely

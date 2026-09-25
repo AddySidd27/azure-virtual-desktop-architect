@@ -8,7 +8,7 @@
 
 This document delivers the ten planning artifacts requested. No chapter content is written yet.
 
-> **Archive note:** This is the original planning document. Its scope figures and delivery status are historical targets, not the repository's current inventory. Use the [main README](../README.md), [table of contents](../SUMMARY.md), and [validation status](../VALIDATION-STATUS.md) for the current position. The final repository contains 25 chapters, 20 labs, 15 fictional architecture case studies, and 196 indexed interview questions.
+> **Archive note:** This is the original planning document. Its scope figures and delivery status are historical targets, not the repository's current inventory. Use the [main README](../README.md), [table of contents](../SUMMARY.md), and [validation status](../VALIDATION-STATUS.md) for the current position. The final repository contains 25 chapters, 20 labs, 15 fictional architecture case studies, and 193 indexed interview questions.
 
 **Plan version:** 1.0 | **Technical baseline date:** August 2026 | **Target reader:** Experienced cloud/infrastructure engineer moving to Senior AVD Architect
 

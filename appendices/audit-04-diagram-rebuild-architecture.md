@@ -1,5 +1,7 @@
 # Audit 04 - Full Diagram Rebuild to Architecture Standard
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every diagram in the repository, Chapters 1 to 15 and Labs 3 and 4
 **Standard applied:** [DIAGRAM-STANDARD.md](../DIAGRAM-STANDARD.md), tightened again

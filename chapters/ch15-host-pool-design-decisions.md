@@ -501,32 +501,3 @@ Chapter 16 covers the two host pool management approaches in depth: session host
 
 **Interview preparation carried forward**
 Q42 is the one to practise. Most candidates pick one algorithm and defend it. The better answer is that the choice changes through the day, and that depth-first is only as good as the session limit behind it.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The two load balancing algorithms and their selection logic, the statement that breadth-first does not require a maximum session limit, the reconnect behaviour including its precedence over `AllowNewConnections`, the fact that load balancing does not apply to personal host pools, the one algorithm per pool constraint, and Microsoft's ramp-up and peak recommendation were verified against the current load balancing configuration page, the classic load balancing behaviour documentation and the Well-Architected application delivery page. Host pool creation parameters follow the documented `New-AzWvdHostPool` structure. The additional personal `LoadBalancerType` values carry a currency flag and a verification marker because multi-personal assignment is recent.
-
-**Pass 2, readability.** The load balancing section leads with what each algorithm does before naming when to use it. The depth-first trap is given its own subsection because it is the most consequential mistake in this area. Long sentences split. No long dash characters.
-
-**Pass 3, diagram review.** Two diagrams. The pooled versus personal decision uses short outcome labels and colours the cost consequence, so the trade-off is visible without reading. The broker selection diagram is drawn as a sequence rather than a flowchart, because the reconnect path only makes sense as an ordered comparison against the new session path. Both were checked against the ten to fifteen second test. Neither contains configuration values or sentences inside nodes.
-
-**Consistency check against earlier chapters.** The Northwind host pool table in section 4 was checked against the object model table in [Chapter 3 section 6](ch03-avd-object-model.md#6-designing-the-object-model-for-northwind) and the OS table in [Chapter 5 section 7](ch05-operating-systems-multisession-licensing.md#7-northwind-applied). All three agree: five pools in the primary region, executives in the knowledge worker pool, personal pools for CAD and developers. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on multi-personal assignment |
-| Supported versus unsupported separated | Yes. The reconnect precedence over drain mode stated explicitly |
-| Commands, portal paths, CLI, PowerShell | Exact, with expected results and common errors |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 6 |
-| Diagrams | Two, to the locked standard, both reviewed visually |
-| Architecture consistency | Northwind design consistent with Chapters 1, 3 and 5 |
-| Cost statements | Capacity floor and consolidation cost effects covered |
-| Security implications | Isolation as a valid reason for a separate pool |
-| Interview answers | Read aloud |
-| Duplicate content | Density referenced to Chapter 5, scaling to [Project 07](../scenarios/project-07-call-centre-high-density.md) |
-| Simple English | Reviewed |
-| Long dash characters | None |

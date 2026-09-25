@@ -16,7 +16,7 @@ platform-wide roles.
   `azurerm_role_assignment` (standing) in `platform/security/rbac.tf`. Rebuilt
   here as `azurerm_pim_eligible_role_assignment`. **The two standing
   assignments in the security module are superseded by this module and should
-  be removed** - see `platform/security/README.md`'s remediation note.
+  be removed** - see `platform/security/README.md`.
 - **Security Administrator** (Part D): previously a standing Key Vault
   Administrator assignment. Rebuilt here as PIM-eligible, same role, same
   scope.
@@ -24,8 +24,8 @@ platform-wide roles.
 ## A real, disclosed tooling risk, not hidden
 
 `azurerm_pim_eligible_role_assignment` is a genuine, current Terraform
-Registry resource, confirmed directly against the registry during this
-remediation. Historical GitHub issues against the `hashicorp/azurerm`
+Registry resource, confirmed against the registry. Historical GitHub
+issues against the `hashicorp/azurerm`
 provider report "Role Management Policy... couldn't find resource" errors on
 first apply in some tenants. This is noted here as a real risk to test
 carefully - ideally against `sub-northwind-avd-nonprod` once it exists, not

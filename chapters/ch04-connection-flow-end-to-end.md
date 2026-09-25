@@ -473,30 +473,3 @@ Chapter 5 covers operating systems, multi-session and licensing - including why 
 
 **Interview preparation carried forward**
 Q8 is the highest-frequency question in this book. Practise the 30-second version until it is automatic, then the 2-minute version. Interviewers commonly open with it and judge the rest of the conversation on how you handle it.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Connection sequence, reverse connect, required FQDN list, RDP Shortpath for managed and public networks, and event ID 3701 guidance verified against the RDP Shortpath, required FQDN and service architecture pages. Currency flag on the FQDN list and RDP Multipath.
-
-**Pass 2, readability.** Three production scenarios and the architect's four questions added during the audit. The silent Shortpath degradation case was added because it is the hardest failure in this area to detect.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes |
-| Commands, portal paths, KQL | Exact paths given where the chapter includes investigation steps |
-| Production scenarios | Three, in the required format |
-| Architect's four questions | Present |
-| Mermaid diagram | Renders and matches the text |
-| Architecture consistency | Naming conventions, lab environment and Northwind design consistent with other chapters |
-| Links and cross references | Checked |
-| Cost statements | Accurate, with running and deallocated figures where compute is involved |
-| Security implications | Stated |
-| Interview answers | Read aloud |
-| Duplicate content | Cross referenced rather than repeated |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

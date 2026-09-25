@@ -743,27 +743,3 @@ Stated plainly, because these are the questions a reviewer will ask.
 
 **Honest answer**
 "Two things. I would test the dictation software in week one rather than week three, because it was the highest risk assumption in the whole design and a failure there would have changed the persona model. And I would have pushed harder on the £6,500 ceiling before accepting it, because the number came from a finance partner rather than from an analysis, and a slightly higher ceiling would have bought the firewall. I landed £1,100 under the ceiling, which suggests the constraint was tighter than it needed to be."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The identity, storage, RBAC, sizing, FSLogix, and OS disk positions link to the relevant chapters and Microsoft references. Costs are worked examples, not quotes. KQL table names must be checked against the target workspace.
-
-**Pass 2, human readability review.** Written as an engagement rather than a description. Requirements before decisions, so the reader can design it themselves first. Every number labelled as assumption, measurement or decision. Sentences kept short. No long dash characters. Read back as an engineer handed this customer, and section 5 was reordered so the AVD against Windows 365 decision comes first, because every later decision depends on it.
-
-**Pass 3, visual and topic accuracy review.** One diagram. Topic test applied: with the title removed it reads as a small single-region AVD deployment with private storage and no domain controller, which is exactly what this customer is. It is not a generic AVD diagram, because the absence of a hub, firewall and directory is visible. Every node is a component name. Carries the `EXAMPLE CUSTOMER ARCHITECTURE` label.
-
-**Project standard check.**
-
-| Requirement | Result |
-|---|---|
-| All thirty sections present | Yes |
-| Real numbers throughout | Yes. User counts, host counts, IOPS, costs, timings |
-| Competing requirements named and resolved | Cost against control, cost against resilience, experience against £300 |
-| Constraints that cannot be designed away | £6,500 ceiling, one-person IT team |
-| At least one decision against the obvious answer | Partners not given their own host pool. Also managed disks over ephemeral |
-| Nothing artificially simple | Trade-offs stated, including the ones a reviewer will attack |
-| Terraform consistent with book conventions | Yes, Lab 2 structure and naming |
-| References concept chapters rather than repeating | Yes throughout |
-| Customer name unique, Northwind reserved for the capstone | Yes |

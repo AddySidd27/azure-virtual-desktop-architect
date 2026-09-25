@@ -433,34 +433,3 @@ Take any application estate you know and fill in the inventory fields from secti
 
 **Interview preparation carried forward**
 Q71 rewards the four questions and the point that delivery and publishing are separate. Q72 rewards knowing the preferred application group type trap.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The two ways to make applications available, the RemoteApp application group behaviour for locally installed and App Attach delivered applications, the rule that App Attach applications are not added to a desktop application group, the preferred application group type behaviour when both group types are attached to one host pool, the requirement for at least one powered-on session host, the Desktop Virtualization Application Group Contributor minimum role, the statement that applications cannot be published using Azure CLI, and the application source options of App Attach, Start menu and File path were all verified against the current Microsoft publish applications with RemoteApp page and the App Attach setup page. The App Attach capability list covering per application per user permissions, package reuse across host pools, the same-region requirement, upgrade without a maintenance window and concurrent versions was verified against the App Attach overview. The Windows Server 2022 and 2025 support date and the retirement of the original MSIX App Attach carry a currency flag. The `New-AzWvdApplication` example uses documented parameters.
-
-**Pass 2, human readability review.** The chapter separates delivery from publishing early, because conflating them is the main source of confusion in this area. The four questions are given before the comparison table, since the questions are the method and the table is reference. The inventory section is deliberately placed after the mechanics, because readers need to understand the routes before they can see why the inventory fields matter. Sentences kept short, scenarios written as narrative, no long dash characters. Read back as an engineer planning an application migration, and the licensing warning was promoted from a table row to its own paragraph, because it can change host pool design.
-
-**Pass 3, visual and topic accuracy review.** One diagram. Topic test applied: with the title removed it reads as application delivery routes reaching a session host and then being published to a user, which is the chapter subject. It is not a generic AVD architecture diagram. Delivery source, session host, publishing and endpoint are separate boundaries, and the split between the four inbound routes and the two outbound presentation options is the visual point. Every node is a component name. Carries the `OUR ORIGINAL ARCHITECTURE DIAGRAM` label. Checked against the fourteen question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The preferred application group type behaviour is consistent with [Chapter 3](ch03-avd-object-model.md#4-preferred-application-group-type) and is applied here rather than restated. The Intune system context and Required intent rules are referenced to [Chapter 24](ch24-intune-and-avd-endpoint-management.md#3-the-rules-that-differ-from-a-laptop). The statement that hand-installed applications do not survive is consistent with [Chapter 16](ch16-automated-host-pools-session-host-configuration.md#3-what-a-session-host-update-actually-does). The image cadence argument is consistent with [Chapter 23](ch23-golden-image-engineering.md#6-what-goes-in-the-image-and-what-does-not). The separate host pool reasoning in Scenario 1 matches the criteria in [Chapter 15](ch15-host-pool-design-decisions.md#4-how-many-host-pools). RBAC requirements match [Chapter 10](ch10-rbac-delegation-administrative-model.md#2-the-built-in-roles). No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on App Attach package and OS support |
-| Supported versus unsupported separated | Yes. The CLI limitation and desktop application group rule stated explicitly |
-| Commands, portal paths, PowerShell | Exact, with prerequisites, expected results and common failures |
-| Production scenarios | Three, in the extended format |
-| Architect's Reality Check | Section 7 |
-| Architect's four questions | Section 9 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 6 |
-| Diagrams | One, topic tested, with a classification label |
-| Architecture consistency | Consistent with Chapters 3, 10, 15, 16, 23 and 24 |
-| Cost statements | Packaging effort and personal pool cost consequence stated |
-| Security implications | Command line arguments and RemoteApp as scope reduction rather than isolation |
-| Interview answers | Read aloud |
-| Duplicate content | Preferred type referenced to Chapter 3, Intune rules to Chapter 24 |
-| Simple English | Reviewed |
-| Long dash characters | None |

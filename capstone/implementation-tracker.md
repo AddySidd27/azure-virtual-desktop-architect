@@ -1,5 +1,7 @@
 # Northwind Capstone: Master Implementation Status Tracker
 
+> **Internal development record.** Not required reading. See [Development history](../appendices/development-history.md) for a summary.
+
 **Purpose:** A single, honest inventory of what actually exists versus what has only been designed or described, across Parts A-D, built by inspecting the real files - not from memory of what each part intended to deliver. Updated at the end of every part from this point forward; nothing is removed from the "open" categories until the actual file exists and has been checked.
 
 **Last updated:** end of the Part D→E remediation pass, before Part E's own new content begins.

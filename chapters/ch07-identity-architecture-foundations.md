@@ -432,29 +432,3 @@ Chapter 8 pulls apart the three separate authentications that happen during a co
 
 **Interview preparation carried forward**
 Q17 and Q18 both come up regularly. Q18 in particular rewards precision about limits, because most candidates repeat the headline and cannot answer the follow-up.
-
----
-
-## Chapter Self-Review
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Join models, Entra Kerberos behaviour and limits taken from current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026. Currency flag added, including a documented discrepancy between two Microsoft pages on cloud-only identity support |
-| Supported versus unsupported separated | Yes. Cross-tenant, government cloud and external identity limits stated explicitly |
-| Commands and code | None in the chapter. All hands-on content is in Lab 4 |
-| Mermaid diagram | Renders. Matches the decision described in the text |
-| Architecture consistency | Northwind design matches Chapters 1, 3 and 5. Cross references checked |
-| Links and references | Microsoft Learn links point to the correct pages |
-| Lab dependencies | Lab 4 depends on Lab 3 network. Stated |
-| Naming conventions | No new resources introduced in the chapter |
-| Cost statements | Lab 4 cost range given honestly, with the deallocated figure |
-| Security implications | Conditional Access bypass risk from mismatched identities called out |
-| Interview answers | Read aloud. Natural |
-| Real-world examples | Three, covering greenfield cloud-only, hybrid enterprise, and a two-forest merger |
-| Duplicate content | RBAC role requirement referenced to Chapter 5 rather than repeated |
-| Missing concepts | Added the permission configuration caveat for Entra Kerberos, which is commonly left out |
-| Simple English | Reviewed. Long sentences split |
-| AI sounding language | Removed |
-| Excessive commas | Reviewed |
-| Long dash characters | None |

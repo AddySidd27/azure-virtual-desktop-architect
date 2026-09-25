@@ -400,31 +400,3 @@ Chapter 7 starts Part II with identity. This is where AVD designs succeed or fai
 
 **Interview preparation carried forward**
 Q15 is the one to practise out loud. The BYOD contractor question comes up constantly, and a good answer covers the decision, the controls and the honest limitation.
-
----
-
-## Chapter Self-Review
-
-Completed against the [style guide](../STYLE-GUIDE.md) checklist before publishing.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Client names, statuses and dates taken from the Microsoft lifecycle page |
-| Current Microsoft capability verified | Yes, August 2026. Currency flag added to the lifecycle section |
-| Supported versus unsupported separated | Yes. Retired clients listed separately from the supported one |
-| Commands and code | None in this chapter |
-| Mermaid diagrams | Client path decision diagram added during the Chapter Contract audit |
-| Architecture consistency | Cross references to Chapters 1, 4, 9 and 28 checked |
-| Links and references | Microsoft Learn links verified as the right pages |
-| Lab dependencies | None. Lab 4 correctly flagged as starting in Chapter 7 |
-| Naming conventions | No new resources introduced |
-| Cost statements | $0.00 for the chapter. Lab 4 cost range stated honestly |
-| Security implications | Covered in Example 2 and in the Conditional Access point |
-| Interview answers | Read aloud. Natural, not scripted |
-| Real-world examples | Three, covering enterprise migration, BYOD contractors and thin client call centre |
-| Duplicate content | Shortpath and hardening are referenced, not re-explained |
-| Missing concepts | Added the point that client choice affects Shortpath, which was not in the original outline |
-| Simple English | Reviewed. Long sentences split |
-| AI sounding language | Removed. No filler openings |
-| Excessive commas | Reviewed |
-| Long dash characters | None |

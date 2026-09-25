@@ -491,28 +491,3 @@ Escalation:     If staging fails on any host, stop and check the certificate cha
 
 **Honest answer**
 "I would have done the handle arithmetic at design time rather than after launch times degraded. The calculation takes a minute and I did it reactively, in an incident, three months after go-live. And I would have chosen CimFS at the start. VHDX was chosen because the packaging team knew it, which is a reasonable instinct and the wrong answer at this scale. Both mistakes came from designing for the four applications we had rather than the nine we knew were coming."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The code signing certificate requirement with object identifier 1.3.6.1.5.5.7.3.3, the sources for a code signing certificate including public and internal certificate authorities, the requirement for the whole chain to be trusted on session hosts, self-signed support with an appropriate chain of trust, the supported disk image formats with VHD not recommended, the open handle behaviour where images are mounted using the session host computer account producing one handle per host per image rather than per user, the active and inactive package model and adding a new version by supplying a new image, and the distinction between machine-level staging and destaging against user-level registering and deregistering were all verified against the current Microsoft App Attach overview, App Attach setup and App Attach test and troubleshoot pages. The AppXDeployment-Server log path and error codes carry a verification marker. Cost figures carry a verification marker.
-
-**Pass 2, human readability review.** Written in engagement order, with the segregation question resolved before any technical design because the answer decided whether the engagement existed. The staging and registration distinction is given its own section because it is the single most useful thing to know before troubleshooting App Attach. Sentences kept short. No long dash characters. Read back as an architect handed a multi-client platform, and the certificate section was moved earlier, because certificate trust is the most common first-attempt failure and mentioning it after packaging would have been too late in the narrative.
-
-**Pass 3, visual and topic accuracy review.** Two diagrams. The package lifecycle sequence exists because the machine-level and user-level split is an ordered process and a sequence diagram is the correct type for it. The platform architecture shows five client teams sharing a pool with one on a separate amber pool, per-client profile shares and segmented paths to insurer systems, which communicates the segregation model rather than a generic AVD layout. Topic test applied to both. A third diagram of the packaging chain was considered and rejected, because it is a five step table and drawing it would add nothing.
-
-**Concepts introduced, for the coverage map.** App Attach packaging chain end to end. Code signing certificates and chain of trust on session hosts. Disk image format choice, CimFS against VHDX. Staging and registration as machine-level and user-level operations. Open handle scaling for the package share. Active and inactive packages as the update and rollback mechanism.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. Users, hosts, handles, launch times, cost, onboarding days |
-| Competing requirements resolved | Consolidation against contractual segregation, resolved with four controls |
-| Constraints that cannot be designed away | Six contracts, per-device licensing, vendor-supplied installers, 20 day SLA |
-| Decision against the obvious answer | Insurer D kept on a separate pool against the whole point of the project |
-| Problems that actually happen | Certificate lost in an image rebuild, scaling limit discovered after growth |
-| Operational ownership addressed | Packaging owned in house, runbook, quarterly handle review |
-| L3 incident workflow complete | Two incidents run incident to KB update, with a rollback position |
-| Audit evidence addressed | Yes, including the question that was hardest to answer |
-| No repetition of concept chapters | Checked. Delivery routes, publishing model and image rules referenced |

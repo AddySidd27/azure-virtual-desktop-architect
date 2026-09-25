@@ -425,32 +425,3 @@ Chapter 17 covers session-host sizing and compute selection, including VM famili
 
 **Interview preparation carried forward**
 Q46 is the strongest question here. Most candidates treat infrastructure as code and service managed lifecycle as opposites. They are not, and being able to explain why marks you as someone who has thought about it rather than picked a side.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The two management approaches and their availability, the three objects and their persistence, the restriction on creating or scaling hosts outside the service, the empty pool exception, the delete and recreate behaviour, the initial host and batch rollout, the timestamped resource naming with unchanged Windows hostname and inherited AD computer object, the loss of manual customisations, and the fields that cannot change during an update were all verified against the current host pool management approaches, session host update, troubleshooting and add session hosts pages. The documentation discrepancy between pages still labelled preview and the June 2026 general availability rollout is flagged rather than resolved silently. CLI property names for the management approach carry a verification marker because exposure varies by version. Terraform provider coverage carries a verification marker rather than a claim.
-
-**Pass 2, readability.** The chapter leads with the decision, then the objects, then what an update does, because that is the order a reader needs. The infrastructure as code trade-off is given its own section rather than buried, since this is a Terraform-first book and avoiding it would be dishonest. Long sentences split. No long dash characters.
-
-**Pass 3, diagram review.** Two diagrams. The decision tree uses three short questions and two outcomes. The object model diagram shows Microsoft managed and customer managed zones with component names only, and the replace action as the single heavy arrow. Both were checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md). No node contains more than a component name.
-
-**Consistency check against earlier chapters.** The Northwind table in section 5 matches the host pool design in [Chapter 15 section 4](ch15-host-pool-design-decisions.md#4-how-many-host-pools): the same five pools, three pooled and two personal. [Chapter 3 section 5](ch03-avd-object-model.md#5-two-host-pool-management-approaches) introduced both approaches with a verification marker, and this chapter is consistent with it while adding the general availability position and the documentation discrepancy. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag and a documented page discrepancy |
-| Supported versus unsupported separated | Yes. Update limits and tooling restrictions stated explicitly |
-| Commands, portal paths, CLI, PowerShell | Exact, with verification markers where property exposure varies |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Diagrams | Two, to the locked standard, reviewed visually |
-| Architecture consistency | Northwind design consistent with Chapters 3 and 15 |
-| Cost statements | $0.00 for the chapter |
-| Security implications | Manual change drift exposed as a hidden dependency |
-| Interview answers | Read aloud |
-| Duplicate content | Host pool design referenced to Chapter 15, images to Chapter 23 |
-| Simple English | Reviewed |
-| Long dash characters | None |

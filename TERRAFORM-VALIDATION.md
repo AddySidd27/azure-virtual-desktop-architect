@@ -19,7 +19,7 @@ The first format pass found invalid one-line nested provider blocks in Lab 9 and
 
 ## Provider validation boundary
 
-`terraform init -backend=false` successfully downloaded AzureRM 5.4.0 and created the provider installation for the first module. `terraform validate` could not complete in this review environment because the AzureRM provider process was not permitted to open its local Unix communication socket:
+Earlier review passes could not install the Terraform CLI at all in their environment, because `releases.hashicorp.com` was unreachable, and used `terraform-config-inspect` as a substitute for structural checks instead. This review ran with Terraform CLI 1.13.3 already present, so that earlier limitation did not apply here: `terraform init -backend=false` successfully downloaded AzureRM 5.4.0 and created the provider installation for the first module. `terraform validate` could not complete in this review environment because the AzureRM provider process was not permitted to open its local Unix communication socket:
 
 ```text
 plugin init error: listen unix /tmp/plugin...: socket: operation not permitted

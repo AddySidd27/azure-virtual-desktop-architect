@@ -22,7 +22,7 @@ behind them. Every role in this module is built with its actual, considered
 resource type from the moment it's created - not retrofitted after a review
 found the gap, the way `platform/rbac/` had to be.
 
-## Fixed during the Part F audit: a fabricated role name
+## Fixed: a role name that did not exist
 
 The original version of this module used `"Desktop Virtualization User
 Session Host Operator"` for Service Desk - a role name that **does not exist

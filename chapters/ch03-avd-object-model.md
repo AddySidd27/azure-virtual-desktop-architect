@@ -468,30 +468,3 @@ Chapter 4 walks the complete connection flow end to end - feed discovery, broker
 
 **Interview preparation carried forward**
 Q6 and Q7 are both high-frequency questions. Q7 in particular is a common practical screen, because the answer reveals immediately whether you understand that assignment lives on the application group.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Cardinality rules, location rule, preferred application group type behaviour and the two host pool management approaches verified against the AVD terminology, preferred application group type and deployment pages. Currency flag on session host configuration.
-
-**Pass 2, readability.** Three production scenarios and the architect's four questions added during the audit, covering empty feeds, dual sessions and the multi-region location constraint.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes |
-| Commands, portal paths, KQL | Exact paths given where the chapter includes investigation steps |
-| Production scenarios | Three, in the required format |
-| Architect's four questions | Present |
-| Mermaid diagram | Renders and matches the text |
-| Architecture consistency | Naming conventions, lab environment and Northwind design consistent with other chapters |
-| Links and cross references | Checked |
-| Cost statements | Accurate, with running and deallocated figures where compute is involved |
-| Security implications | Stated |
-| Interview answers | Read aloud |
-| Duplicate content | Cross referenced rather than repeated |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

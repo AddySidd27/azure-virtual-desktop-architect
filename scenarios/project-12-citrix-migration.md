@@ -144,7 +144,7 @@ Golden images for Warehouse and Office pools are built and versioned in Azure Co
 
 ## 11. Rollback
 
-Each wave's rollback path is the parallel-run Citrix environment itself, available for exactly the two-week window, a user hitting a blocking issue in AVD is moved back to their still-functioning Citrix account for that window while the issue is fixed, then re-migrated, rather than the whole wave being rolled back. No wave-level rollback was required in practice; the closest case was two Dispatch users kept on Citrict for an extra eight days past their wave's window while the NetScaler-dependency remediation for their specific application was finished, an explicitly approved, time-boxed extension rather than an open-ended one.
+Each wave's rollback path is the parallel-run Citrix environment itself, available for exactly the two-week window, a user hitting a blocking issue in AVD is moved back to their still-functioning Citrix account for that window while the issue is fixed, then re-migrated, rather than the whole wave being rolled back. No wave-level rollback was required in practice; the closest case was two Dispatch users kept on Citrix for an extra eight days past their wave's window while the NetScaler-dependency remediation for their specific application was finished, an explicitly approved, time-boxed extension rather than an open-ended one.
 
 ## 12. Risks accepted
 
@@ -232,11 +232,3 @@ The quarterly (rather than monthly) image update cadence for the hardware-licenc
 - [Azure Virtual Desktop application groups](https://learn.microsoft.com/en-us/azure/virtual-desktop/manage-app-groups)
 - [FSLogix profile container overview](https://learn.microsoft.com/en-us/fslogix/overview-prerequisites)
 - [Universal Print and USB redirection for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-properties)
-
----
-
-## Project Self-Review
-
-**What this engagement actually taught.** The Citrix Studio published-application list and the six documented Delivery Groups were both wrong in ways that mattered, 13 unused applications and two Delivery Groups that had drifted from their documented design. A migration planned against the documentation rather than against discovered reality would have migrated dead weight and carried forward structural decisions nobody had actually validated in years. The discovery phase, which felt like overhead against the six-month deadline pressure, is what made every later decision defensible.
-
-**What would be done differently with more time.** The hard-coded NetScaler dependency in two applications was found by manually inspecting application configuration, which does not scale well and got lucky finding both instances within the 40-application set. A more systematic network-dependency scan, capturing actual outbound connections from a running Citrix session for each application over a representative period, would have been more reliable than manual inspection and worth the extra week it would have cost against the discovery-phase timeline.

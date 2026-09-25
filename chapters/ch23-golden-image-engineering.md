@@ -465,36 +465,3 @@ Chapter 24 covers Intune and AVD endpoint management, which is where most of the
 
 **Interview preparation carried forward**
 Q65 rewards the agent capture rule and the operating model points. Most candidates describe the tooling and stop there.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The recommendation to use Azure Compute Gallery in production for replication and versioning, the instruction to delete the VM after capture, and the rule against capturing the same VM twice were verified against the current Microsoft golden image page. The prohibition on capturing an image with the AVD agent installed, including the expired registration token consequence and the remedy, was verified against the prepare and customize image page. The custom image template definition, the source image options, Azure Image Builder handling sysprep generalisation, the built-in customisations, the user-assigned managed identity requirement and the build VM internet requirement were verified against the custom image templates page. The Terraform example uses documented `azurerm_shared_image_gallery` and `azurerm_shared_image` arguments. Optimisation tooling carries a verification marker because recommended settings change with Windows versions, and custom image templates carry a currency flag because the customisation list has expanded.
-
-**Pass 2, human readability review.** The chapter leads with the pipeline diagram because the shape of the process is what makes the rest make sense. The agent capture rule was given its own section rather than a bullet, because it is the single most damaging mistake in this area. The image versus policy split is a table since it is a two column decision. Sentences kept short, scenarios written as narrative, no long dash characters. Read back as an engineer building an image for the first time, and the build methods section was moved after the marketplace versus custom decision, because choosing a build method only matters once you have decided to build.
-
-**Pass 3, visual and topic accuracy review.** One diagram. Topic test applied: with the title removed, it reads as an image build and distribution pipeline, which is the chapter subject. It is not a generic AVD architecture diagram. Source, build, gallery and host pools are separate boundaries, the build and publish chain is the dominant path, and replication is dashed because it is asynchronous and optional. Every node is a component name. Carries the `RECOMMENDED ARCHITECTURE` label, because the pipeline shape is our design rather than a Microsoft reference architecture. Checked against the fourteen question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The image versus policy split is consistent with [Chapter 21](ch21-fslogix-production-implementation.md#1-where-fslogix-configuration-lives), which recommends FSLogix configuration in policy and the agent in the image. The statement that manual host changes do not survive is consistent with [Chapter 16](ch16-automated-host-pools-session-host-configuration.md#3-what-a-session-host-update-actually-does). The registration troubleshooting is referenced to [Chapter 18](ch18-session-host-lifecycle-hybrid.md#3-registration-and-how-it-goes-wrong) rather than repeated, and the agent capture rule stated there is expanded here rather than contradicted. The build VM internet requirement is consistent with the egress design in [Chapter 13](ch13-hybrid-connectivity-egress-control.md). Teams redirector placement in the image is consistent with [Chapter 14](ch14-protocol-optimisation-network-performance.md#4-teams-media-optimisation). Naming follows the Lab 2 convention. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on custom image templates |
-| Supported versus unsupported separated | Yes. The agent capture prohibition and capture rules stated explicitly |
-| Commands, CLI, PowerShell, Terraform | Exact, with prerequisites, expected results and common failures |
-| Production scenarios | Three, in the extended format |
-| Architect decision structure | Section 2, with impacts, recommendation and when not to use it |
-| Architect's Reality Check | Section 8 |
-| Architect's four questions | Section 10 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 7 |
-| Diagrams | One, topic tested, with a classification label |
-| Terraform and Bicep | Terraform primary, Bicep comparison with the reasoning |
-| Architecture consistency | Consistent with Chapters 13, 14, 16, 18 and 21 |
-| Cost statements | Gallery version and replication cost, with a retention position |
-| Security implications | Stale image risk and the compliance consequence |
-| Interview answers | Read aloud |
-| Duplicate content | Registration troubleshooting referenced to Chapter 18 |
-| Simple English | Reviewed |
-| Long dash characters | None |

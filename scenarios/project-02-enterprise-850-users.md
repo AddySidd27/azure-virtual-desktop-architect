@@ -608,27 +608,3 @@ Plus: **monthly image rollout**, **clear a locked profile container**, and **res
 
 **Strong answer**
 "Ownership, which was the actual root cause. The platform had no owner, so nothing was measured, nothing was patched and nothing was reviewed. I created a service owner role with two hours a week, an operating calendar with daily, weekly, monthly, quarterly and annual activities, and a one page monthly report with four numbers. The quarterly item that matters is density re-measurement, because that is what prevents the same engagement happening again in two years. And handover is a gate, not a document: the operations team completed every runbook unaided before I left."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** Diagnostic settings, log categories and Insights prerequisites carry verification markers because category names and requirements have changed over time. KQL carries a verification marker for table naming. The Azure CLI and Terraform examples use documented resource types and arguments. All architectural positions trace to chapters where they were verified: session host status semantics ([Chapter 18](../chapters/ch18-session-host-lifecycle-hybrid.md)), sizing method and the memory-before-CPU pattern ([Chapter 17](../chapters/ch17-session-host-sizing-compute-selection.md)), storage burst sizing and premium redundancy limits ([Chapter 20](../chapters/ch20-profile-storage-architecture.md)), exclusions and compaction ([Chapters 21](../chapters/ch21-fslogix-production-implementation.md) and [22](../chapters/ch22-profile-operations-failure-recovery.md)), load balancing behaviour ([Chapter 15](../chapters/ch15-host-pool-design-decisions.md)). Costs are indicative shapes with a verification marker.
-
-**Pass 2, human readability review.** Written as an engagement in the order the work happened: assess, measure, diagnose, decide, fix, hand over. New concepts appear where the engineer needs them rather than in a block. No section repeats a concept chapter. Sentences kept short. No long dash characters. Read back as a consultant handed this account, and section 4 was moved ahead of the decisions because nothing in the engagement is possible before monitoring exists.
-
-**Pass 3, structure review against the revised standard.** No diagram in this project, deliberately. The architecture is three pooled host pools and a personal pool in one region, which is structurally the same as Project 01 and already drawn there. Drawing it again would be repetition, and the standard says depth is set by the engagement. What is unique here is the operating model and the measurement approach, and both are better expressed as tables and queries. This decision is recorded rather than left as an apparent omission.
-
-**Concepts introduced, for the coverage map.** Monitoring architecture and what to collect. Diagnostic settings as an opt-in gap. AVD Insights and its limits. Six working KQL queries. Alert thresholds tied to real ticket classes. The day-2 operating model, roles, calendar and monthly report.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers throughout | Yes. Concurrency, host counts, IOPS, latency, cost |
-| Competing requirements resolved | Speed of relief against architectural correctness. Cost against storage tier |
-| Constraints that cannot be designed away | Live platform, no long maintenance window, 20 percent budget cap |
-| Decision against the obvious answer | Fixing in place before rebuilding, and brokers sharing with management |
-| Problems that actually happen | Six silently broken hosts, sign-in storm, profile bloat, no ownership |
-| Operational ownership addressed | Yes. Roles, calendar, report, handover gate |
-| New concepts taught practically, not as theory | Yes |
-| No repetition of concept chapters | Checked. All referenced |

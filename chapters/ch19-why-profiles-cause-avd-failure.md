@@ -454,36 +454,3 @@ Chapter 20 covers profile storage architecture. Azure Files against Azure NetApp
 
 **Interview preparation carried forward**
 Q54 is one of the highest value questions in this book. Decomposing logon time, rather than guessing at a cause, is the thing that marks an experienced answer.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The profile container definition and behaviour, the two container types with Cloud Cache excluded as a type, the recommendation against dual container configurations, the guidance that ODFC alone suits third-party profile solutions, the concurrency configuration split between ProfileType and VHDAccessMode, the OneDrive concurrency limitation, and the April 2026 Kerberos RC4 to AES-SHA1 change were all verified against the current FSLogix overview, container types, profile container configuration, ODFC configuration and concurrent connections pages. The Azure CLI file handle commands carry a verification marker because parameters and required permissions vary by authentication configuration. KQL carries a verification marker for table naming.
-
-**Pass 2, readability.** The chapter opens with what a profile is, because a reader cannot evaluate FSLogix without it. Historical approaches are covered briefly and only to establish why attaching beats copying. The scale section is written as three sizes rather than as prose, because the change between them is the teaching point. Long sentences split. No long dash characters.
-
-**Pass 3, diagram review.** One diagram, showing the sign-in path and the identity dependency, because that dependency is what makes the Kerberos scenario understandable. Every node is a component name. Container types are a table, not a diagram, since the content is a comparison. Checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Scenario format.** All three scenarios use the extended format introduced with this chapter in the [operations standard](../OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md), including business impact, architect lesson and interview lesson.
-
-**Consistency check against earlier chapters.** The concurrency discussion references the preferred application group type problem from [Chapter 3](ch03-avd-object-model.md#4-preferred-application-group-type) rather than restating it. The locked container prevention references the drain, remove, rebuild sequence in [Chapter 18](ch18-session-host-lifecycle-hybrid.md#4-patching-strategy). The Entra Kerberos alternative references [Chapter 7](ch07-identity-architecture-foundations.md#3-entra-kerberos-changed-the-design) and is consistent with it. The peering cost point is consistent with [Chapter 12](ch12-enterprise-topologies-ip-planning.md#4-cost-honestly). No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft FSLogix pages |
-| Current capability verified | Yes, August 2026, with two currency flags |
-| Supported versus unsupported separated | Yes. Dual container recommendation and OneDrive concurrency limit stated explicitly |
-| Commands, portal paths, CLI, KQL, log locations | Exact, with verification markers where configuration varies |
-| Production scenarios | Three, in the extended format |
-| Architect's Reality Check | Section 7 |
-| Architect's four questions | Section 9 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 6 |
-| Diagrams | One, deliberately, to the locked standard |
-| Architecture consistency | Consistent with Chapters 3, 7, 12, 15, 16 and 18 |
-| Cost statements | Profile size cost at scale and peering cost referenced |
-| Security implications | Kerberos dependency and the risk of closing live handles |
-| Interview answers | Read aloud |
-| Duplicate content | Storage sizing deferred to Chapter 20, exclusions to Chapter 21 |
-| Simple English | Reviewed |
-| Long dash characters | None |

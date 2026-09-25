@@ -1,5 +1,7 @@
 # Audit 16 - Repository-Wide Diagram Remediation: Closing Report
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every diagram in the repository, Chapters 1-25, Labs 1-10, published Projects 01/02/04-10, troubleshooting runbooks, brought to the standard established for the 10 hero diagrams (Audit 14): self-contained vector shapes, zero remote icon dependency, editable `.drawio` source, matching `.svg` export, rendered PNG visually inspected, technical accuracy verified against the related chapter/lab/Terraform.
 

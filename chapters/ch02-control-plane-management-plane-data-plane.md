@@ -245,7 +245,7 @@ This chapter's practical work is in **[Lab 1](../labs/lab-01-azure-prerequisites
 
 ---
 
-## 8. Production Scenarios
+## 10. Production Scenarios
 
 ### Scenario 1: "AVD is down" on a Monday morning
 
@@ -359,7 +359,7 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 ---
 
-## 9. The Architect's Four Questions
+## 11. The Architect's Four Questions
 
 **What do I check first?** Does the feed load. If it does, the control plane is working and the fault is on your side.
 
@@ -408,30 +408,3 @@ Chapter 3 covers the AVD object model - host pools, application groups and works
 
 **Interview preparation carried forward**
 Q4 and Q5 should both be deliverable out loud without notes. Q5 in particular is a favourite opener for senior interviews, because it separates people who have run an environment from people who have only read about one.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Five control plane components, regional versus geographical host pool metadata, and Microsoft's resiliency model verified against the AVD service architecture and resilience page. Currency flag on regional host pools.
-
-**Pass 2, readability.** Scenario narrative rather than lists. Three production scenarios and the architect's four questions added during the audit. Event ID 3701 investigation steps made exact.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes |
-| Commands, portal paths, KQL | Exact paths given where the chapter includes investigation steps |
-| Production scenarios | Three, in the required format |
-| Architect's four questions | Present |
-| Mermaid diagram | Renders and matches the text |
-| Architecture consistency | Naming conventions, lab environment and Northwind design consistent with other chapters |
-| Links and cross references | Checked |
-| Cost statements | Accurate, with running and deallocated figures where compute is involved |
-| Security implications | Stated |
-| Interview answers | Read aloud |
-| Duplicate content | Cross referenced rather than repeated |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

@@ -15,5 +15,5 @@ cost_centre                             = "REPLACE_WITH_REAL_COST_CENTRE"
 break_glass_domain                      = "REPLACE_WITH_YOUR_ONMICROSOFT_DOMAIN"
 # identity_administrator_principal_id, network_administrator_principal_id, and
 # security_administrator_principal_id moved to terraform/capstone-northwind/platform/rbac/
-# as part of the PIM remediation - see that module's terraform.tfvars.example instead.
+# (PIM-eligible assignment) - see that module's terraform.tfvars.example instead.
 # break_glass_account_count defaults to 2, per Microsoft's documented guidance

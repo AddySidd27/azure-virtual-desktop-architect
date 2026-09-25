@@ -1,5 +1,7 @@
 # Audit 02 - Diagrams against the Diagram Quality Standard
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every diagram in the repository at the time Chapter 14 was written
 **Standard applied:** [DIAGRAM-STANDARD.md](../DIAGRAM-STANDARD.md)

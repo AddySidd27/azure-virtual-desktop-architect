@@ -1,5 +1,7 @@
 # Audit 11 - Phase 2: Citation Integrity Check and Labs 5-10
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** Phase 2 of the publication remediation. Part A is the focused citation-integrity check requested before new content. Part B is the Labs 5-10 build, completing the lab sequence to a working, end-to-end AVD deployment.
 
