@@ -15,8 +15,8 @@ resource "azurerm_virtual_desktop_host_pool" "persona" {
   location                 = var.location
   resource_group_name      = local.avd_resource_group
   type                     = each.value.type
-  load_balancer_type       = each.value.type == "Pooled" ? "BreadthFirst" : "Persistent"           # CONFIRMED during Part F audit: Microsoft's own Azure Verified Modules documentation and the Terraform Registry both state "Persistent should be used if the host pool type is Personal" - exact match, no longer a placeholder guess.
-  maximum_sessions_allowed = each.value.type == "Pooled" ? each.value.max_sessions_per_host : null # AUDIT FINDING, fixed: previously a single hardcoded 8 applied to every pooled pool regardless of its own density assumption - see variables.tf's persona definition for the full explanation. Now consistent with users_per_host per persona, but the actual numbers remain unconfirmed - BUSINESS DECISION REQUIRED.
+  load_balancer_type       = each.value.type == "Pooled" ? "BreadthFirst" : "Persistent"           # Microsoft's Azure Verified Modules documentation and the Terraform Registry both state "Persistent should be used if the host pool type is Personal".
+  maximum_sessions_allowed = each.value.type == "Pooled" ? each.value.max_sessions_per_host : null # Driven by users_per_host per persona in variables.tf rather than a single hardcoded value - see that file for the density assumptions. [VERIFY BEFORE IMPLEMENTATION] confirm the per-persona numbers against real usage data.
   preferred_app_group_type = "Desktop"
   start_vm_on_connect      = true
   validate_environment     = true
@@ -37,10 +37,9 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "persona" {
 
 ############################################
 # Diagnostic settings, applied directly to each host pool, pointed at
-# the monitoring workspace built in the remediation pass. This does
-# NOT wait for the tenant-wide diagnostic-settings policy to be
-# re-applied (a separate, tracked follow-up per the implementation
-# tracker) - Part F's own resources get diagnostics from the moment
+# the tenant-wide monitoring workspace. This does NOT wait for the
+# tenant-wide diagnostic-settings policy to be re-applied (a separate
+# follow-up) - these resources get diagnostics from the moment
 # they exist, independent of that policy's status.
 ############################################
 

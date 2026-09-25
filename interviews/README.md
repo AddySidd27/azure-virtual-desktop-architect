@@ -1,12 +1,12 @@
 # Interview Material
 
-**Status: 196 indexed study questions are mapped to the chapters, labs, and case studies.** See [interview-index.md](interview-index.md).
+**Status: 193 indexed study questions are mapped to the chapters, labs, and case studies.** See [interview-index.md](interview-index.md).
 
 ## What this contains
 
-[interview-index.md](interview-index.md) organizes 196 interview questions by topic, including chapter questions, case-study questions, and lab questions. It also contains five mock senior-level interview scenarios.
+[interview-index.md](interview-index.md) organizes 193 interview questions by topic, including chapter questions, case-study questions, and lab questions. It also contains five mock senior-level interview scenarios.
 
-This index links to where each question's full answer already lives: a 30-second answer, a senior 2-minute answer, deep-dive points, and what the interviewer is testing, rather than duplicating that content here. 77 questions come from the 25 published chapters, 75 from all 15 published projects (5 each), and 44 from Labs 5-20 (13 from Labs 5-10, 31 from Labs 11-20), for 196 total.
+This index links to where each question's full answer already lives: a 30-second answer, a senior 2-minute answer, deep-dive points, and what the interviewer is testing, rather than duplicating that content here. 74 questions come from the 25 published chapters, 75 from all 15 published projects (5 each), and 44 from Labs 5-20 (13 from Labs 5-10, 31 from Labs 11-20), for 193 total.
 
 ## How to use it
 

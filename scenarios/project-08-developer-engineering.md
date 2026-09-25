@@ -476,28 +476,3 @@ Then remove the legacy runbook entirely, once Start VM on Connect and the schedu
 
 **Honest answer**
 "I would have hunted for inherited automation in week one. An old Azure Automation runbook from the physical workstation era was deallocating idle machines, and it killed QA's overnight test runs three times a week for three weeks before anyone connected the two. Nothing about it was visible in the AVD configuration. And I would have moved the overnight test runs to build agents in the original design rather than as an incident remediation, because in hindsight they never belonged on a developer desktop and putting them there was what made the QA power management conflict possible."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The personal desktop assignment types and the automatic versus direct behaviour, the persistence of user activities, files and settings on the OS disk, the Start VM on Connect behaviour for personal host pools compared with pooled, the increased connection time for a deallocated host and the user-facing notification, the Desktop Virtualization Host Pool Contributor role required to configure Start VM on Connect, and the requirement for a power-on role assignment to the AVD service principal were verified against the current Microsoft personal desktop assignment and Start VM on Connect pages. The `az desktopvirtualization hostpool update` syntax follows the documented example. Nested virtualisation support and the exact service principal identifier and scope carry verification markers because both vary. Cost figures carry a verification marker.
-
-**Pass 2, human readability review.** Written in engagement order, with the reason pooled does not work established before any decision, because every later decision follows from it. The cost section states plainly that the project does not save money, which is the honest position and the one a reader is least likely to have seen written down. Sentences kept short. No long dash characters. Read back as an architect handed a developer population, and the drift section was moved after the architecture, because it is an operational consequence rather than a design input.
-
-**Pass 3, visual and topic accuracy review.** One diagram. It shows personal desktops in two regions with build agents and source control alongside, and the deliberately blocked path to production, which is the control that makes local admin defensible. Topic test applied: with the title removed it reads as a developer desktop platform, not a generic AVD architecture, because build agents, source control and the blocked production path are all specific to this workload. A second diagram of the power state lifecycle was considered and rejected as a table with arrows. Every node is a component name.
-
-**Concepts introduced, for the coverage map.** Personal desktop assignment types and their operational cost. Start VM on Connect behaviour and its role dependency. Power state as the only cost lever on personal pools, with measured cold start. Local administrator containment on persistent desktops. Configuration drift management without rebuild-first. Nested virtualisation as a sizing constraint.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. Build times, cold start, effective hours, cost |
-| Competing requirements resolved | Local admin against security posture, cost against build performance |
-| Constraints that cannot be designed away | Local admin, build time KPI, container requirement, Kraków hours |
-| Decision against the obvious answer | Direct assignment rather than automatic. Local admin granted rather than removed |
-| Problems that actually happen | Half-configured feature, inherited automation killing overnight work |
-| Operational ownership addressed | Support boundary published, joiner and leaver, rebuild cycle |
-| L3 incident workflow complete | Two incidents run incident to KB update, with a rollback position |
-| Cost treated honestly | Yes. The project costs more than the alternative and that is stated |
-| No repetition of concept chapters | Checked. Host pool types, sizing and image strategy referenced |

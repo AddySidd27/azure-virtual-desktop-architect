@@ -15,8 +15,8 @@ resource "azurerm_resource_group" "monitoring" {
 }
 
 ############################################
-# Tenant-wide Log Analytics workspace - the one designed in Part B
-# section 2.8, never built until this remediation pass.
+# Tenant-wide Log Analytics workspace, shared across the platform
+# and AVD-specific monitoring modules.
 ############################################
 
 resource "azurerm_log_analytics_workspace" "platform" {

@@ -1,5 +1,7 @@
 # Audit 17 - Phase 3 Closing Report: Projects 03/11-15, Interview Bank, Readability Review
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Completing the original 15-project plan (Projects 03, 11-15), closing the interview-question parity gap this created, a real manual readability review against the house style guide, removal of every remaining dangling reference to the original Chapters 26-54 plan, and a full repository-wide validation pass.
 

@@ -424,28 +424,3 @@ Chapter 13 covers hybrid connectivity and egress control. ExpressRoute, VPN, Azu
 
 **Interview preparation carried forward**
 Q33 is a good one to have ready. Most candidates size from user count. Sizing from peak host count during an update, and knowing why, is a small detail that signals real deployment experience.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The application landing zone placement, the hub and spoke and Virtual WAN definitions, Microsoft's Virtual WAN recommendation trigger, the constraint that customer deployed shared services cannot sit inside a Virtual WAN hub, and the GatewaySubnet /26 recommendation were all verified against the current Cloud Adoption Framework AVD network topology page, the traditional networking topology page, the Virtual WAN landing zone page and the hub and spoke reference architecture during this chapter's verification pass. Azure CLI commands use documented syntax. Cost drivers are described by shape rather than by price, because prices change and region specific figures would date quickly.
-
-**Pass 2, readability.** The topology comparison was reduced to the decision that actually matters rather than a long feature table. The sizing method is shown as a worked example with a table, because the arithmetic is the point. Long sentences split. No long dash characters.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes. The Virtual WAN shared services constraint stated explicitly |
-| Commands, portal paths, CLI | Exact, including effective routes for routing disputes |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Mermaid diagram | Inline, with the four part explanation |
-| Architecture consistency | Lab 3 network explained rather than contradicted. Northwind figures consistent with Chapter 1 |
-| Cost statements | Cost drivers listed. The peering cost point is specific to AVD and often missed |
-| Security implications | Egress and routing dependencies referenced to Chapter 11 rather than repeated |
-| Interview answers | Read aloud |
-| Duplicate content | Egress requirements referenced to Chapter 11, not repeated |
-| Simple English | Reviewed |
-| Long dash characters | None |

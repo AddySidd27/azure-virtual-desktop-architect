@@ -3,7 +3,7 @@
 #
 # azurerm_pim_eligible_role_assignment confirmed as a real, current
 # Terraform Registry resource (hashicorp/azurerm, checked directly
-# against the registry during this remediation). Historical GitHub
+# against the registry). Historical GitHub
 # issues (2023) reported "Role Management Policy... couldn't find
 # resource" errors on first apply in some tenants - noted here as a
 # known rough edge to test carefully in non-production first, not
@@ -40,7 +40,7 @@ resource "azurerm_pim_eligible_role_assignment" "subscription_owner_identity" {
 
 resource "azurerm_pim_eligible_role_assignment" "identity_administrator" {
   scope              = "/subscriptions/${var.identity_subscription_id}"
-  role_definition_id = "/subscriptions/${var.identity_subscription_id}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c" # Contributor - same [VERIFY] note as Part D originally raised, carried forward, not resolved by this remediation
+  role_definition_id = "/subscriptions/${var.identity_subscription_id}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c" # Contributor - [VERIFY BEFORE IMPLEMENTATION] confirm whether a narrower custom role would fit better than the built-in Contributor role
   principal_id       = var.identity_administrator_principal_id
 
   schedule {

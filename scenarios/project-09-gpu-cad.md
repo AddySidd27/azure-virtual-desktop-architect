@@ -489,28 +489,3 @@ Escalation:     Any model failure stops the rollout immediately
 
 **Honest answer**
 "I would have implemented the driver pinning rule in the image build at the same time as writing it. It was in the design, everyone agreed with it, and the build called the extension without a version, so the rule protected nothing until an incident forced it. And I would have put GPU utilisation under load into the post-build validation from day one rather than after the pilot nearly failed. Both mistakes are the same shape: a control that existed as a statement rather than as something the platform enforced."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The statement that NC, NCv2, NCv3, ND and NDv2 series are not generally appropriate as session hosts and do not support GPU acceleration for most applications or the Windows user interface, the requirement for NVIDIA GRID drivers rather than CUDA drivers, the GRID 16.2 (537.13) requirement for HEVC hardware acceleration, and the default that AVD remote sessions are rendered with the CPU and do not use available GPUs were verified against the current Microsoft enable GPU acceleration guidance. The NVadsA10 v5 fractional GPU range from one sixth of a GPU with 4 GiB frame buffer to a full A10 with 24 GiB, the included GRID licence and its single virtual workstation or 25 concurrent user application scenarios, and the lack of nested virtualisation support were verified against the NVadsA10 v5 series documentation. Driver extension behaviour by series, the `nvidia-smi` path, graphics policy setting names, and NVv3 and NVv4 retirement dates all carry verification markers, the last with a currency flag because it comes from a third-party source rather than a Microsoft page. Cost figures carry a verification marker.
-
-**Pass 2, human readability review.** Written in engagement order, with the three GPU failure points established before any design decision, because the pilot nearly failed on one of them. The cost section states plainly that the requirement was not met, which is the honest position. Sentences kept short. No long dash characters. Read back as an architect handed a CAD population, and the frame buffer sizing concept was moved ahead of the decisions, because the sizing table is meaningless without it.
-
-**Pass 3, visual and topic accuracy review.** Three diagrams, produced as SVG rather than Mermaid, because Mermaid cannot express the zone, tile and legend grammar an Azure architecture diagram needs. Current state shows why the migration is happening, including the nightly copy that caused two version incidents. The rendering path shows where the GPU sits between the application and the encoder and where policy has to act for it to be in that path, with the three failure points drawn as a separate band. Production architecture shows the finished platform, the single model store both regions work from, and the operational controls. Each diagram carries a title, a subtitle, a legend and a provenance note. Editable draw.io sources using the Azure shape library accompany two of them. Topic test applied to each: none reads as a generic AVD diagram.
-
-**Concepts introduced, for the coverage map.** GPU VM series selection and unsuitable series. GRID against CUDA drivers. Enabling GPU rendering, which is off by default. Fractional GPU sizing by frame buffer. Vendor driver certification as change control. GPU quota and capacity checking before design.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. Frame buffer, model open times, latency, cost |
-| Competing requirements resolved | Data location against latency, cost against capability |
-| Constraints that cannot be designed away | Vendor certified driver list, GPU capacity, client data restrictions |
-| Decision against the obvious answer | Offshore team on UK hosts rather than local hosts |
-| Problems that actually happen | GPU hosts rendering on CPU, driver drift breaking vendor support |
-| Operational ownership addressed | Driver change runbook, monthly driver report, annual series lifecycle check |
-| L3 incident workflow complete | Two incidents run incident to KB update, with measured validation |
-| Cost treated honestly | Yes. The requirement was not met and that is stated |
-| No repetition of concept chapters | Checked. GPU basics, personal pools and image strategy referenced |

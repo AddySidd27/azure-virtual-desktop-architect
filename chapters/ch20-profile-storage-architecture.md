@@ -531,35 +531,3 @@ Chapter 21 covers FSLogix production implementation. Every setting that matters,
 
 **Interview preparation carried forward**
 Q56 is one of the most common storage questions in AVD interviews. Leading with the identity constraint rather than the performance comparison is what makes the answer sound like design experience.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The redundancy constraints were verified against the current Azure Files data redundancy page: geo-redundancy is supported only for HDD file shares, SSD file shares must use LRS or ZRS, and there is no read access to the secondary region without initiating a failover, with RA-GRS and RA-GZRS unsupported. The increase in geo-redundant standard SMB share capacity with the large file shares feature was verified against the Azure Files geo-redundancy guidance and carries a currency flag. The Azure NetApp Files Kerberos and AD DS requirement, the lack of Entra-only identity support, the hybrid identity support statement, the 3,000 concurrent profile guidance per regular volume, the capacity pool and tier times capacity performance model, the Azure Files and Azure NetApp Files comparison figures for IOPS, latency, capacity, minimum footprint, redundancy and regional availability, and the IOPS per user guidance for steady state and sign-in were all verified against the current Microsoft storage options for FSLogix profile containers page, the FSLogix container storage options page and the Azure NetApp Files FSLogix configuration page. A currency flag covers identity support, which has changed more than once. Azure CLI and PowerShell commands use documented syntax. KQL carries a verification marker for table naming.
-
-**Pass 2, human readability review.** The chapter opens with identity rather than performance, because that is the order the decision is actually made in and leading with a comparison table would teach the wrong habit. Sizing is presented as a method with a worked table, since the arithmetic is the teaching point. Sentences kept short. Scenario narrative rather than bullet lists. No long dash characters. Read back as an engineer learning the topic, and the permission section was reordered so the two layers are established before the failure modes.
-
-**Pass 3, visual and diagram review.** Two diagrams. Redundancy scope, showing three zones in a primary region and a dashed paired region, because the scope of each option is spatial and a table cannot show that the geo copy carries no user traffic. The access path diagram was rebuilt with the storage account as a single boundary containing the share, the ACL and the container, so the two permission checks read as one path rather than as separate boxes. One diagram, on the permission layers, because that is the part of this chapter where a picture beats a table. The platform comparison stays a table since it is a multi-dimension comparison. Every node is a component name, the two permission checks are the heavy path, and identity sits in its own boundary. Checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md), including whether it reads in ten to fifteen seconds.
-
-**Consistency check against earlier chapters.** The identity constraint is consistent with [Chapter 7](ch07-identity-architecture-foundations.md#3-entra-kerberos-changed-the-design), including the one identity source per storage account rule referenced there. The sign-in burst sizing principle is consistent with [Chapter 19](ch19-why-profiles-cause-avd-failure.md#6-what-changes-with-scale). The recommendation to keep profile storage in the same virtual network as session hosts is consistent with [Chapter 12](ch12-enterprise-topologies-ip-planning.md#4-cost-honestly) and [Chapter 17](ch17-session-host-sizing-compute-selection.md#3-placement-and-resilience). Northwind figures match [Chapter 1](ch01-what-avd-actually-is.md#4-meet-the-capstone-customer-northwind-global-manufacturing). No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on identity support |
-| Supported versus unsupported separated | Yes. Entra-only limitation on Azure NetApp Files stated explicitly |
-| Commands, portal paths, CLI, PowerShell, KQL | Exact, with verification markers where configuration varies |
-| Production scenarios | Three, in the extended format with business impact, architect lesson and interview lesson |
-| Architect decision structure | Section 6, with pros, cons, impacts, recommendation and when not to use it |
-| Architect's Reality Check | Section 8 |
-| Architect's four questions | Section 10 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 7 |
-| Diagrams | Two. Redundancy scope and the access path, both to the locked standard |
-| Architecture consistency | Consistent with Chapters 1, 7, 12, 17 and 19 |
-| Cost statements | Minimum capacity pool and provisioned model called out honestly |
-| Security implications | Permission isolation and the full control anti-pattern |
-| Interview answers | Read aloud |
-| Duplicate content | Profile theory referenced to Chapter 19, exclusions deferred to Chapter 21 |
-| Simple English | Reviewed |
-| Long dash characters | None |

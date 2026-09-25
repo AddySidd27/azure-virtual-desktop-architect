@@ -17,8 +17,8 @@ described both as "PIM-eligible" - a real gap the [implementation
 tracker](../../../../capstone/implementation-tracker.md) found and closed.
 All platform RBAC, including these two roles and Security Administrator's Key
 Vault access, now lives in [`platform/rbac/`](../rbac/) as genuine
-`azurerm_pim_eligible_role_assignment` resources, alongside Part B's three
-roles, which had never had any Terraform at all until that same remediation.
+`azurerm_pim_eligible_role_assignment` resources, alongside the platform
+engineer, subscription owner, and security reader roles.
 `rbac.tf` in this module is kept as an empty marker file, not deleted, so the
 history is visible.
 

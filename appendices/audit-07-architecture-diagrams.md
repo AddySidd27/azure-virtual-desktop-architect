@@ -1,5 +1,7 @@
 # Audit 07 - Architecture Diagram Tier
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** The diagrams did not look like Azure architecture diagrams, because Mermaid cannot produce them.
 **Result:** A second diagram tier added. Project 09 rebuilt as the reference implementation. Remaining projects and chapters scheduled.

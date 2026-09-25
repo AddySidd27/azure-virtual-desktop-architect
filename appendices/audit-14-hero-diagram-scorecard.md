@@ -1,5 +1,7 @@
 # Audit 14 - Hero Diagram Scorecard: All 10 Complete and Self-Contained
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** Diagram 4's Hub-Spoke rebuild exposed a repository-wide inconsistency: 3 of 10 `.drawio` sources (1, 5, 10) depended on remote Azure icon URLs while their matching `.svg` exports used a different, self-contained shape system — exactly the mismatch flagged as unacceptable. This audit fixes all 10 to one consistent, offline-safe standard and scores every diagram against the full checklist.
 

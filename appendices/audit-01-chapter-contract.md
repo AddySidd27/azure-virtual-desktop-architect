@@ -1,5 +1,7 @@
 # Audit 01 - Chapters 1 to 9 against the Chapter Contract
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every completed chapter before Chapter 10
 **Standard applied:** [CHAPTER-CONTRACT.md](../CHAPTER-CONTRACT.md), [STYLE-GUIDE.md](../STYLE-GUIDE.md), [OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md](../OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md)

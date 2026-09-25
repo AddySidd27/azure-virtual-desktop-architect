@@ -397,7 +397,7 @@ No Azure resources. No cost. Twenty minutes with a notepad.
 
 ---
 
-## 10. Production Scenarios
+## 14. Production Scenarios
 
 Three real decisions. Each one is a conversation you will have.
 
@@ -463,7 +463,7 @@ Three real decisions. Each one is a conversation you will have.
 
 ---
 
-## 11. The Architect's Four Questions
+## 15. The Architect's Four Questions
 
 **What do I check first when someone asks for AVD?** Whether the workload can share a host and whether capacity can be switched off. If neither is true, question the fit before designing anything.
 
@@ -512,30 +512,3 @@ Chapter 2 opens up the control plane properly - broker, gateway, web access and 
 
 **Interview preparation carried forward**
 Be able to deliver Q1 and Q2 out loud without notes before moving on. Chapter 2's questions build directly on the responsibility split you just learned.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Service definition, responsibility split, licensing model and platform history verified against Microsoft Learn overview, licensing and per-user access pricing pages. Currency table for 2025 to 2026 platform changes carries a currency flag.
-
-**Pass 2, readability.** Long sentences split. Filler openings removed. Three production scenarios added during the Chapter Contract audit, covering a poor-fit small firm, a broken business case and an identity problem hidden behind a VDI request.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes |
-| Commands, portal paths, KQL | Exact paths given where the chapter includes investigation steps |
-| Production scenarios | Three, in the required format |
-| Architect's four questions | Present |
-| Mermaid diagram | Renders and matches the text |
-| Architecture consistency | Naming conventions, lab environment and Northwind design consistent with other chapters |
-| Links and cross references | Checked |
-| Cost statements | Accurate, with running and deallocated figures where compute is involved |
-| Security implications | Stated |
-| Interview answers | Read aloud |
-| Duplicate content | Cross referenced rather than repeated |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

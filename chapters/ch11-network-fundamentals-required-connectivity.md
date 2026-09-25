@@ -415,30 +415,3 @@ Chapter 12 covers enterprise topologies. Hub and spoke, Virtual WAN, landing zon
 
 **Interview preparation carried forward**
 Q29 is asked in almost every AVD interview. The detail that separates candidates is knowing that no static IP list exists and being able to say what to use instead.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The required versus optional endpoint split, the support statement about blocked endpoints, the IMDS and WireServer fabric layer behaviour, the wildcard requirement for service traffic, the service tag guidance, the DNS requirements, and every Private Link constraint were verified against the current Microsoft required FQDN, Private Link overview and Cloud Adoption Framework network topology pages during this chapter's verification pass, not carried from earlier chapters. Currency flags added to the FQDN list and to Private Link, which has changed since preview. The RDAgentBootLoader restart command uses standard service cmdlets.
-
-**Pass 2, readability.** The required FQDN table was deliberately not repeated from Chapter 4, only referenced. Long sentences split. The Private Link section reordered so the constraints come before the recommendation, because the constraints are what drive the decision. No long dash characters.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with two currency flags |
-| Supported versus unsupported separated | Yes. The support statement on blocked endpoints stated explicitly |
-| Commands, portal paths, CLI | Exact, with expected output |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Mermaid diagram | Enforcement point decision diagram, inline in section 3 |
-| Architecture consistency | Builds on Lab 3 network and Chapter 4 flow. Naming convention unchanged |
-| Cost statements | $0.00 for the chapter, Private Link cost flagged |
-| Security implications | TLS inspection, the unrestrictable discovery workspace, and the documented exception approach |
-| Interview answers | Read aloud |
-| Duplicate content | Required FQDN table referenced to Chapter 4, not repeated |
-| Simple English | Reviewed |
-| Long dash characters | None |
-
-**Diagram note.** The full Private Link topology and hub egress architecture is drawn in [Chapter 13](ch13-hybrid-connectivity-egress-control.md) rather than duplicated here. This chapter's diagram covers the decision it actually owns, which is where each rule can be enforced.

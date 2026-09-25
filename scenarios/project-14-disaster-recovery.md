@@ -119,10 +119,10 @@ A structured, evidence-first runbook, not a narrative document, written so that 
 
 | Runbook step | Target | Measured | Outcome |
 |---|---|---|---|
-| Declare |, | 8 minutes | Within expectation |
+| Declare | 15 minutes | 8 minutes | Within expectation |
 | Provision infrastructure (Terraform) | 90 minutes | 74 minutes | Better than target |
 | Restore data (Azure Backup) | Remaining window to 4-hour total | 3 hours 40 minutes | **Exceeded the 4-hour total RTO by 22 minutes** |
-| Validate |, | 25 minutes | Within expectation |
+| Validate | 30 minutes | 25 minutes | Within expectation |
 
 **The finding that mattered, and what was done about it.** The Azure Backup restore step, not the Terraform infrastructure step, was the actual bottleneck, the FSLogix profile data volume (1,400 users' worth of profile containers) took longer to restore than the initial estimate, which had been based on a smaller pilot dataset rather than the full production volume. This is presented honestly as a test finding, not hidden: the first DR test missed the target. The remediation (restructuring the backup to use incremental snapshots with a faster restore path for the most recently modified containers first, prioritising active users over dormant accounts) was implemented, and a second test, run two months later, completed the full sequence in 3 hours 15 minutes, inside the 4-hour target with a real margin.
 
@@ -229,11 +229,3 @@ DR infrastructure that is provisioned during a test (or a real incident, once re
 - [Azure Backup for Azure Files](https://learn.microsoft.com/en-us/azure/backup/azure-file-share-backup-overview)
 - [Azure Compute Gallery replication](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery)
 - [On-demand capacity reservation in Azure](https://learn.microsoft.com/en-us/azure/virtual-machines/capacity-reservation-overview)
-
----
-
-## Project Self-Review
-
-**What this engagement actually taught.** The business impact analysis, done properly before any infrastructure decision, is what made every later choice defensible, the 4-hour RTO, the warm-standby cost model, the 60% capacity reservation all trace back to that table, not to an architect's judgement call. The other genuine lesson is the DR test itself: the infrastructure half of the recovery (Terraform) worked essentially perfectly on the first attempt, and it was the data half (backup restore) that had the real, unglamorous bottleneck nobody had scoped properly because the pilot test data didn't represent production volume. That is a very typical DR-test finding pattern, not specific to this engagement, and worth carrying into every future DR project as a place to look hard, early.
-
-**What would be done differently with more time.** Failback remains untested, which is the honestly disclosed gap in this report. Given the choice to prioritise one test over the other within the engagement's timeline, prioritising the recovery runbook over failback was the right call, but a longer engagement would have scheduled a third test cycle specifically for failback before calling the DR capability complete, rather than handing it over with that gap still open.

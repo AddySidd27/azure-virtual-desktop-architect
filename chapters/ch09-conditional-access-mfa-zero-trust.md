@@ -407,28 +407,3 @@ Chapter 10 covers RBAC and the administrative model, including the role assignme
 
 **Interview preparation carried forward**
 Q24 separates candidates quickly. Most know sign-in frequency exists. Few know it behaves differently per app, and almost nobody mentions the silent diagnostics failure.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** App IDs, sign-in frequency behaviour per app, the Every time restriction, the per-user MFA conflict and the silent diagnostics failure all verified against the current Microsoft set-up-mfa and troubleshoot-sso-conditional-access pages. Currency flag added because the session host app list has been consolidating. KQL marked for verification because table naming varies by workspace.
-
-**Pass 2, readability.** Long sentences split. Repetition of the three stage model removed and replaced with a cross reference to Chapter 8. No long dash characters. Scenarios read as narrative rather than as lists.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Supported versus unsupported separated | Yes. Every time restriction stated explicitly |
-| Commands, portal paths, KQL | Exact portal paths given. KQL carries a verification note |
-| Troubleshooting format | Three scenarios, nine steps each, plus an architect lesson |
-| Architect's four questions | Section 6 |
-| Architecture consistency | Three stage model consistent with Chapter 8. App to stage mapping added |
-| Cost statements | $0.00 for the chapter. Entra ID P1 or P2 requirement noted |
-| Security implications | Break glass exclusions, report only mode, and the risk of weakening a policy to stop complaints |
-| Interview answers | Read aloud |
-| Real-world scenarios | Three, covering a rollout, a regulated finance team and a monitoring degradation |
-| Duplicate content | Chapter 8 material referenced, not repeated |
-| Missing concepts | Added the observability side effect, which is absent from most AVD Conditional Access guidance |
-| Simple English | Reviewed |
-| Long dash characters | None |

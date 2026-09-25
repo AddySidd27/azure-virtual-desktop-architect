@@ -2,10 +2,9 @@
 # Policy: allowed locations
 #
 # Built-in Azure Policy definition. GUID confirmed directly against
-# Microsoft Learn's own tutorial documentation during this capstone's
-# research pass (learn.microsoft.com/azure/governance/policy/
-# tutorials/create-and-manage) - this one is verified, not a working
-# assumption. Traces to Part A constraint C-01.
+# Microsoft Learn's own tutorial documentation
+# (learn.microsoft.com/azure/governance/policy/
+# tutorials/create-and-manage).
 ############################################
 
 resource "azurerm_management_group_policy_assignment" "allowed_locations" {
@@ -23,19 +22,15 @@ resource "azurerm_management_group_policy_assignment" "allowed_locations" {
 # Policy: required tags
 #
 # [VERIFY BEFORE IMPLEMENTATION] The built-in "Require a tag on
-# resources" policy definition GUID could not be independently
-# confirmed from official Microsoft documentation during this
-# capstone's research pass - searches returned at least three
-# different candidate GUIDs across sources of varying authority.
-# The GUID below (871b6d14-10aa-478d-b590-94f262ecfa99) is the one
-# explicitly labelled "Require a tag on resources" in Microsoft's own
-# Azure Landing Zones reference implementation
+# resources" policy definition GUID could not be confirmed from a
+# single authoritative source - different references list different
+# candidate GUIDs. The GUID below (871b6d14-10aa-478d-b590-94f262ecfa99)
+# is the one explicitly labelled "Require a tag on resources" in
+# Microsoft's own Azure Landing Zones reference implementation
 # (azure.github.io/Azure-Landing-Zones), the most directly-labelled
-# source found, but it is used here as a working default requiring
-# confirmation, not as a verified fact. Confirm via
+# source found, but treat it as a working default. Confirm via
 # `az policy definition list --query "[?displayName=='Require a tag
-# on resources']"` before applying. Traces to Part A requirement
-# TR-04.
+# on resources']"` before applying.
 ############################################
 
 resource "azurerm_management_group_policy_assignment" "required_tags" {

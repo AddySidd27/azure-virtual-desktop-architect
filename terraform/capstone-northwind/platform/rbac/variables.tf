@@ -5,8 +5,8 @@
 # all) as a standing assignment. This module is the single, correct
 # home for all six platform-wide roles, superseding the two standing
 # assignments (Identity Administrator, Network Administrator)
-# previously in platform/security/rbac.tf, which are removed as part
-# of this remediation - see that module's README for the note.
+# previously in platform/security/rbac.tf, which are removed here in
+# favour of PIM-eligible assignments - see that module's README.
 ############################################
 
 variable "northwind_management_group_id" {

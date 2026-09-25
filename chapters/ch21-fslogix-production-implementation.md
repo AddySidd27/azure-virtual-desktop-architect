@@ -440,34 +440,3 @@ Chapter 22 closes Part V with profile operations, failure and recovery. Locked c
 
 **Interview preparation carried forward**
 Q59 rewards explaining what a setting prevents rather than reciting the list. That difference is obvious to an interviewer within one sentence.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The registry path, the settings and values in the configuration script, and the stated purpose of `ClearCacheOnLogoff`, `DeleteLocalProfileWhenVHDShouldApply` and `FlipFlopProfileDirectoryName` were verified against the current Microsoft configure profile containers page and the Cloud Cache tutorial settings table. The statement that multiple `VHDLocations` entries do not provide resiliency and the object specific configuration registry path were verified against the configuration examples page. The antivirus exclusion scope, including the instruction to apply exclusions in all layers of security, was verified against the FSLogix prerequisites page. Verification markers are placed on the exclusion list itself, the redirections file format and the redirections registry setting name, because those vary by version and by application. No setting value was invented.
-
-**Pass 2, human readability review.** The settings table explains what each value prevents rather than restating its name, because a list of names is what the reference documentation already provides. The `VHDLocations` warning was given its own subsection because it is widely misunderstood and the failure mode looks like data loss. Sentences kept short, scenario narrative rather than bullets, no long dash characters. Read back as an engineer configuring this for the first time, and the ordering was changed so configuration location comes before settings, because deciding where configuration lives changes how you apply everything after it.
-
-**Pass 3, visual and diagram review.** No diagram in this chapter, and that is deliberate. The content is a settings table, an exclusion list and a size management process. None of those are architecture, and drawing a flowchart of registry values would be exactly the generic diagram the [diagram standard](../DIAGRAM-STANDARD.md) forbids. The architecture that supports this chapter is already drawn in [Chapter 19](ch19-why-profiles-cause-avd-failure.md) and [Chapter 20](ch20-profile-storage-architecture.md), and is cross referenced rather than redrawn.
-
-**Consistency check against earlier chapters.** The configuration in policy rather than image recommendation is consistent with the disposable host model in [Chapter 16](ch16-automated-host-pools-session-host-configuration.md#3-what-a-session-host-update-actually-does), where manual host changes do not survive an update. The `ProfileType` value is consistent with the concurrency discussion in [Chapter 19](ch19-why-profiles-cause-avd-failure.md#4-concurrency-one-user-more-than-one-session). The permission prerequisites reference [Chapter 20](ch20-profile-storage-architecture.md#5-the-two-layer-permission-model) rather than restating them. The security tooling scenario connects to the in-VM failure mode in [Chapter 13](ch13-hybrid-connectivity-egress-control.md#4-the-failure-mode-inside-the-virtual-machine). Storage account and share names match the lab naming convention. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft FSLogix pages |
-| Current capability verified | Yes, August 2026 |
-| Supported versus unsupported separated | Yes. The VHDLocations resiliency misconception stated explicitly |
-| Commands, registry paths, PowerShell | Exact, with prerequisites, expected results and common failures |
-| Production scenarios | Three, in the extended format |
-| Architect's Reality Check | Section 7 |
-| Architect's four questions | Section 9 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 6 |
-| Diagrams | None, deliberately, with the reason stated |
-| Architecture consistency | Consistent with Chapters 13, 16, 19 and 20 |
-| Cost statements | Profile growth as an operational cost, covered in Scenario 3 |
-| Security implications | Exclusions framed as a security trade rather than a request |
-| Interview answers | Read aloud |
-| Duplicate content | Permissions referenced to Chapter 20, recovery deferred to Chapter 22 |
-| Simple English | Reviewed |
-| Long dash characters | None |

@@ -521,29 +521,3 @@ Chapter 9 covers Conditional Access and MFA for AVD, including the sign-in frequ
 
 **Interview preparation carried forward**
 Q20 is asked constantly. The three stage framing is what makes the answer sound like experience rather than reading.
-
----
-
-## Chapter Self-Review
-
-| Check | Result |
-|---|---|
-| Technical accuracy | SSO prerequisites, Windows Cloud Login app ID, Kerberos and KDC proxy behaviour taken from current Microsoft Learn pages |
-| Current capability verified | Yes, August 2026. Currency flag on the SSO prerequisites |
-| Supported versus unsupported separated | Yes. NTLM and Kerberos support stated, smart card and WHfB limitation stated |
-| Commands verified | Graph and Az cmdlets given with a verify flag on Graph cmdlet naming, which has changed across module versions |
-| Troubleshooting format | Three scenarios, all nine steps each |
-| Portal and Event Viewer paths | Exact paths given |
-| KQL | Included with a verify note on table naming |
-| Architect's four questions | Section 5, stated explicitly |
-| Mermaid diagram | Renders. Matches the three stage model |
-| Architecture consistency | Cross references to Chapters 4, 7, 9, 43 and Labs 4 and 12 checked |
-| Cost statements | $0.00 for the chapter, stated |
-| Security implications | Conditional Access change safety and break glass exclusion called out |
-| Interview answers | Read aloud. Natural |
-| Real-world examples | Three production scenarios covering hybrid drift, regulated smart card users and Entra join |
-| Duplicate content | Entra Kerberos referenced to Chapter 7, not repeated |
-| Missing concepts | Added the warning that CustomRdpProperty overwrites, which is a common cause of secondary incidents |
-| Simple English | Reviewed |
-| AI sounding language | Removed |
-| Long dash characters | None |

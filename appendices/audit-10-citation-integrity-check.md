@@ -1,5 +1,7 @@
 # Audit 10 - Citation Integrity Check (Post Cite-Strip)
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** The prior pass stripped 348 `<cite index>` wrappers programmatically, preserving the enclosed prose. This check confirms that removal did not leave Microsoft-derived claims without professionally defensible source attribution.
 

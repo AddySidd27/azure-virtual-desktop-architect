@@ -504,28 +504,3 @@ Chapter 14 closes Part III with protocol optimisation and network performance. R
 
 **Interview preparation carried forward**
 Q36 is the strongest question in this chapter. Knowing that most platform connectivity issues are inside the VM, and being able to name the specific causes, is unusual and it lands well.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The AVD service tag and FQDN tag availability, the absence of a published IP range list, the NGFW dynamic list requirement, FQDN tag behaviour, forced tunnelling behaviour, and every in-VM failure cause were verified during this chapter's verification pass against the current required FQDN page, the Azure Firewall features page, the forced tunnelling page and the Azure fabric communication IPs page. The fabric communication IPs guidance is recent and carries a currency flag. CLI commands use documented syntax. Firewall log table names carry a verification note because they depend on the diagnostic mode configured.
-
-**Pass 2, readability.** The in-VM failure section was moved ahead of the scenarios because it is the most useful content and readers should reach it early. The firewall rule structure is presented as three layers rather than as a rule list, because the layering is the thing people get wrong. Long sentences split. No long dash characters.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on the fabric IPs guidance |
-| Supported versus unsupported separated | Yes. The DNAT anti-pattern stated explicitly |
-| Commands, portal paths, CLI, KQL | Exact, with expected output and a verification note on log table names |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 8 |
-| Mermaid diagram | Inline egress architecture, with the four part explanation |
-| Architecture consistency | Uses the Lab 3 network and Chapter 12 topology. Naming convention unchanged |
-| Cost statements | Azure Firewall cost called out honestly, including why the lab does not deploy it |
-| Security implications | Forced tunnelling trade-offs, DNAT anti-pattern, endpoint agent policy scope |
-| Interview answers | Read aloud |
-| Duplicate content | Required endpoint list referenced to Chapter 11, not repeated |
-| Simple English | Reviewed |
-| Long dash characters | None |

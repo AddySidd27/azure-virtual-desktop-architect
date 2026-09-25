@@ -9,7 +9,7 @@ proven pattern exactly.
 
 ## Finance isolation, per ADR-CAP-06
 
-The [Part F audit](../../../../capstone/implementation-tracker.md) found finance
+A design review found finance
 sharing one storage account, share, and RBAC group with the other four
 personas, despite Chapter 15's host-pool-level isolation requirement. See
 [ADR-CAP-06](../../../../capstone/adr/adr-cap-06-finance-fslogix-isolation.md)

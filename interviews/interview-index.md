@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 
-196 study questions are indexed from the chapters, labs, and fictional architecture case studies. Each entry links to its source file, where the full answer appears. Search the source file for the question number, for example `Q59`.
+193 study questions are indexed from the chapters, labs, and fictional architecture case studies: 74 from the 25 published chapters, 75 from all 15 published projects (5 each), and 44 from Labs 5-20 (13 from Labs 5-10, 31 from Labs 11-20). Each entry links to its source file, where the full answer appears. Search the source file for the question number, for example `Q59`.
 
 This index reuses existing content. It does not generate new questions to inflate a count, and it does not duplicate full answers that already exist elsewhere in the book.
 
@@ -173,6 +173,14 @@ Each of the 15 fictional architecture case studies ends with five questions abou
 - How would you measure and explain a reduction in platform cost?
 - How do you stop it degrading again?
 
+**[Project 03 - Meridian Global Industries: 3,200-User Multi-Region Governance](../scenarios/project-03-global-enterprise-governance.md)**
+
+- Why one subscription per business unit instead of one shared subscription with resource groups?
+- Why keep standing access for Session Host Operator and Service Desk but require PIM for everything else?
+- Four business units each want their own naming convention. How do you get agreement on one standard?
+- How do you decide what stays centrally owned versus what stays with each business unit?
+- The CFO wants a single cost number today. What do you actually tell them in week one, before any of this is built?
+
 **[Project 04 - Halbrook Retail Group: Hybrid AD, 18 Years of Group Policy, and an AVD Estate in the Middle](../scenarios/project-04-hybrid-active-directory.md)**
 
 - In a hybrid estate, which wins, Group Policy or Intune?
@@ -229,11 +237,51 @@ Each of the 15 fictional architecture case studies ends with five questions abou
 - Can App Attach satisfy a contractual segregation requirement?
 - What would you do differently?
 
+**[Project 11 - Ashford Regional Health Network: Highly Secure and Regulated AVD](../scenarios/project-11-highly-secure-regulated.md)**
+
+- How do you decide which security controls to apply and which to skip, on a regulated platform?
+- Walk me through how you'd rebuild a broken break-glass process.
+- An audit finding says "no efficient access-evidence capability." How do you actually close that, not just document a plan to close it?
+- A hardening baseline breaks a clinical application during testing. What do you do?
+- How do you decide which redirection and screen controls are proportionate for a specific user population?
+
+**[Project 12 - Falkirk Logistics Group: Citrix to AVD Migration](../scenarios/project-12-citrix-migration.md)**
+
+- How do you handle an application that depends on a hardware fingerprint for licensing, when moving from a persistent Citrix model to AVD's disposable-host model?
+- Your Citrix estate has six Delivery Groups. How many AVD host pools do you build, and why?
+- Your discovery finds that Citrix Studio's published-application list doesn't match what's actually used. How does that change your migration plan?
+- How do you sequence migration waves for an estate with three shifts and no acceptable downtime window?
+- A vendor's application ties its licence to a hardware fingerprint that AVD's rebuild model breaks. How is this different from a technical bug to fix?
+
+**[Project 13 - Solheim Trading: Multi-Region AVD Architecture](../scenarios/project-13-multi-region-architecture.md)**
+
+- Why did you choose active/active with no cross-region failover, when active/passive sounds more resilient?
+- Why did you choose separate hub-spoke networks per region instead of Azure Virtual WAN?
+- How do you keep three regions' golden images provably identical without a manual process someone eventually forgets?
+- Why does each region get its own FSLogix storage with no Cloud Cache spanning regions, when Cloud Cache exists specifically for resilience?
+- How do you validate that three regions are actually independent, rather than just assuming the architecture makes them so?
+
+**[Project 14 - Corrigan Insurance: Business Continuity and Disaster Recovery for AVD](../scenarios/project-14-disaster-recovery.md)**
+
+- Your DR test missed its RTO target on the first attempt. How do you handle that?
+- Why is "we use Terraform, so we can just redeploy" not a complete disaster recovery plan?
+- How do you set an RTO when the business hasn't told you what "acceptable downtime" means?
+- Your board won't fund a fully duplicate always-on second region. How do you still meet a defensible recovery target?
+- Your DR runbook has a recovery process. Does it need a separate failback process, or can you just run recovery in reverse?
+
+**[Project 15 - Northgate Retail: Simulated Production Incident](../scenarios/project-15-production-troubleshooting.md)**
+
+- You arrive at a live incident where the customer's own team has already made several changes. How does that affect your approach?
+- Walk me through why you use a fixed, ordered layer sequence instead of investigating whichever layer seems most likely first.
+- How do you hold a structured diagnostic method when the customer is pressuring you to "just try something" faster?
+- The customer's own team made changes before you arrived that didn't help. How do you handle that conversation without it feeling like blame?
+- The root cause turned out to be an application memory leak the vendor had already patched. Was this really an AVD problem to solve?
+
 ---
 
 ## Hands-on lab questions
 
-Each of Labs 5-10 ends with two or three questions tied directly to what that lab built, useful for demonstrating hands-on depth rather than only design knowledge.
+Each of Labs 5-20 ends with two to five questions tied directly to what that lab built, useful for demonstrating hands-on depth rather than only design knowledge.
 
 **[Lab 5 - Profile Storage](../labs/lab-05-storage.md)**
 
@@ -265,6 +313,67 @@ Each of Labs 5-10 ends with two or three questions tied directly to what that la
 
 - You configure diagnostic settings and want to prove they are actually working. What do you check, and when?
 - What does drain mode actually stop, and what does it not stop?
+
+**[Lab 11 - Multi-Region Network Foundation](../labs/lab-11-multiregion-network-foundation.md)**
+
+- Why build two separate VNets peered together, rather than one VNet spanning two regions?
+- Why does `centralus`'s identity NSG need a rule for the entire `eastus2` address range, when the original design only allowed the local hosts subnet?
+- This lab explicitly doesn't configure DNS. Why not just point both VNets at each other's future DNS servers now, to save a step later?
+
+**[Lab 12 - Regional Identity](../labs/lab-12-regional-identity.md)**
+
+- Why join the existing forest with a second domain controller, rather than create a separate domain in `centralus` and trust it?
+- What actually breaks if you deploy a second domain controller in `centralus` but skip the AD Sites and Services configuration?
+- Why change the VNet DNS server settings only after confirming replication, rather than as part of the same deployment?
+
+**[Lab 13 - Regional Storage Foundation](../labs/lab-13-regional-storage-foundation.md)**
+
+- Why build a second, completely independent storage account for `centralus`, rather than just letting `centralus` session hosts use the existing `eastus2` share over the peered network?
+- Two private DNS zones in this build share the exact same name, `privatelink.file.core.windows.net`. Why doesn't that conflict?
+
+**[Lab 14 - Active-Active Host Pools and Workspaces](../labs/lab-14-active-active-hostpools-workspaces.md)**
+
+- Why does Microsoft's active-active design produce two visible desktop entries for a user assigned to both regions, and why is that treated as correct rather than a bug to fix?
+- This lab explicitly avoids Session Host Configuration even though the Azure feature is GA. Walk me through how you'd evaluate whether a new AVD capability is actually ready to build a required deployment on.
+- If Session Host Configuration's tooling reaches full stability next year, what would actually need to change in this lab's design to adopt it?
+
+**[Lab 15 - Cloud Cache Replication](../labs/lab-15-cloud-cache-replication.md)**
+
+- Why does `centralus`'s configuration list its own storage account first in `CCDLocations`, while `eastus2`'s configuration lists its own storage account first too, rather than both regions using an identical provider order?
+- You reproduced `ERROR_LOCK_VIOLATION` deliberately in this lab. What does that error actually tell you, and what would a production incident involving it look like?
+- Given that the lock-violation failure is expected and documented, why not just tell users "don't sign in from two regions at once" instead of building Lab 16's group-based prevention?
+
+**[Lab 16 - User Region Assignment](../labs/lab-16-user-region-assignment.md)**
+
+- Why build two separate groups per population instead of one group with conditional logic deciding which region a member reaches?
+- This lab's Terraform creates the groups but not their membership. Why draw the boundary there instead of automating membership too?
+- How would you extend this design if a user genuinely needs access to both regions, say a manager overseeing both desks?
+
+**[Lab 17 - Regional Autoscaling](../labs/lab-17-regional-autoscaling.md)**
+
+- Why do the two regions' scaling plans use genuinely different schedule values instead of the same conservative defaults everywhere?
+- What would you actually check to confirm two scaling plans are truly independent, beyond reading their Terraform configuration?
+- Dynamic Autoscaling can create and delete hosts, which sounds more efficient than Power Management Autoscale's start-and-stop model. Why isn't it this lab's required implementation, given the Azure feature is GA?
+
+**[Lab 18 - Regional Security and Monitoring](../labs/lab-18-regional-security-monitoring.md)**
+
+- Why build two separate Log Analytics workspaces instead of pointing both regions' diagnostics at one shared workspace, which would be simpler to query?
+- How would you actually verify that two Log Analytics workspaces are genuinely independent, rather than just configured with different names?
+- Azure Firewall is a common recommendation for egress control. Why does this lab default it to off, and when would you turn it on?
+
+**[Lab 19 - Disaster Recovery Failover](../labs/lab-19-disaster-recovery-failover.md)**
+
+- Walk me through why this lab's DR target had to move from `centralus` to a third region during the build.
+- Why does this lab treat failback as a separate runbook rather than just running the failover script in reverse?
+- You built both an active-active region pair and an active-passive DR pair in this book. How would you explain to a stakeholder which one their business actually needs?
+- Your DR region's session hosts originally authenticated only against the protected region's domain controller. Why is that a real design flaw, and how did you fix it?
+- You said an on-demand capacity reservation "guarantees capacity during failover" at "no extra cost beyond the reserved VM rate." Is that accurate?
+
+**[Lab 20 - Validation, Cost and Teardown](../labs/lab-20-validation-cost-teardown.md)**
+
+- Why isn't the teardown order for Labs 11-20 simply the reverse of the build order?
+- What's the actual value of re-running Lab 19's failover exercise here, in Lab 20, rather than trusting the result from when Lab 19 was originally built?
+- If you were presenting this environment's cost to a stakeholder who wasn't technical, how would you use the Labs 11-20 plan's cost table and this lab's Step 3 output together?
 
 ---
 

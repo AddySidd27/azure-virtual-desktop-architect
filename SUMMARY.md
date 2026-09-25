@@ -133,7 +133,7 @@ Lab 20 is built as this lab set's end-to-end validation, cost, and teardown lab,
 
 ## Part XV-XVI - Interview Preparation
 
-Chapters 48-51, as originally planned, were never written as standalone chapters. The content exists instead as a single [interview index](interviews/interview-index.md) (196 questions across chapters, labs and all 15 projects) plus five full mock interview scenarios in the same file. A separately assembled Part XV/XVI document, organised by seniority tier rather than by source chapter, has not yet been built; the underlying content is complete and indexed.
+Chapters 48-51, as originally planned, were never written as standalone chapters. The content exists instead as a single [interview index](interviews/interview-index.md) (193 questions across chapters, labs and all 15 projects) plus five full mock interview scenarios in the same file. A separately assembled Part XV/XVI document, organised by seniority tier rather than by source chapter, has not yet been built; the underlying content is complete and indexed.
 
 ## Part XVII - Decision Frameworks
 
@@ -200,32 +200,17 @@ Lab 6 (FSLogix) has no dedicated Terraform module: it configures host-side regis
 
 ## Contributor and project-management history
 
-This section is for anyone maintaining or auditing the repository, not for a reader following the book. It has no bearing on the technical content and is kept out of the primary navigation above for that reason. Each entry records a quality pass performed on the repository and what it changed.
+This section is for anyone maintaining or auditing the repository, not for a reader following the book. It has no bearing on the technical content and is kept out of the primary navigation above for that reason.
 
-**Diagram quality passes**
+See [Development history](appendices/development-history.md) for a summary of how the repository was built and reviewed in phases: diagram quality, the content retrofit, publication remediation, the multi-region labs, and the capstone build. The detailed pass-by-pass records it links to remain in the repository for full traceability.
 
-- [Audit 01 - Chapters 1 to 9 against the chapter contract](appendices/audit-01-chapter-contract.md)
-- [Audit 02 - Diagrams against the diagram quality standard](appendices/audit-02-diagram-standard.md)
-- [Audit 03 - Diagram visual quality rebuild](appendices/audit-03-diagram-rebuild.md)
-- [Audit 04 - Full diagram rebuild to architecture standard](appendices/audit-04-diagram-rebuild-architecture.md)
-- [Audit 06 - Diagram topic accuracy audit](appendices/audit-06-diagram-topic-accuracy.md)
-- [Audit 07 - Architecture diagram tier introduced](appendices/audit-07-architecture-diagrams.md)
-- [Audit 08 - Repository-wide diagram coverage](appendices/audit-08-repository-diagram-coverage.md)
+**Structure changes**
 
-**Content and structure passes**
-
-- [Audit 05 - Chapters 1 to 19 retrofit to the raised standard](appendices/audit-05-chapter-retrofit.md)
 - [Structure change 01 - Intune as a first-class topic](appendices/structure-change-01-intune.md)
 - [Structure change 02 - Real-world projects expanded](appendices/structure-change-02-projects.md)
 - [Structure change 03 - Project-led delivery](appendices/structure-change-03-project-led.md)
-- [Audit 09 - August 2026 publication remediation, Phase 1](appendices/audit-09-remediation-report.md): citation artifact removal, broken-link repair, README/SUMMARY accuracy, Chapter 24 Intune correction, GitHub hygiene, Terraform structural validation, and security scan
-- [Audit 10 - Citation integrity check](appendices/audit-10-citation-integrity-check.md): focused verification that the Phase 1 cite-tag strip preserved defensible source attribution
-- [Audit 11 - Phase 2: Labs 5-10](appendices/audit-11-phase2-labs-5-10.md): the citation check plus the full Labs 5-10 build, completing the lab sequence to a working AVD deployment
-- [Audit 12 - Phase 3: diagrams, runbooks, interview index](appendices/audit-12-phase3-report.md): five troubleshooting runbooks, a 132-question interview index, two new hero diagrams, Terraform/lab consistency fixes
-- [Audit 13 - Phase 4: real visual QA, 8 new hero diagrams built](appendices/audit-13-phase4-report.md): cairosvg-based rendering, real bugs found and fixed across every diagram
-- [Audit 14 - All 10 hero diagrams pass the full scorecard](appendices/audit-14-hero-diagram-scorecard.md): self-contained icon standard adopted repository-wide, Diagram 4 rebuilt clean, drawio/svg consistency fixed across all 10
-- [Audit 15 - Repository-wide diagram inventory](appendices/audit-15-repository-diagram-inventory.md): full classification of every diagram in the repository, batch plan for the 34 replacements
-- [Audit 16 - Repository-wide diagram remediation, closing report](appendices/audit-16-diagram-remediation-closing-report.md): all 34 replacement diagrams complete, 18 Mermaid diagrams correctly retained, zero remote icon dependencies anywhere in the repository
-- [Audit 17 - Phase 3 closing report](appendices/audit-17-phase3-closing-report.md): Projects 03 and 11-15 published (15 of 15 complete), interview bank at parity (165 questions at the time of that phase; 196 after Labs 11-20 added their own), a real readability review against the house style guide, every stale Chapters 26-54 reference removed
+
+**Labs 11-20**
+
 - [Labs 11-20 plan](appendices/labs-11-20-plan.md): active-active multi-region AVD, all 10 labs built and validated. Product-accuracy findings verified against current Microsoft Learn documentation: Regional Host Pools are Preview and explicitly excluded; Session Host Configuration's Terraform/PowerShell/AzAPI tooling is Preview or nonexistent (see the [ADR](appendices/adr-shc-vs-standard-host-pools.md)) and is therefore optional-only, not a required dependency; standard host-pool management and Power Management Autoscale are the required, GA-safe implementation throughout
 - [Lab 19 correction report](appendices/lab-19-correction-report.md): two post-acceptance corrections to disaster recovery - removed the DR region's identity dependency on the failed region it was meant to protect (westus2 now peers to centralus as well as eastus2, with centralus's domain controller as primary), and corrected the Capacity Reservation cost model (bills continuously regardless of VM deployment, confirmed against Microsoft's own documentation; the variable now defaults off)

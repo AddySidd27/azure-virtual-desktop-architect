@@ -1,8 +1,8 @@
 ############################################
-# AVD-specific RBAC, built with the correct resource type from the
-# start - the PIM remediation exists because Parts B and D didn't do
-# this the first time. See Part E, section 7, for the full reasoning
-# per role.
+# AVD-specific RBAC, using azurerm_pim_eligible_role_assignment
+# throughout rather than standing role assignments. See the
+# platform/rbac module for the reasoning behind PIM eligibility
+# over standing access.
 #
 # AUDIT FINDING, fixed: the original version of this file used
 # "Desktop Virtualization User Session Host Operator" for Service
@@ -11,9 +11,9 @@
 # Virtualization Session Host Operator" (manages session HOSTS -
 # remove, drain mode) and "Desktop Virtualization User Session
 # Operator" (manages user SESSIONS - disconnect, logoff). Confirmed
-# directly against Microsoft's own built-in roles documentation
-# during the Part F audit. Both are now looked up by their real,
-# confirmed names via data sources, not hardcoded GUIDs.
+# directly against Microsoft's built-in roles documentation.
+# Both are looked up by their real names via data sources, not
+# hardcoded GUIDs.
 #
 # NOT built here: End User. Its correct scope is Part F's future
 # application groups (persona-specific, non-overlapping per the model

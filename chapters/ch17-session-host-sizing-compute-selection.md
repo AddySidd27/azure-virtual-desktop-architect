@@ -399,32 +399,3 @@ Chapter 18 covers session host lifecycle, including registration, agent health, 
 
 **Interview preparation carried forward**
 Q47 is asked in nearly every AVD interview. The two details that lift the answer are the upper bound on VM size and the fact that memory usually binds before CPU.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The sizing guidance, availability-zone guidance, and ephemeral OS disk scope and limitations were checked against Microsoft Learn. The KQL example still requires verification against the tables enabled in the target workspace.
-
-**Pass 2, readability.** The sizing method uses numbered steps followed by a worked table. The disk section starts with the current AVD support boundary.
-
-**Pass 3, diagram review.** One diagram, on placement, because that is the only part of this chapter where a diagram adds more than a table would. Sizing is arithmetic and belongs in a table. The placement diagram shows three zones inside a region with shared profile storage, which makes the storage single point of failure visible at a glance. Every node is a component name. Checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The Northwind persona mapping matches [Chapter 1](ch01-what-avd-actually-is.md#4-meet-the-capstone-customer-northwind-global-manufacturing) and [Chapter 15](ch15-host-pool-design-decisions.md#4-how-many-host-pools). The subnet sizing reference matches [Chapter 12](ch12-enterprise-topologies-ip-planning.md#3-address-space-planning).
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with two currency flags |
-| Supported versus unsupported separated | Yes. Ephemeral OS disk scope and limitations stated explicitly |
-| Commands, portal paths, CLI, PowerShell, KQL | Exact, with verification markers where workspace configuration varies |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Diagrams | One, deliberately, to the locked standard |
-| Architecture consistency | Northwind design consistent with Chapters 1, 12, 15 and 16 |
-| Cost statements | Sizing identified as the largest compute cost driver |
-| Security implications | Not a security-led chapter. Resilience covered instead |
-| Interview answers | Read aloud |
-| Duplicate content | Density referenced to Chapter 5, scaling to [Project 07](../scenarios/project-07-call-centre-high-density.md), storage to Chapter 20 |
-| Simple English | Reviewed |
-| Long dash characters | None |

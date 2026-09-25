@@ -461,28 +461,3 @@ Chapter 15 opens Part IV with host pool design decisions. Pooled versus personal
 
 **Interview preparation carried forward**
 Q38 is one of the most common practical questions in AVD interviews. Leading with the transport check, rather than with resizing, is what marks the answer as experienced.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The transport negotiation order, the STUN provider, the ephemeral port range, the TCP fallback behaviour, Microsoft's recommendation to allow outbound UDP, the QoS limitation for reverse connect transport, the Teams registry value and redirector service requirement, the device redirection guidance, and the WebRTC deprecation dates were all verified during this chapter's verification pass against the current RDP Shortpath, RDP bandwidth, Teams on AVD, Teams VDI requirements and Well-Architected networking pages. The QoS PowerShell example follows the documented policy structure. Currency flags cover the TURN expansion, Shortpath over Private Link, and the WebRTC retirement dates.
-
-**Pass 2, readability.** Two diagrams rather than one, because transport selection and Teams media are different flows and combining them would have produced an unreadable diagram. Bandwidth presented as a method rather than a number. Long sentences split. No long dash characters.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with three currency flags |
-| Supported versus unsupported separated | Yes. The QoS limitation for reverse connect stated explicitly |
-| Commands, portal paths, CLI, PowerShell | Exact, with prerequisites and common errors |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Diagrams | Two, both with layers, boundaries, labelled traffic and the six part explanation required by the [diagram standard](../DIAGRAM-STANDARD.md) |
-| Architecture consistency | Builds on Chapters 4 and 13. Terminology unchanged |
-| Cost statements | Egress cost covered in Scenario 3 |
-| Security implications | The UDP compromise for security teams, rather than blocking the protocol |
-| Interview answers | Read aloud |
-| Duplicate content | Shortpath mechanics referenced to Chapter 4, egress rules to Chapter 13 |
-| Simple English | Reviewed |
-| Long dash characters | None |

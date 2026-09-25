@@ -527,28 +527,3 @@ The honest comparison, which is not the one the board expected.
 
 **Honest answer**
 "Verify the test environment on day one. The single most expensive failure in the engagement was three days of finance disruption before month end, caused by a test host everyone believed was Entra joined and was not. One command would have caught it. And I would have asked 'how does this authenticate' as a signed field in the application discovery rather than accepting verbal answers from owners, because the answer 'it just uses the finance database' turned out to hide the exact dependency the project was about."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The Virtual Machine User Login and Virtual Machine Administrator Login role requirements and the recommendation to assign at resource group scope, the removal of DC line-of-sight requirements, automatic Intune enrolment, and the current support statement for Azure Files access with hybrid, cloud-only and external identities using Entra Kerberos were verified against the current Microsoft Entra joined session hosts page. The external identity prerequisites, including Entra joined session hosts, single sign-on configuration, Windows App client support and FSLogix preview status, were verified against the current AVD identities and authentication page. The documented limitations quoted from the older guidance are marked with a currency flag alongside the current position, because localised Learn pages still carry the older text. The Kerberos server object requirement applying to hybrid joined hosts rather than cloud-only estates is consistent with the single sign-on guidance. LAPS for session host local administrator accounts is from the Cloud Adoption Framework identity guidance. `dsregcmd /status`, `klist` and `Test-NetConnection` are documented Windows commands. Storage account configuration steps for cloud-only identities carry a verification marker.
-
-**Pass 2, human readability review.** Written in engagement order, with discovery given more space than design because discovery is what decided the outcome. The cost section deliberately reaches an unflattering conclusion and states it plainly. Sentences kept short. No long dash characters. Read back as an architect handed this question, and section 3 was moved ahead of discovery, because the team could not classify dependencies without first agreeing what Entra join actually changes.
-
-**Pass 3, visual and topic accuracy review.** Four diagrams. As-found shows six dependencies rather than one, which is the engagement's central point. The disposition decision flow is a decision tree and is labelled as one. Target state shows the isolated hybrid pool as a dashed amber boundary, which is the honest outcome. The sign-in sequence is a sequence diagram because order is what the two incidents turn on. A fifth diagram of the migration waves was considered and rejected as a table with arrows. Topic test applied to each: none reads as a generic AVD diagram.
-
-**Concepts introduced, for the coverage map.** The Entra joined operating model and what it changes. RBAC-based Windows sign-in and local administrator without a domain. Dependency discovery and the retain, redesign, replace, isolate, retire framework. Cloud-only identity constraints and share-level permission implications. Rebuild-first recovery. Operating model cost comparison.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. Users, dependencies, costs, rebuild times |
-| Competing requirements resolved | Cost avoidance against application continuity, resolved by partial migration |
-| Constraints that cannot be designed away | Vendor roadmap, month end, decade-old NTFS permissions |
-| Decision against the obvious answer | Active Directory retained deliberately, scoped to one pool |
-| Problems that actually happen | False-pass testing on a mis-joined host, permission model outgrown by identity types |
-| Operational ownership addressed | PIM model, revised runbooks, quarterly isolate review |
-| L3 incident workflow complete | Two incidents run incident to KB update, including an executed rollback |
-| Cost treated honestly | Yes. The infrastructure case does not pay back and that is stated |
-| No repetition of concept chapters | Checked. Entra Kerberos, RBAC and Intune rules referenced |

@@ -1,5 +1,7 @@
 # Audit 15 - Repository-Wide Diagram Inventory and Classification
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every inline Mermaid, standalone Mermaid, SVG and `.drawio` file in the repository, classified before any replacement work begins.
 

@@ -3,6 +3,6 @@ output "platform_engineer_pim_assignment_id" {
 }
 
 output "pim_role_count" {
-  description = "Confirms, structurally, how many roles are actually PIM-eligible after this remediation - 5, not the 0 that existed before it"
+  description = "Number of platform roles that are PIM-eligible rather than standing assignments"
   value       = 5
 }

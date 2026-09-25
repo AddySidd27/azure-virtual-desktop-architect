@@ -489,34 +489,3 @@ Chapter 25 covers application delivery strategy and RemoteApp design, which is w
 
 **Interview preparation carried forward**
 Q68 rewards naming the specific rules. A general statement that multi-session is different sounds like reading. Three precise rules sound like deployment.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The independence of Intune and AVD management, the device credential enrolment requirement, the agent version floor of 1.0.2944.1400, the unsupported user-targeted compliance configuration, the Conditional Access support for both user and device targeting, the Endpoint security platform availability test, the security baseline recommendation to configure values in the Settings catalog, the ADMX-backed and ADMX-ingested support with limitations, the three application rules covering system context, device targeting and intent, the web app user context behaviour, the OOBE, Autopilot, Enrollment Status Page and China Sovereign Cloud restrictions, the cloned image error 0x8007064c, the orphaned device record behaviour, and the personal VM treatment were all verified against the current Microsoft Intune AVD multi-session and single-session solution pages. The Azure Policy machine configuration and diagnostic settings recommendations were verified against the Cloud Adoption Framework security, governance and compliance guidance for AVD. A currency flag is included because multi-session support has expanded steadily.
-
-**Pass 2, human readability review.** The chapter leads with the two management planes because the independence of Intune and AVD is what makes the rest coherent. The rules that differ from a laptop are grouped in one section rather than scattered, because they share a signature: no useful error and a console that looks correct. Sentences kept short, scenarios written as narrative, no long dash characters. Read back as an engineer bringing session hosts into Intune for the first time, and the enrolment section was moved before the rules, because enrolment has to work before any rule matters.
-
-**Pass 3, visual and topic accuracy review.** Two diagrams. The management planes diagram passes the topic test: with the title removed it reads as Intune managing a session host alongside AVD, not as a generic AVD architecture. Entra ID, Microsoft managed, customer Azure and on-premises are separate boundaries, and the policy path from device group to Windows is the dominant flow. The enrolment diagram is a decision tree and is labelled as one, using the reduced explanation set. Every node is a component name. Both checked against the fourteen question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The multi-session separate edition point is consistent with [Chapter 5](ch05-operating-systems-multisession-licensing.md#1-single-session-and-multi-session) and is referenced rather than restated. The cloned image error is presented as the same root cause as the AVD agent capture rule in [Chapter 23](ch23-golden-image-engineering.md#3-the-rule-that-breaks-deployments), which keeps the two chapters aligned. The patching position is consistent with [Chapter 18](ch18-session-host-lifecycle-hybrid.md#4-patching-strategy), image replacement for pooled and in-place for personal. Conditional Access application targeting is referenced to [Chapter 9](ch09-conditional-access-mfa-zero-trust.md#1-the-applications-you-are-actually-targeting). FSLogix configuration ownership is consistent with [Chapter 21](ch21-fslogix-production-implementation.md#1-where-fslogix-configuration-lives). The join models match [Chapter 7](ch07-identity-architecture-foundations.md#2-the-three-join-models). The [Intune support matrix](../appendices/intune-avd-support-matrix.md) was re-read and no contradiction was found. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft Intune and CAF pages |
-| Current capability verified | Yes, August 2026, with a currency flag |
-| Supported versus unsupported separated | Yes. Every restriction stated explicitly with its consequence |
-| Commands, portal paths, CLI, PowerShell | Exact, with expected output |
-| Production scenarios | Three, in the extended format |
-| Architect's Reality Check | Section 8 |
-| Architect's four questions | Section 10 |
-| Scale behaviour at 100, 1,000 and 5,000 users | Section 7 |
-| Diagrams | Two, topic tested, with classification labels |
-| Architecture consistency | Consistent with Chapters 5, 7, 9, 18, 21 and 23, and the support matrix |
-| Cost statements | $0.00 for the chapter, Intune licensing noted |
-| Security implications | Configured versus enforced control, and sign-off evidence |
-| Interview answers | Read aloud |
-| Duplicate content | Update rules referenced to the support matrix, patching to Chapter 18 |
-| Simple English | Reviewed |
-| Long dash characters | None |

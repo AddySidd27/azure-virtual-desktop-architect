@@ -14,7 +14,7 @@ variable "diagnostic_settings_policy_definition_id" {
 }
 
 variable "require_tag_policy_definition_id" {
-  description = "[VERIFY BEFORE IMPLEMENTATION] GUID for the built-in 'Require a tag on resources' policy. Defaulted to the value found in Microsoft's own Azure Landing Zones reference implementation, but not independently confirmed against the official Azure Policy built-in definitions reference during this capstone's research - confirm via `az policy definition list` before relying on it. See the note in policy-assignments.tf."
+  description = "[VERIFY BEFORE IMPLEMENTATION] GUID for the built-in 'Require a tag on resources' policy. Defaulted to the value found in Microsoft's own Azure Landing Zones reference implementation, but not independently confirmed against the official Azure Policy built-in definitions reference - confirm via `az policy definition list` before relying on it. See the note in policy-assignments.tf."
   type        = string
   default     = "871b6d14-10aa-478d-b590-94f262ecfa99"
 }

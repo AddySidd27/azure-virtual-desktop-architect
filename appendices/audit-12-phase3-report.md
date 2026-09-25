@@ -1,5 +1,7 @@
 # Audit 12 - Phase 3 Report: Diagrams, Readability, Runbooks, Interview Index
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Draw.io hero diagrams, readability review, Labs 5-10 detailed review, five troubleshooting runbooks, professional interview index, Terraform/diagram consistency, final validation.
 **Builds on:** [Audit 09](audit-09-remediation-report.md) (Phase 1), [Audit 10](audit-10-citation-integrity-check.md) and [Audit 11](audit-11-phase2-labs-5-10.md) (Phase 2). Nothing from those passes is repeated or undone here.

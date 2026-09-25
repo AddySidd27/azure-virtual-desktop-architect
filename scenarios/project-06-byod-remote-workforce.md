@@ -514,28 +514,3 @@ Security controls affect every user at once, which makes the change approach dif
 
 **Honest answer**
 "I would have validated by attempting the blocked action from the very first control rather than trusting policy reporting, because that is how the clipboard direction problem stayed hidden through most of the build. And I would have brought a delivery director into the control design in week one instead of week four. The security standard was written without them, we rediscovered every business process the hard way, and the Teams window sharing conflict should have been found in a conversation rather than in a rollback."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The change of redirection defaults for newly created host pools, the clipboard transfer direction and data type options, the requirement that host pool RDP properties must allow clipboard for direction policies to apply, the operating system and cumulative update prerequisites for clipboard transfer direction, the screen capture protection modes and their prerequisites, the statement that screen capture protection blocks sharing the remote window in local collaboration software including Teams with media optimisation, the client-side enforcement behaviour, and watermarking with QR-based session tracing were all verified against the current Microsoft screen capture protection, clipboard transfer direction, RDP properties and What's new pages. A currency flag records the redirection default change. KQL carries verification markers for table naming.
-
-**Pass 2, human readability review.** Written in engagement order, with each control presented as threat, control, configuration, impact, validation, operations and exceptions, because a control described without its user impact is how designs get reversed later. The two incidents are told as investigations rather than summaries. Sentences kept short. No long dash characters. Read back as a security architect handed this account, and the control catalogue was moved ahead of the architecture decisions, because the decisions only make sense once the cost of each control is known.
-
-**Pass 3, visual and topic accuracy review.** One diagram, deliberately. The trust tier and enforcement point diagram communicates the two architectural decisions that matter: routing by device trust, and the precedence between RDP properties and policy. A second diagram of the control matrix would have been a table drawn as boxes, which the [diagram standard](../DIAGRAM-STANDARD.md) forbids. Topic test applied: with the title removed it reads as a BYOD access control design, not a generic AVD architecture. Every node is a component name.
-
-**Concepts introduced, for the coverage map.** Redirection controls and the new secure defaults. Clipboard transfer direction and data type limits. Screen capture protection, its modes, prerequisites and the Teams consequence. Watermarking and traceability. The two-layer enforcement model and its precedence rule. Exception process design.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. Populations, concurrency, exception counts |
-| Competing requirements resolved | Data protection against document delivery, resolved with tiers and an approved path |
-| Constraints that cannot be designed away | 48 hour onboarding, no shipped hardware, client-issued devices |
-| Decision against the obvious answer | Installed client rather than browser for BYOD. Tiers rather than one strict policy |
-| Problems that actually happen | Silent non-enforcement, group membership error causing a contract breach |
-| Operational ownership addressed | Yes. Ownership split, service desk KB, quarterly reviews |
-| L3 incident workflow complete | Both incidents run symptom to KB update |
-| New concepts taught practically | Yes, each with user impact and validation |
-| No repetition of concept chapters | Checked. Conditional Access, Intune and host pool design referenced |

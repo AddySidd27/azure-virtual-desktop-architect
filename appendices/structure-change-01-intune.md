@@ -129,7 +129,7 @@ Four new diagrams, all original, each with the relevant Microsoft Learn referenc
 - 54 chapters
 - 20 labs, same numbering, same dependency chain
 - 15 scenarios
-- 196 interview questions in the final repository
+- 193 interview questions in the final repository
 - 20 mock interviews
 - Northwind Global capstone
 - Terraform-first IaC, Bicep for comparison

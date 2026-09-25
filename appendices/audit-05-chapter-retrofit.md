@@ -1,5 +1,7 @@
 # Audit 05 - Chapters 1 to 19 Retrofit to the Raised Standard
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Scope:** Every chapter written before the standard was raised at Chapter 19
 **Standards applied:** [CHAPTER-CONTRACT.md](../CHAPTER-CONTRACT.md), [OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md](../OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md), [DIAGRAM-STANDARD.md](../DIAGRAM-STANDARD.md)

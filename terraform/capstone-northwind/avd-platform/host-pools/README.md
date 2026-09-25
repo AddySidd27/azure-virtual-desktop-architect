@@ -20,7 +20,7 @@ placeholder**. No chapter or capstone part has ever stated how Northwind's
 downstream of this one number. Confirm the real figure with Northwind before
 applying, and re-plan once you do - the host counts will change.
 
-## Resolved during the Part F audit
+## Resolved
 
 - **Personal host pool `load_balancer_type`** value (`Persistent`) - confirmed
   against Microsoft's own Azure Verified Modules documentation and the

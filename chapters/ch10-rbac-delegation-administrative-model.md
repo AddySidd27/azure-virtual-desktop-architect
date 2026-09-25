@@ -448,28 +448,3 @@ Chapter 11 opens Part III with network fundamentals and required connectivity. M
 
 **Interview preparation carried forward**
 Q26 is a fast filter. Candidates who say Desktop Virtualization Contributor does everything have not built an environment. Q27 is where senior candidates separate themselves, because it is a design question rather than a recall question.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** Every built-in role description was checked against the current Microsoft AVD RBAC page rather than carried from memory or from earlier chapters. The Desktop Virtualization Contributor exclusions, the User Access Administrator requirement for user assignment, and the Workspace Contributor dependency on Application Group Reader are all taken from that page. Session Host Operator capabilities and the Virtual Machine User Login requirement for Entra joined hosts were verified separately. A currency flag is included because Microsoft adds AVD roles over time and this table should not be treated as permanent. CLI and PowerShell syntax follows the documented command structure, and Terraform uses the standard `azurerm_role_assignment` resource.
-
-**Pass 2, readability.** Long sentences split. The two planes explained in plain language before the role table. Scenarios written as narrative. The Entra join role requirement referenced to Chapter 5 in one line rather than re-explained. No long dash characters.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against the current Microsoft AVD RBAC page |
-| Current capability verified | Yes, August 2026, with a currency flag on the role list |
-| Supported versus unsupported separated | Yes. Role exclusions stated explicitly |
-| Commands, portal paths, Terraform | Exact. Common errors listed |
-| Production scenarios | Three, in the nine step format, plus architect lessons |
-| Architect's four questions | Section 7 |
-| Mermaid diagram | Inline, with explanation |
-| Architecture consistency | Uses the Lab 2 resource group split and the book's naming convention |
-| Cost statements | $0.00, stated |
-| Security implications | Blast radius, PIM, resource locks and the order of operations when removing broad access |
-| Interview answers | Read aloud |
-| Duplicate content | Entra join role requirement cross referenced, not repeated |
-| Simple English | Reviewed |
-| Long dash characters | None |

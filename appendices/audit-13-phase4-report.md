@@ -1,5 +1,7 @@
 # Audit 13 - Phase 4 Report: Real Visual Diagram QA and the Remaining 8 Hero Diagrams
 
+> **Internal development record.** Not required reading. See [Development history](development-history.md) for a summary.
+
 **Date:** August 2026
 **Trigger:** Phase 3's honest disclosure that SVG could not be rendered as an image in that environment, and that only 2 of 10 required hero diagrams existed. This pass fixes both.
 **Builds on:** [Audit 09](audit-09-remediation-report.md), [Audit 10](audit-10-citation-integrity-check.md), [Audit 11](audit-11-phase2-labs-5-10.md), [Audit 12](audit-12-phase3-report.md). Nothing from those passes is repeated or undone here.

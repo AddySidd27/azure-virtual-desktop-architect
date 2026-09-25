@@ -584,28 +584,3 @@ Get-GPInheritance -Target "OU=AVD,OU=Servers,DC=halbrook,DC=local" |
 
 **Honest answer**
 "I would have checked AD Sites and Services in the first week rather than the third. It explained the largest complaint in the environment, the check takes two commands, and I did not run them early because the symptom looked like a profile problem and I followed the obvious lead. And I would have got the ownership matrix agreed before touching any policy. We did the technical work first and the organisational work second, and the technical findings would have been easier to act on if both teams had already agreed who decides what."
-
----
-
-## Project Self-Review
-
-**Pass 1, technical verification.** The default precedence of domain-level Group Policy over Intune, the existence and scope of MDMWinsOverGP as a Policy CSP setting that does not cover other CSPs, Microsoft's recommendation to avoid it and to control conflicts by not targeting the same settings from both authorities, the fact that it does not apply to Windows Update for Business policies, the registry location under PolicyManager ControlPolicyConflict, the re-application of Group Policy on unenrolment, and Group Policy analytics as a migration aid were verified against current Microsoft guidance and the ControlPolicyConflict documentation. AD Sites and Services behaviour, `nltest` usage, `gpresult`, event 8001 in the GroupPolicy operational log, and the DeviceManagement-Enterprise-Diagnostics-Provider debug channel are documented Windows behaviour. `mdmdiagnosticstool.exe` area names carry a verification marker because they vary by Windows version. Nothing about DC placement contradicts [Chapter 7](../chapters/ch07-identity-architecture-foundations.md).
-
-**Pass 2, human readability review.** Written in the order the engagement happened: what was found, what it meant, what was decided, what broke, and who owns it afterwards. The precedence section deliberately refuses the simple answer and gives the caveats, because the simple answer is what causes the incident in section 8. Sentences kept short. No long dash characters. Read back as a consultant handed this estate, and the Sites and Services concept was moved ahead of DC placement, because placement decisions are meaningless if the site definition is missing.
-
-**Pass 3, visual and topic accuracy review.** Four diagrams, each carrying a decision. As-found shows two policy authorities with no boundary and session hosts ignoring local domain controllers, which is the engagement in one picture. DC and DNS placement shows zone separation and the fallback path. The policy decision flow is a decision tree and is labelled as one. Target state shows the split GPO structure and labelled policy responsibilities. Topic test applied to each: none reads as a generic AVD diagram. A fifth diagram of the migration rings was considered and rejected, because it is a table with arrows added.
-
-**Concepts introduced, for the coverage map.** AD Sites and Services for Azure subnets and DC locator behaviour. Domain controller placement for AVD with rejected alternatives. GPO and Intune coexistence and real precedence behaviour. MDMWinsOverGP scope and caveats. The six-step method for determining which authority set a value. Staged policy migration with a per-setting procedure and rollback.
-
-| Standard check | Result |
-|---|---|
-| Engagement brief answering all eight questions | Yes |
-| Real numbers, typed | Yes. GPO counts, DC counts, logon measurements, cost deltas |
-| Competing requirements resolved | Modern management against an untouchable physical estate |
-| Constraints that cannot be designed away | AD dependency, 3,400 physical devices, no modernisation budget |
-| Decision against the obvious answer | MDMWinsOverGP rejected. Several settings deliberately left on GPO |
-| Problems that actually happen | Both consoles reporting success, months-long unexplained logon variance |
-| Operational ownership addressed | Ownership matrix, quarterly audit, subnet registration procedure |
-| L3 incident workflow complete | Two incidents run incident to KB update, including rollback position |
-| New concepts taught practically | Yes, at the point of need |
-| No repetition of concept chapters | Checked. Join models, patching and Intune rules referenced |

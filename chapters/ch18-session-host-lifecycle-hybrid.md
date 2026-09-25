@@ -457,32 +457,3 @@ Chapter 19 opens Part V with profiles, which is the highest yield area in this b
 
 **Interview preparation carried forward**
 Q50 is asked constantly, because registration failures are the first thing most engineers meet in AVD. The detail that lifts the answer is knowing that a boot loader which starts and stops means a token problem.
-
----
-
-## Chapter Self-Review
-
-**Pass 1, technical verification.** The agent, boot loader and side-by-side stack behaviour, the health check status model including the fatal and non-fatal distinction, the registration token cmdlets and the three day expiration guidance, the NAME_ALREADY_REGISTERED and EXPIRED_MACHINE remediation, the boot loader diagnostic where a service that starts then stops indicates a registration failure, the `IsRegistered` registry value, the side-by-side stack reinstall procedure, and the Arc-enabled session host announcement including the exclusion of VM provisioning and power management were all verified against the current session host status and health checks page, the agent troubleshooting article, the VM configuration troubleshooting article, the AVD Hybrid troubleshooting page and the What's new page. Arc-enabled session hosts carry a currency flag and a verification marker because the feature is recent and developing.
-
-**Pass 2, readability.** The chapter is ordered as components, then status, then failure, then strategy, because that is the order an engineer meets them. Destructive commands carry warnings before the command rather than after. Long sentences split. No long dash characters.
-
-**Pass 3, diagram review.** One diagram, covering the three components and their relationship to the broker and gateway, because that relationship is what makes the independent failure modes understandable. Every node is a component name. Patching strategy is a table, not a diagram, since it is a three way comparison. Checked against the twelve question review in the [diagram standard](../DIAGRAM-STANDARD.md).
-
-**Consistency check against earlier chapters.** The drain, remove, rebuild sequence is consistent with the reconnect behaviour documented in [Chapter 15 section 2](ch15-host-pool-design-decisions.md#2-how-the-broker-chooses-a-host), and step 3 explicitly references it rather than restating it. The patching strategy table is consistent with the management approaches in [Chapter 16](ch16-automated-host-pools-session-host-configuration.md) and with the Intune multi-session limitations in the [support matrix](../appendices/intune-avd-support-matrix.md), specifically that update ring policies are unsupported on multi-session. The statement that session host configuration removes token management is consistent with Chapter 16. No earlier chapter required correction.
-
-| Check | Result |
-|---|---|
-| Technical accuracy | Verified against current Microsoft pages |
-| Current capability verified | Yes, August 2026, with a currency flag on Arc-enabled hosts |
-| Supported versus unsupported separated | Yes. Arc release exclusions stated explicitly |
-| Commands, portal paths, CLI, PowerShell, registry | Exact, with expected output and destructive warnings |
-| Production scenarios | Three, in the nine step format, with architect lessons |
-| Architect's four questions | Section 7 |
-| Diagrams | One, deliberately, to the locked standard |
-| Architecture consistency | Consistent with Chapters 15, 16 and the Intune support matrix |
-| Cost statements | $0.00 for the chapter. Unregistered hosts noted as billing without serving users |
-| Security implications | Short-lived token handling and the image capture anti-pattern |
-| Interview answers | Read aloud |
-| Duplicate content | Reconnect behaviour referenced to Chapter 15, image work to Chapter 23 |
-| Simple English | Reviewed |
-| Long dash characters | None |
