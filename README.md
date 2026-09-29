@@ -4,6 +4,14 @@ I created this repository to show how I approach Azure Virtual Desktop as an arc
 
 The repository also gives me one place to practise and revise AVD, and gives other engineers a structured learning path they can follow.
 
+## About the architect
+
+I'm a Senior Cloud/Solutions Architect with 12+ years of enterprise IT experience, specializing in enterprise end-user computing: Citrix, Azure Virtual Desktop, Windows 365, FSLogix, Nerdio Manager for Enterprise, and hybrid Azure/AWS infrastructure. I currently manage a hybrid Citrix/AVD estate for a multi-brand enterprise.
+
+Certifications: Azure Solutions Architect Expert, AZ-140 (Azure Virtual Desktop Specialty), Azure Administrator, Microsoft Certified Trainer (MCT), Citrix CCP-V, Citrix CCA-V, and Nerdio Engineer.
+
+This repository reflects how I actually work: start from business requirements, document trade-offs before committing to a design, then validate what I ship instead of presenting it as finished on faith.
+
 ## What I designed and implemented
 
 - I designed a fictional 3,200-user enterprise AVD platform from discovery through landing-zone integration, identity, networking, security, host pools, FSLogix, application delivery, monitoring, scaling, backup, and recovery planning.
