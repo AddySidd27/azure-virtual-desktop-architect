@@ -32,7 +32,7 @@
 
 ## 1. The organisation and the device landscape
 
-**Trentham Group.** A 2,200 person management and technology consultancy. UK headquartered, delivery teams across three countries.
+**Trentham Group.** A 2,470 person management and technology consultancy. UK headquartered, delivery teams across three countries.
 
 | Population | Count | Device | Managed by |
 |---|---|---|---|

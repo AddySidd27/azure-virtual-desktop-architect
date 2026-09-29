@@ -320,5 +320,5 @@ APAC's part-time Platform Engineer arrangement is a single point of knowledge ri
 - [Azure landing zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
 - [Azure Policy overview](https://learn.microsoft.com/en-us/azure/governance/policy/overview)
 - [Microsoft Entra Privileged Identity Management](https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-configure)
-- [Manage Azure Virtual Desktop environments using Azure Resource Manager templates and Terraform](https://learn.microsoft.com/en-us/azure/virtual-desktop/automation-github)
+- [Configure Azure Virtual Desktop with Terraform](https://learn.microsoft.com/en-us/azure/developer/terraform/configure-azure-virtual-desktop)
 - [Organize your resources with management groups](https://learn.microsoft.com/en-us/azure/governance/management-groups/overview)

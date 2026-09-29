@@ -136,9 +136,9 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
 Now, from a second context (or the Azure portal), attempt to identify the open handle: this is the exact diagnostic step from [Chapter 19, Scenario 3](../chapters/ch19-why-profiles-cause-avd-failure.md#8-production-scenarios):
 
 ```bash
-az storage file handle list \
+az storage share list-handle \
   --account-name <storage_account_name> \
-  --share-name profiles \
+  --name profiles \
   --path "locktest.vhdx" \
   --auth-mode login -o table
 ```
@@ -148,10 +148,11 @@ az storage file handle list \
 Recover by closing the handle and cleaning up:
 
 ```bash
-az storage file handle close-all \
+az storage share close-handle \
   --account-name <storage_account_name> \
-  --share-name profiles \
+  --name profiles \
   --path "locktest.vhdx" \
+  --close-all \
   --auth-mode login
 
 az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
@@ -168,7 +169,7 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
 - [ ] `fslogix-profile-config.ps1` produced and reviewed against the Chapter 21 settings table
 - [ ] VHDX create/mount/dismount mechanics proven against the Lab 5 share from the domain controller
 - [ ] Exclusion list documented, ready to apply via Intune in Lab 8
-- [ ] Locked container simulated, identified via `az storage file handle list`, and recovered
+- [ ] Locked container simulated, identified via `az storage share list-handle`, and recovered
 - [ ] `DeleteLocalProfileWhenVHDShouldApply` present and set to `1` in the saved configuration script
 
 ## Common errors
@@ -176,7 +177,7 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `New-VHD` fails with access denied | NTFS permission from Lab 5 Step 6 not actually applied, or applied to the wrong identity | Re-run `Get-Acl` against the share path and confirm |
-| `az storage file handle list` returns nothing for a VHD you just mounted | Handle enumeration can lag briefly behind the mount | Wait a few seconds and retry; if it persists, confirm you are querying the correct account and share |
+| `az storage share list-handle` returns nothing for a VHD you just mounted | Handle enumeration can lag briefly behind the mount | Wait a few seconds and retry; if it persists, confirm you are querying the correct account and share |
 | Mount succeeds but `Get-Disk` shows nothing | Ran the check in a different session than the mount | Keep create/mount/check/dismount in one script invocation, as written above |
 
 ## Troubleshooting
@@ -207,7 +208,7 @@ Delete any `test-container.vhdx` or `locktest.vhdx` left over from Steps 2 or 4.
 
 **Q. A user's container will not mount. How do you tell whether it is a lock, a permission problem, or a storage problem?**
 
-Check the FSLogix log first for the specific error class. For a suspected lock, list open handles on the container file directly with `az storage file handle list`: a handle from a session or host that no longer exists is the signature of a stale lock, and closing it (after confirming it really is stale) resolves it without deleting any data.
+Check the FSLogix log first for the specific error class. For a suspected lock, list open handles on the container file directly with `az storage share list-handle`: a handle from a session or host that no longer exists is the signature of a stale lock, and closing it (after confirming it really is stale) resolves it without deleting any data.
 
 ---
 

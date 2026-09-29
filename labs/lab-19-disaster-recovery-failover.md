@@ -132,9 +132,9 @@ az vm list --resource-group rg-avd-dr-lab-wus2-01 --output table
 **Second, confirm no capacity reservation exists by default** - this is new, and matters because a capacity reservation left enabled by accident bills regardless of the check above passing:
 
 ```bash
-az capacity-reservation-group show \
+az capacity reservation group show \
   --resource-group rg-avd-dr-lab-wus2-01 \
-  --name crg-avd-dr-lab-wus2-01 \
+  --capacity-reservation-group crg-avd-dr-lab-wus2-01 \
   --output table
 ```
 

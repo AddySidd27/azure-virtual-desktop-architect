@@ -335,7 +335,7 @@ Then fix the build to install the specific certified version rather than the cur
 
 Then verify every host in the estate reports the certified version, because the two alignment hosts built most recently were also outside the list and had simply not hit a model that exposed it.
 
-**Validation.** Both assemblies open on rebuilt hosts. Driver version confirmed on all 47 GPU hosts, not a sample, because the whole point of the incident was that a subset had drifted. Vendor support case closed with the certified version confirmed.
+**Validation.** Both assemblies open on rebuilt hosts. Driver version confirmed on all 244 GPU hosts, not a sample, because the whole point of the incident was that a subset had drifted. Vendor support case closed with the certified version confirmed.
 
 **Rollback.** The rebuild was itself the rollback, to a known-good image.
 

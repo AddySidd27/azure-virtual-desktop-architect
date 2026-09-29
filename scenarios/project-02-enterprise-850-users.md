@@ -294,7 +294,7 @@ Then build alongside for the structural changes: new host pools, current image, 
 |---|---|---|---|---|
 | `hp-cbg-claims-prd-uks-01` | Claims handlers | 410 | D8as v5 | 9 |
 | `hp-cbg-brokers-prd-uks-01` | Brokers, management | 320 | D8as v5 | 8 |
-| `hp-cbg-finance-prd-uks-01` | Finance and back office | 120 | D16as v5 | 6 |
+| `hp-cbg-finance-prd-uks-01` | Finance and back office | 114 | D16as v5 | 6 |
 | `hp-cbg-power-prd-uks-01` | Six heavy Excel users | 6 | Personal, D8as v5 | Not applicable |
 
 **Reason.** Finance were degrading everyone else. Separating them was the single highest-value structural change, and it came from data rather than from a persona workshop.
@@ -327,7 +327,7 @@ Existing Azure Files Standard LRS moved to Premium, ZRS.
 | Burst window used for sizing | 15 minutes, 390 users | Measured |
 | IOPS for the burst at 50 per user | 19,500 | Calculation |
 | Users already working at 10 IOPS | 295 | Calculation |
-| Peak requirement | Approximately 19,800 | Calculation |
+| Peak requirement | Approximately 22,450 | Calculation |
 | Profile size after exclusions | Target 12 GB from 34 GB | Decision |
 
 **LRS to ZRS is not optional here.** 850 users depending on one share in one zone, in a business that stops working without it.
@@ -422,9 +422,9 @@ Scaling was not deployed until the persona split was complete, because scaling a
 | Storage | £900 | £2,400 |
 | Log Analytics | £0 | £850 |
 | Networking and other | £600 | £700 |
-| **Total** | **£41,000** | **£23,150** |
+| **Total** | **£40,000** | **£23,150** |
 
-**A 43 percent reduction while fixing the performance problem.** That combination is unusual and it happened because the original estate was both oversized and misconfigured. Most engagements trade cost against performance. This one did not, and it is worth being honest that the saving came from correcting a bad deployment rather than from clever architecture.
+**A 42 percent reduction while fixing the performance problem.** That combination is unusual and it happened because the original estate was both oversized and misconfigured. Most engagements trade cost against performance. This one did not, and it is worth being honest that the saving came from correcting a bad deployment rather than from clever architecture.
 
 **Storage cost went up and that is correct.** Moving from Standard LRS to Premium ZRS nearly tripled it. It bought the sign-in improvement and the zone resilience, and against a £19,000 compute saving it is not a difficult conversation.
 

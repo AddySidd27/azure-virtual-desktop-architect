@@ -121,7 +121,7 @@ A structured, evidence-first runbook, not a narrative document, written so that 
 |---|---|---|---|
 | Declare | 15 minutes | 8 minutes | Within expectation |
 | Provision infrastructure (Terraform) | 90 minutes | 74 minutes | Better than target |
-| Restore data (Azure Backup) | Remaining window to 4-hour total | 3 hours 40 minutes | **Exceeded the 4-hour total RTO by 22 minutes** |
+| Restore data (Azure Backup) | Remaining window to 4-hour total | 3 hours 0 minutes | **Exceeded the 4-hour total RTO by 22 minutes** |
 | Validate | 30 minutes | 25 minutes | Within expectation |
 
 **The finding that mattered, and what was done about it.** The Azure Backup restore step, not the Terraform infrastructure step, was the actual bottleneck, the FSLogix profile data volume (1,400 users' worth of profile containers) took longer to restore than the initial estimate, which had been based on a smaller pilot dataset rather than the full production volume. This is presented honestly as a test finding, not hidden: the first DR test missed the target. The remediation (restructuring the backup to use incremental snapshots with a faster restore path for the most recently modified containers first, prioritising active users over dormant accounts) was implemented, and a second test, run two months later, completed the full sequence in 3 hours 15 minutes, inside the 4-hour target with a real margin.
