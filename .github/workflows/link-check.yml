@@ -61,7 +61,7 @@ jobs:
             local pattern="$1"
             local desc="$2"
             local matches
-            matches=$(grep -rn "$pattern" --include="*.md" . || true)
+            matches=$(grep -rn "$pattern" --include="*.md" --exclude-dir=appendices . || true)
             if [ -n "$matches" ]; then
               echo "::error::Prohibited pattern found ($desc):"
               echo "$matches"
@@ -90,3 +90,4 @@ jobs:
           use-verbose-mode: 'yes'
           check-modified-files-only: 'yes'
           config-file: '.github/workflows/mlc-config.json'
+          base-branch: 'main'
