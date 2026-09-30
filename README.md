@@ -4,6 +4,13 @@ I created this repository to show how I approach Azure Virtual Desktop as an arc
 
 The repository also gives me one place to practise and revise AVD, and gives other engineers a structured learning path they can follow.
 
+## How to use this repository
+
+This repository serves two different readers:
+
+- **Reviewing this as a hiring manager or technical reviewer?** Start with the [Recommended review path](#recommended-review-path) - it walks through the case study, the architecture decisions, the Terraform implementation, and the final review in about 15-20 minutes.
+- **Studying Azure Virtual Desktop and want a structured path?** Start with the [Learning and practice path](#learning-and-practice-path) - 25 chapters, 20 hands-on labs, 15 business scenarios, and interview preparation, in order.
+
 ## What I designed and implemented
 
 - I designed a fictional 3,200-user enterprise AVD platform from discovery through landing-zone integration, identity, networking, security, host pools, FSLogix, application delivery, monitoring, scaling, backup, and recovery planning.
