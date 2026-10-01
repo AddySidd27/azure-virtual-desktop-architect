@@ -4,6 +4,12 @@ I created this repository to show how I approach Azure Virtual Desktop as an arc
 
 The repository also gives me one place to practise and revise AVD, and gives other engineers a structured learning path they can follow.
 
+## About the architect
+
+I'm a Senior Cloud/Solutions Architect with 15 years of enterprise IT experience, specializing in Citrix, Azure Virtual Desktop, Windows 365, FSLogix, and Nerdio Manager for Enterprise. I hold the AZ-140, Azure Solutions Architect Expert, Azure Administrator, MCT, CCP-V, CCA-V, and Nerdio Engineer certifications.
+
+This repository is part of my transition toward AI-augmented cloud architecture roles, building portfolio evidence through real projects rather than certifications alone.
+
 ## How to use this repository
 
 This repository serves two different readers:
