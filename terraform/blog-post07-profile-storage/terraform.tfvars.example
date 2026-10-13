@@ -1,0 +1,21 @@
+# Replace every placeholder. 0 means NOT CONFIGURED, not a deployment size.
+subscription_id            = "<enabled-subscription-id>"
+resource_group_name        = "<existing-resource-group>"
+storage_account_name       = "<new-globally-unique-storage-name>"
+location                   = "<approved-region>"
+private_endpoint_subnet_id = "<existing-private-endpoint-subnet-resource-id>"
+private_dns_zone_id        = "<existing-central-private-dns-zone-resource-id>"
+shares = {
+  profiles-callcenter = {
+    capacity_gib     = 0
+    iops             = 0
+    throughput_mibps = 0
+    user_group_id    = "<callcenter-group-object-id>"
+  }
+  profiles-business = {
+    capacity_gib     = 0
+    iops             = 0
+    throughput_mibps = 0
+    user_group_id    = "<business-group-object-id>"
+  }
+}
