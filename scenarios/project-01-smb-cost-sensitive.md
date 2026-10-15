@@ -289,7 +289,7 @@ Deliberately minimal.
 
 **Permissions.** Both layers. Share-level RBAC for the AVD user groups, plus NTFS permissions so each user has rights to their own folder and no other. Isolation tested with two accounts before go-live.
 
-**FSLogix configuration.** In Intune policy, not the image. Profile container only, no ODFC. `SizeInMBs` 30000. `DeleteLocalProfileWhenVHDShouldApply` enabled, because silent data loss is the worst failure mode for a law firm ([Chapter 21](../chapters/ch21-fslogix-production-implementation.md#2-the-settings-that-matter)).
+**FSLogix configuration.** In Intune policy, not the image. Profile container only, no ODFC. `SizeInMBs` 30000. `DeleteLocalProfileWhenVHDShouldApply` enabled, following Microsoft's recommendation that users do not use local profiles and lose data unexpectedly. The setting permanently deletes an existing local profile, so existing local profiles are reviewed first ([Chapter 21](../chapters/ch21-fslogix-production-implementation.md#2-the-settings-that-matter)).
 
 **Exclusions from day one.** Browser and Teams caches. Adding them later does not shrink existing containers.
 

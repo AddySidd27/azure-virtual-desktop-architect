@@ -14,7 +14,7 @@ What this lab does instead, and it is real work rather than a placeholder: it pr
 
 ## Objective
 
-Produce and prove the FSLogix configuration from [Chapter 21](../chapters/ch21-fslogix-production-implementation.md): the registry values that matter and why, antivirus exclusions, the `VHDLocations` decision, and (critically) the setting most labs skip, `DeleteLocalProfileWhenVHDShouldApply`, whose absence is the single worst FSLogix failure mode because it fails silently.
+Produce and prove the FSLogix configuration from [Chapter 21](../chapters/ch21-fslogix-production-implementation.md): the registry values that matter and why, antivirus exclusions, the `VHDLocations` decision, and `DeleteLocalProfileWhenVHDShouldApply`, which Microsoft recommends so that users do not use local profiles and lose data unexpectedly, and which permanently deletes an existing local profile.
 
 ## Learning objectives
 
@@ -48,7 +48,7 @@ $0.00 for this lab specifically. No new billable resource is created; this lab c
 ## Security considerations
 
 - Exclusions in Step 3 are scoped narrowly to the FSLogix paths and processes documented by Microsoft, not broad exclusions that would weaken endpoint protection generally.
-- `DeleteLocalProfileWhenVHDShouldApply` is framed here as a security-adjacent setting, not just a convenience one: without it, a failed attach silently falls back to a local profile, and any work done in that session is lost the next time the host is rebuilt. That is a data protection failure, not merely an inconvenience.
+- `DeleteLocalProfileWhenVHDShouldApply` (default 0): when set to 1, FSLogix deletes a local profile that exists and matches the profile container, then creates or attaches the container. Microsoft recommends it so that users do not use local profiles and lose data unexpectedly, and warns that the deletion is permanent, so review which local profiles exist before you enable it.
 
 ---
 
@@ -73,7 +73,7 @@ New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name LockedRetryCount -
 New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name LockedRetryInterval -PropertyType dword -Value 15 -Force
 ```
 
-**Why `DeleteLocalProfileWhenVHDShouldApply` is not optional in this lab's configuration.** Covered fully in [Chapter 21](../chapters/ch21-fslogix-production-implementation.md#2-the-settings-that-matter) and worth restating here because it is the one setting worth memorising: without it, a container that fails to attach falls back to a local profile silently, the session works normally, and the user's session data is lost the next time the host is replaced. Set it every time, in every lab and every real deployment.
+**Why `DeleteLocalProfileWhenVHDShouldApply` is included in this lab's configuration.** Covered in [Chapter 21](../chapters/ch21-fslogix-production-implementation.md#2-the-settings-that-matter). By default, when FSLogix is installed on a host where a local profile already exists, the local profile is honoured instead of the FSLogix profile. Setting the value to 1 deletes that local profile at sign-in and creates or attaches the container; Microsoft recommends it so that users do not use local profiles and lose data unexpectedly, and warns that the deletion is permanent. What a user gets when a container fails to attach is documented separately: for example a temporary profile when the container is in use on another computer, or a temporary or local profile when the storage is full. `PreventLoginWithFailure` and `PreventLoginWithTempProfile` are the documented settings for blocking sign-in (RemoteApp users are not blocked). Whether `DeleteLocalProfileWhenVHDShouldApply` changes the outcome of a failed attach has not been tested in this repository.
 
 **Why `VolumeType` is `VHDX`, not `VHD`.** There is no reason to choose VHD for a new deployment; VHDX is the current recommendation throughout Chapter 21 and this book.
 
@@ -204,7 +204,7 @@ Delete any `test-container.vhdx` or `locktest.vhdx` left over from Steps 2 or 4.
 
 **Q. What is the one FSLogix setting you would never deploy without, and why?**
 
-`DeleteLocalProfileWhenVHDShouldApply`. Without it, a failed container attach falls back silently to a local profile: the session works, so nobody notices, and the user's work is lost the next time the host is rebuilt. It converts a visible failure into invisible data loss, which is the worst direction to fail in.
+`DeleteLocalProfileWhenVHDShouldApply`. Microsoft recommends it so that users do not use local profiles and lose data unexpectedly; it permanently deletes an existing local profile that matches the container. After a failed container attach a user can end up on a temporary or local profile (documented separately by Microsoft); whether this setting changes that outcome has not been tested here.
 
 **Q. A user's container will not mount. How do you tell whether it is a lock, a permission problem, or a storage problem?**
 

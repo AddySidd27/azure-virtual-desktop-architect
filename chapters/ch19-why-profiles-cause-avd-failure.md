@@ -80,7 +80,7 @@ Nothing is copied. The disk is mounted. That single difference is why sign-in go
 > **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Created for this book. Not a Microsoft diagram.
 > Editable source: [`ch19-fslogix-profile-flow.drawio`](../diagrams/architecture/ch19-fslogix-profile-flow.drawio)
 
-![FSLogix profile container attach at sign-in, including the silent fallback to a temporary profile on failure](../diagrams/architecture/ch19-fslogix-profile-flow.svg)
+![FSLogix profile container attach at sign-in, including documented scenarios in which a user receives a temporary profile](../diagrams/architecture/ch19-fslogix-profile-flow.svg)
 
 **What this diagram shows.** The path a profile takes at sign-in, and the identity dependency that makes it possible.
 

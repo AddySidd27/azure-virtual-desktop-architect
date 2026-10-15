@@ -7,7 +7,7 @@
         <mxCell id="title" value="FSLogix profile container attach at sign-in" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
           <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="sub" value="Chapter 19 | Related: Hero diagram 5, Lab 6 | The failure that matters most: a failed attach falls back silently unless configured not to" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+        <mxCell id="sub" value="Chapter 19 | Related: Hero diagram 5, Lab 6 | A failed attach can leave a user on a temporary profile unless sign-in is blocked by configuration" style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
           <mxGeometry x="40" y="55" width="1100" height="20" as="geometry"/>
         </mxCell>
         <mxCell id="zEP" value="USER ENDPOINT" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;strokeColor=#605E5C;fillColor=none;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#605E5C;" vertex="1" parent="1">
@@ -58,7 +58,7 @@
         <mxCell id="f4" value="5  Profile Container -&gt; User Profile, attach (success path)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="60" y="500" width="1160" height="32" as="geometry"/>
         </mxCell>
-        <mxCell id="f5" value="6  If attach fails: falls back to a Temporary Profile, silently, unless DeleteLocalProfileWhenVHDShouldApply is set" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+        <mxCell id="f5" value="6  If attach fails: a temporary profile can be used; sign-in can be blocked with PreventLoginWithFailure / PreventLoginWithTempProfile (RemoteApp users are not blocked)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A4262C;fontSize=11;fontColor=#A4262C;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="60" y="540" width="1160" height="32" as="geometry"/>
         </mxCell>
         <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
