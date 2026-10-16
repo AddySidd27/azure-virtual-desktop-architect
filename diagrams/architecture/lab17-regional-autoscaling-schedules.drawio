@@ -46,7 +46,7 @@
         <mxCell id="f0" value="1  Two independent azurerm_virtual_desktop_scaling_plan resources - not one plan applied to both host pools" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="60" y="400" width="1380" height="32" as="geometry"/>
         </mxCell>
-        <mxCell id="f1" value="2  centralus ramps up an hour earlier and ramps down an hour earlier than eastus2 - genuinely different demand assumptions, not a copy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
+        <mxCell id="f1" value="2  Local times differ but ramp-up, peak and ramp-down fall at the same moment in both regions (Central is one hour behind Eastern); only off-peak differs, 2 h later in centralus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B77300;fontSize=11;fontColor=#B77300;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="60" y="440" width="1380" height="32" as="geometry"/>
         </mxCell>
         <mxCell id="f2" value="3  Each plan's host_pool_association scopes it to exactly one region's host pool - a scaling event in one region cannot affect the other" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">

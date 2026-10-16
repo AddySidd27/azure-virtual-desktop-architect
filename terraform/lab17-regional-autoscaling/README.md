@@ -23,8 +23,9 @@ with two conflicting scaling plans at once.
 No direct charge for the scaling plan objects. Cost impact is a *reduction*
 against Lab 14's always-on baseline, since Power Management Autoscale deallocates
 idle session hosts during ramp-down and off-peak windows rather than leaving them
-running. Estimated saving: 30-50% against Lab 14's baseline for a typical
-business-hours demand pattern.
+running. The saving has not been measured, so no percentage is claimed here.
+Before quoting one, compare the compute hours or cost data for Lab 14's
+always-on hosts with this lab's hosts over the same period.
 
 ## Dependency on Labs 7, 11, and 14
 
@@ -44,11 +45,17 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-## Why the two regions' schedules genuinely differ
+## How the two regions' schedules differ
 
-`centralus`'s schedule isn't `eastus2`'s schedule with the region name changed -
-it starts an hour earlier, uses a different minimum-hosts and capacity-threshold
-percentage, and has a longer ramp-down wait time. This is deliberate: two
-active-active regions serving different user cohorts have no reason to share a
-demand curve, and copying one region's schedule into the other would be exactly
-the kind of unexamined default this book avoids elsewhere.
+`centralus`'s schedule isn't `eastus2`'s schedule with the region name changed.
+It uses its own minimum-hosts and capacity-threshold percentages, a longer
+ramp-down wait time and a later off-peak start. Its local times look an hour
+earlier (06:00 versus 07:00), but Central is one hour behind Eastern, so
+ramp-up, peak and ramp-down fall at the same moment in both regions. In
+absolute time only off-peak differs, starting two hours later in `centralus`.
+This is clock arithmetic and assumes both time zones follow the same
+daylight-saving rules; how a scaling plan behaves across a daylight-saving
+change is not verified here. The percentages and wait times are deliberate
+placeholders for different demand assumptions per user cohort, and copying one
+region's schedule into the other would be exactly the kind of unexamined
+default this book avoids elsewhere.
