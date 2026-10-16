@@ -52,11 +52,11 @@ resource "azurerm_private_dns_zone" "files" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "files" {
-  name                  = "link-files-${local.suffix}"
-  private_dns_zone_id   = azurerm_private_dns_zone.files.id
-  virtual_network_id    = data.azurerm_virtual_network.avd.id
-  registration_enabled  = false
-  tags                  = local.common_tags
+  name                 = "link-files-${local.suffix}"
+  private_dns_zone_id  = azurerm_private_dns_zone.files.id
+  virtual_network_id   = data.azurerm_virtual_network.avd.id
+  registration_enabled = false
+  tags                 = local.common_tags
 }
 
 resource "azurerm_private_dns_a_record" "files" {
