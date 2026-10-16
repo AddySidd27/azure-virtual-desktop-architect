@@ -11,7 +11,7 @@ resource "azurerm_virtual_desktop_host_pool" "remoteapp" {
   type                     = "Pooled"
   load_balancer_type       = "BreadthFirst"
   maximum_sessions_allowed = 4
-  preferred_app_group_type = "RemoteApp"
+  preferred_app_group_type = "RailApplications"
   start_vm_on_connect      = true
   tags                     = local.common_tags
 }

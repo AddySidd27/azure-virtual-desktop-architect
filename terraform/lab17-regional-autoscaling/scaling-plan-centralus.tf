@@ -16,7 +16,6 @@ resource "azurerm_virtual_desktop_scaling_plan" "centralus" {
   resource_group_name = data.terraform_remote_state.lab11_network.outputs.resource_group_names.avd
   friendly_name       = "Central US regional scaling plan"
   time_zone           = "Central Standard Time"
-  host_pool_type      = "Pooled"
 
   schedule {
     name                               = "weekday"
@@ -35,13 +34,14 @@ resource "azurerm_virtual_desktop_scaling_plan" "centralus" {
     ramp_down_capacity_threshold_percent = 75
     ramp_down_force_logoff_users         = false
     ramp_down_wait_time_minutes          = 45
+    ramp_down_stop_hosts_when            = "ZeroSessions"
     ramp_down_notification_message       = "This session host is scaling down for Central US's off-peak window. Please save your work."
 
     off_peak_start_time               = "21:00"
     off_peak_load_balancing_algorithm = "DepthFirst"
   }
 
-  host_pool_association {
+  host_pool {
     hostpool_id          = data.terraform_remote_state.lab14_hostpools.outputs.host_pool_id
     scaling_plan_enabled = true
   }

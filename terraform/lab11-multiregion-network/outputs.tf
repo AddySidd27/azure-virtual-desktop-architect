@@ -38,11 +38,3 @@ output "nsg_ids" {
     storage  = azurerm_network_security_group.storage.id
   }
 }
-
-output "peering_status" {
-  description = "Peering connection states, both directions. Both must read Connected before Lab 12 depends on cross-region reachability."
-  value = {
-    centralus_to_eastus2 = azurerm_virtual_network_peering.centralus_to_eastus2.peering_state
-    eastus2_to_centralus = azurerm_virtual_network_peering.eastus2_to_centralus.peering_state
-  }
-}

@@ -26,8 +26,6 @@ resource "azurerm_recovery_services_vault" "fslogix" {
   location            = var.location
   resource_group_name = azurerm_resource_group.backup.name
   sku                 = "Standard"
-
-  soft_delete_enabled = true
 }
 
 resource "azurerm_backup_container_storage_account" "fslogix" {
