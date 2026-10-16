@@ -143,7 +143,7 @@ Northwind Global Manufacturing is a fictional 3,200-user architecture case study
 
 The documents and reference code for all eight parts are present. The **design package is complete**. This does not mean the full environment has been deployed or production validated.
 
-Run `python tools/validate_repository.py` before publishing. Terraform 1.13.3 successfully parsed and formatted all 230 Terraform files. The [Terraform validation record](TERRAFORM-VALIDATION.md) explains the completed checks and the remaining provider-validation boundary. GitHub Actions checks local links, draw.io/SVG pairs, XML parsing, sensitive file types, Terraform formatting, and every Terraform module that contains a `versions.tf` file.
+Run `python tools/validate_repository.py` before publishing. Repository CI runs `terraform fmt -check`, `terraform init -backend=false` and `terraform validate` in every one of the 34 Terraform modules; it passed at commit `2a7b03b` (16 October 2026). The [Terraform validation record](TERRAFORM-VALIDATION.md) explains the completed checks, their limits and what remains before deployment. GitHub Actions checks local links, draw.io/SVG pairs, XML parsing, sensitive file types, Terraform formatting, and every Terraform module that contains a `versions.tf` file.
 
 ## Terraform
 

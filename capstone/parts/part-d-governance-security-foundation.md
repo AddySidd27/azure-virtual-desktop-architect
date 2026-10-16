@@ -66,7 +66,7 @@ Part B named this process (Project 03's discipline: every exception owned and da
 
 **Decision.** One Key Vault, `kv-northwind-platform-prd`, in `sub-northwind-management` - the shared platform-services subscription, not `sub-northwind-identity` specifically, because this vault will hold secrets for more than identity infrastructure over time (Bastion's session-recording storage credentials, section 3.5, are the first non-identity example). Access is via Azure RBAC (not the older vault access-policy model), so the same PIM-eligible roles from section 4 govern who can read which secret, rather than a second, parallel permission system.
 
-**Implementation approach.** `azurerm_key_vault` with `enable_rbac_authorization = true`, Private Endpoint only (Part C's existing standard), storing the domain controller admin credentials and the Entra Connect Sync service account credential as `azurerm_key_vault_secret` resources referenced by the identity module going forward - closing the gap Part C's `terraform.tfvars.example` files left open.
+**Implementation approach.** `azurerm_key_vault` with `rbac_authorization_enabled = true`, Private Endpoint only (Part C's existing standard), storing the domain controller admin credentials and the Entra Connect Sync service account credential as `azurerm_key_vault_secret` resources referenced by the identity module going forward - closing the gap Part C's `terraform.tfvars.example` files left open.
 
 ### 3.3 Microsoft Defender for Cloud: unchanged from Part B, restated for completeness
 

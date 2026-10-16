@@ -133,7 +133,7 @@ az vm list -g rg-avd-hosts-lab-cus-01 -d --query "[].{name:name, powerState:powe
 
 | Problem | Likely cause | Fix |
 |---|---|---|
-| `hostPoolReferences` empty on either plan | `host_pool_association` block missing or referencing the wrong host pool ID | Confirm the `hostpool_id` in each region's `.tf` file points at that region's own remote-state output, not the other region's |
+| `hostPoolReferences` empty on either plan | `host_pool` block missing or referencing the wrong host pool ID | Confirm the `hostpool_id` in each region's `.tf` file points at that region's own remote-state output, not the other region's |
 | Both regions' hosts begin ramp-down at the same moment | Expected: 17:00 Central and 18:00 Eastern are the same moment, and ramp-up and peak also coincide. Only the off-peak start (20:00 Eastern versus 21:00 Central), the wait time and the percentages differ | Compare each plan's `time_zone` and schedule values with Step 1. Treat it as a fault only if the off-peak start, wait time and percentages are also identical, for example both regions using Lab 10's original numbers |
 | Session host doesn't deallocate at the expected ramp-down time | An active session is preventing it (expected, matches `ramp_down_force_logoff_users = false`), or `ramp_down_wait_time_minutes` hasn't elapsed yet | Check for active sessions on that host before assuming a fault; the wait time is deliberate, not a bug |
 

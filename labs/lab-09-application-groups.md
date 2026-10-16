@@ -8,7 +8,7 @@
 
 ## Objective
 
-Publish a RemoteApp alongside the Desktop delivery from Lab 7, and validate both through Windows App: proving the object model constraint from [Chapter 3](../chapters/ch03-avd-object-model.md#4-preferred-application-group-type) rather than only reading about it: a RemoteApp application group needs a host pool whose `preferred_app_group_type` is `RemoteApp`, which Lab 7's Desktop pool is not.
+Publish a RemoteApp alongside the Desktop delivery from Lab 7, and validate both through Windows App: proving the object model constraint from [Chapter 3](../chapters/ch03-avd-object-model.md#4-preferred-application-group-type) rather than only reading about it: a RemoteApp application group needs a host pool whose `preferred_app_group_type` is `RailApplications` (shown as **RemoteApp** in the Azure portal), which Lab 7's Desktop pool is not.
 
 ## Learning objectives
 
@@ -31,7 +31,7 @@ flowchart LR
     WS["Workspace (Lab 7)"] --> AGD["Desktop App Group\n(Lab 7 pool)"]
     WS --> AGR["RemoteApp App Group\n(this lab's pool)"]
     AGD --> HPD["Host Pool: Desktop\npreferred_app_group_type = Desktop"]
-    AGR --> HPR["Host Pool: RemoteApp\npreferred_app_group_type = RemoteApp"]
+    AGR --> HPR["Host Pool: RemoteApp\npreferred_app_group_type = RailApplications"]
 
     classDef az fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
     class WS,AGD,AGR,HPD,HPR az
@@ -61,7 +61,9 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-**Expected output:** a second host pool (`preferred_app_group_type = RemoteApp`), its application group, workspace association, role assignment, and Notepad published as the example application.
+**Expected output:** a second host pool (`preferred_app_group_type = RailApplications`), its application group, workspace association, role assignment, and Notepad published as the example application.
+
+> **Value naming.** Microsoft Learn states that, in Azure PowerShell and Azure CLI, *RailApplications* is the term for RemoteApp application groups, and shows `Desktop` or `RailApplications` as the values to set ([Set the preferred application group type](https://learn.microsoft.com/azure/virtual-desktop/set-preferred-application-group-type)). The Azure portal labels the same setting **Desktop** or **RemoteApp**. The AzureRM provider accepts `None`, `Desktop` and `RailApplications`. The application group's own `type` stays `RemoteApp`.
 
 ---
 
