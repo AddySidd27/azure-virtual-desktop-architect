@@ -16,7 +16,6 @@ resource "azurerm_virtual_desktop_scaling_plan" "persona" {
   resource_group_name = local.avd_resource_group
   friendly_name       = "${each.key} autoscale - ${var.location}"
   time_zone           = var.time_zone
-  host_pool_type      = "Pooled"
 
   schedule {
     name                               = "weekdays"
@@ -33,6 +32,8 @@ resource "azurerm_virtual_desktop_scaling_plan" "persona" {
     ramp_down_load_balancing_algorithm   = "DepthFirst"
     ramp_down_minimum_hosts_percent      = local.schedule.ramp_down_min_percent
     ramp_down_wait_time_minutes          = local.schedule.ramp_down_wait_minutes
+    ramp_down_notification_message       = "This session host is scaling down. Please save your work."
+    ramp_down_stop_hosts_when            = "ZeroSessions"
     ramp_down_force_logoff_users         = false
     ramp_down_capacity_threshold_percent = local.schedule.ramp_up_threshold_percent
 
@@ -40,7 +41,7 @@ resource "azurerm_virtual_desktop_scaling_plan" "persona" {
     off_peak_load_balancing_algorithm = "DepthFirst"
   }
 
-  host_pool_association {
+  host_pool {
     hostpool_id          = each.value
     scaling_plan_enabled = true
   }

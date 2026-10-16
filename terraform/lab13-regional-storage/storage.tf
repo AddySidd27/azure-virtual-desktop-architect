@@ -61,18 +61,16 @@ resource "azurerm_private_dns_zone" "files" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "files" {
-  name                  = "link-files-${local.suffix}"
-  resource_group_name   = data.terraform_remote_state.lab11_network.outputs.resource_group_names.storage
-  private_dns_zone_name = azurerm_private_dns_zone.files.name
-  virtual_network_id    = data.terraform_remote_state.lab11_network.outputs.vnet_id
-  registration_enabled  = false
-  tags                  = local.common_tags
+  name                 = "link-files-${local.suffix}"
+  private_dns_zone_id  = azurerm_private_dns_zone.files.id
+  virtual_network_id   = data.terraform_remote_state.lab11_network.outputs.vnet_id
+  registration_enabled = false
+  tags                 = local.common_tags
 }
 
 resource "azurerm_private_dns_a_record" "files" {
   name                = azurerm_storage_account.fslogix.name
-  zone_name           = azurerm_private_dns_zone.files.name
-  resource_group_name = data.terraform_remote_state.lab11_network.outputs.resource_group_names.storage
+  private_dns_zone_id = azurerm_private_dns_zone.files.id
   ttl                 = 300
   records             = [azurerm_private_endpoint.fslogix.private_service_connection[0].private_ip_address]
 }
