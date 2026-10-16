@@ -23,9 +23,9 @@ One status does not imply the next status. Valid Terraform can still fail becaus
 |---|---|
 | Chapters 1-25 | Documented; core service, identity, network, management, profile, Intune, image, and application topics checked against the sources in `SOURCE-VERIFICATION.md` |
 | Labs 1-20 | Documented; live validation must be confirmed per lab |
-| Lab Terraform | Implemented; Terraform 1.13.3 format and parse checks pass; provider validation must complete in GitHub Actions or an unrestricted workstation |
+| Lab Terraform | Implemented; format checked and provider validated: repository CI (`terraform fmt -check`, `terraform init -backend=false`, `terraform validate`) passed for all 34 modules at commit `2a7b03b` (16 October 2026); see `TERRAFORM-VALIDATION.md`; the Terraform and provider versions used by that CI are not recorded; not plan reviewed and not applied |
 | Northwind Parts A-H | Architecture documents complete as a fictional reference case study |
-| Northwind Terraform | Reference implementation present; not applied as one complete environment |
+| Northwind Terraform | Reference implementation present; provider validated with the other modules (same CI evidence); not plan reviewed; not applied as one complete environment |
 | Architecture case studies | Fictional design exercises; not customer delivery records |
 | Troubleshooting runbooks | Documented procedures; AVD connectivity guidance checked; run commands in an authorized lab before calling them validated |
 | Interview material | Study content derived from chapters, labs, and case studies |
@@ -56,7 +56,7 @@ Hide subscription IDs, tenant IDs, usernames, public IP addresses, passwords, to
 ## Before publication
 
 - [ ] Complete the Microsoft source review.
-- [ ] Validate every Terraform module, including nested capstone modules.
+- [x] Validate every Terraform module, including nested capstone modules (`terraform init -backend=false` and `terraform validate`; repository CI at commit `2a7b03b`).
 - [ ] Resolve code-level `VERIFY BEFORE IMPLEMENTATION` items that block validation.
 - [ ] Add evidence only for procedures that were actually tested.
 - [ ] Keep design-only material clearly labelled.

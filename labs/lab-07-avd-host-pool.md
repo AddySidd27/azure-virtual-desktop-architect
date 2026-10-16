@@ -133,7 +133,7 @@ az role assignment list \
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `preferred_app_group_type` rejected on apply | Value must be exactly `Desktop` or `RemoteApp`, case-sensitive | Correct the value in `host-pool.tf` |
+| `preferred_app_group_type` rejected on apply | The provider accepts exactly `None`, `Desktop` or `RailApplications`, case-sensitive. `RailApplications` is the value for RemoteApp application groups (the Azure portal labels it **RemoteApp**) | Correct the value in `host-pool.tf` |
 | Role assignment fails with `PrincipalNotFound` | The group object ID doesn't exist yet, or replication lag after creating it | Wait a minute after group creation and retry |
 | Registration token expired before Lab 8 | More than 24 hours passed between this lab and the next | `terraform apply -replace=azurerm_virtual_desktop_host_pool_registration_info.lab` |
 

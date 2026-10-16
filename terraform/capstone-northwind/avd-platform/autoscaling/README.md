@@ -8,14 +8,23 @@ SHC reconciliation as Part F8 and the existing ADR. Personal pools (CAD,
 developers) are not scaled this way - they use Start VM on Connect, already
 set on the host pool in Part F.
 
-## Schema corrected against Lab 17's own proven pattern, not memory
+## Schema corrections
 
-Building this surfaced three real errors, caught by checking against this
-book's own already-validated Lab 17 Terraform rather than trusting recall:
-a wrong block name (`host_pool_association`, not `host_pool`), a missing
-required `host_pool_type` argument, and `peak_start_time` incorrectly set
-equal to `ramp_up_start_time` instead of a genuinely later, distinct value.
-All three fixed before this module was considered complete.
+Earlier drafts of this module (and of Lab 17, which it followed) did not match
+the AzureRM v5.10.0 schema for `azurerm_virtual_desktop_scaling_plan`. They
+used a `host_pool_association` block and a `host_pool_type` argument; the
+resource defines a `host_pool` block (`hostpool_id`, `scaling_plan_enabled`)
+and no `host_pool_type` argument. They also omitted the required
+`ramp_down_notification_message` and `ramp_down_stop_hosts_when` arguments.
+`terraform validate` failed for this module before the correction (diagnostic
+run 38843347683, 15 October 2026). The module now uses the `host_pool` block,
+has no `host_pool_type`, and sets both required ramp-down arguments
+(`ramp_down_stop_hosts_when = "ZeroSessions"`). Separately, `peak_start_time`
+is a genuinely later, distinct value than `ramp_up_start_time`.
+
+Repository CI runs `terraform validate` on this module as part of the check
+recorded in [TERRAFORM-VALIDATION.md](../../../../TERRAFORM-VALIDATION.md).
+That is a schema check, not a plan, an apply or an observed scaling result.
 
 ## West Europe's schedule is genuinely different, not just varied for teaching
 

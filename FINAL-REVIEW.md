@@ -56,3 +56,5 @@
 This review does not claim that the fictional Northwind environment was deployed or production validated. AzureRM provider schema validation could not complete locally because this review environment blocks the provider's Unix socket. The GitHub Terraform workflow must pass all 33 modules before they are labelled provider validated. Azure plans, deployments, lab procedures, recovery timings, and production acceptance require evidence from an authorized target environment.
 
 See [Validation Status](VALIDATION-STATUS.md), [Terraform Validation Record](TERRAFORM-VALIDATION.md), and [Source Verification](SOURCE-VERIFICATION.md).
+
+**Update, 16 October 2026:** the Terraform statements in this review are dated 6 September 2026 and are left as written. Later, repository CI ran `terraform fmt -check`, `terraform init -backend=false` and `terraform validate` in all 34 modules and passed at commit `2a7b03b`. See the current status in [Terraform Validation Record](TERRAFORM-VALIDATION.md). That is a schema check; it is not a deployment, plan review or production validation.
