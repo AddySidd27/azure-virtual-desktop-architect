@@ -1,0 +1,228 @@
+name: H1 lock-file trial (blog-post07-profile-storage only)
+
+# TEMPORARY trial workflow. It exists only on branch chore/h1-blog-lock-trial and
+# is never intended for main. It runs once per push to that branch.
+#
+# Read-only by design: it commits, pushes and deploys nothing, uses no secrets
+# and no Azure credentials, and never runs terraform init, plan or apply. It runs
+# `terraform providers lock` in ONE module (terraform/blog-post07-profile-storage)
+# inside the runner's throwaway checkout, to observe what happens to the
+# already-tracked .terraform.lock.hcl (versions, constraints, checksums).
+on:
+  push:
+    branches: ["chore/h1-blog-lock-trial"]
+
+permissions:
+  contents: read
+
+jobs:
+  trial:
+    name: providers lock trial (blog-post07-profile-storage)
+    runs-on: ubuntu-latest
+    env:
+      MODULE: terraform/blog-post07-profile-storage
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "1.16.6"
+          terraform_wrapper: false
+
+      - name: Record versions, the existing lock file and the before-manifests
+        run: |
+          set -eu
+          echo "REPORT=$RUNNER_TEMP/h1-report" >> "$GITHUB_ENV"
+          REPORT="$RUNNER_TEMP/h1-report"
+          mkdir -p "$REPORT"
+          { echo "head: $(git rev-parse HEAD)"; terraform version; } | tee "$REPORT/versions.txt"
+          cp "$MODULE/.terraform.lock.hcl" "$REPORT/lock-before.hcl"
+          sha256sum "$MODULE/.terraform.lock.hcl" | tee "$REPORT/lock-sha-before.txt"
+          git status --short --ignored | tee "$REPORT/status-before.txt"
+          find . -path ./.git -prune -o -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > "$REPORT/hashes-before.txt"
+          find . -path ./.git -prune -o -printf '%y %m %p -> %l\n' | LC_ALL=C sort > "$REPORT/paths-before.txt"
+          wc -l "$REPORT/hashes-before.txt" "$REPORT/paths-before.txt"
+
+      - name: terraform providers lock (blog-post07, four platforms, no init)
+        working-directory: ${{ env.MODULE }}
+        continue-on-error: true
+        run: |
+          set +e
+          terraform providers lock \
+            -platform=linux_amd64 \
+            -platform=darwin_arm64 \
+            -platform=darwin_amd64 \
+            -platform=windows_amd64 2>&1 | tee "$REPORT/lock-output.txt"
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > "$REPORT/lock-rc.txt"
+          echo "providers lock exit code: $rc"
+          exit "$rc"
+
+      - name: Take the after-manifests
+        if: always()
+        run: |
+          set -u
+          sha256sum "$MODULE/.terraform.lock.hcl" | tee "$REPORT/lock-sha-after.txt"
+          git status --short | tee "$REPORT/status-after.txt"
+          git status --short --ignored | tee "$REPORT/status-after-ignored.txt"
+          git diff --stat | tee "$REPORT/diff-stat.txt"
+          find . -path ./.git -prune -o -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > "$REPORT/hashes-after.txt"
+          find . -path ./.git -prune -o -printf '%y %m %p -> %l\n' | LC_ALL=C sort > "$REPORT/paths-after.txt"
+          find terraform \( -name '.terraform' -o -name '*.tfstate*' -o -name '*.tfvars' \) | tee "$REPORT/stray.txt"
+          cp "$MODULE/.terraform.lock.hcl" "$REPORT/lock-after.hcl"
+
+      - name: Verify the result
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          R = os.environ["REPORT"]
+          M = os.environ["MODULE"]
+          LOCK = f"{M}/.terraform.lock.hcl"
+          problems = []
+
+          def enc(s):
+              return s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+          def note(title, msg):
+              print(f"::notice title={title}::{enc(msg)}")
+
+          def read(name):
+              try:
+                  return open(os.path.join(R, name), encoding="utf-8").read()
+              except FileNotFoundError:
+                  return None
+
+          def parse(path):
+              out, cur = {}, None
+              for line in open(path, encoding="utf-8"):
+                  m = re.match(r'^provider "([^"]+)" \{', line)
+                  if m:
+                      cur = {"version": None, "constraints": None, "h1": set(), "zh": set(), "other": 0}
+                      out[m.group(1)] = cur
+                      continue
+                  if cur is None:
+                      continue
+                  if line.startswith("}"):
+                      cur = None
+                      continue
+                  m = re.match(r'^\s+version\s*=\s*"([^"]+)"', line)
+                  if m:
+                      cur["version"] = m.group(1)
+                      continue
+                  m = re.match(r'^\s+constraints\s*=\s*"([^"]+)"', line)
+                  if m:
+                      cur["constraints"] = m.group(1)
+                      continue
+                  m = re.match(r'^\s+"(h1|zh):([^"]*)"', line)
+                  if m:
+                      cur[m.group(1)].add(m.group(1) + ":" + m.group(2))
+                      continue
+                  if re.match(r'^\s+"[^"]*",?\s*$', line):
+                      cur["other"] += 1
+              return out, cur is not None
+
+          note("versions", read("versions.txt") or "missing")
+          note("lock file sha256 before", read("lock-sha-before.txt") or "missing")
+          note("lock file sha256 after", read("lock-sha-after.txt") or "missing")
+
+          rc = (read("lock-rc.txt") or "missing").strip()
+          note("providers lock exit code", rc)
+          if rc != "0":
+              problems.append(f"providers lock exit code {rc}")
+              note("providers lock output", read("lock-output.txt") or "missing")
+
+          before, unc_b = parse(os.path.join(R, "lock-before.hcl"))
+          after, unc_a = parse(os.path.join(R, "lock-after.hcl"))
+          if unc_b or unc_a:
+              problems.append("unclosed provider block in before or after lock file")
+
+          note("lock file BEFORE", read("lock-before.hcl"))
+          note("lock file AFTER", read("lock-after.hcl"))
+
+          lines = []
+          if set(before) != set(after):
+              problems.append(f"provider set changed: {sorted(before)} -> {sorted(after)}")
+          for name in sorted(set(before) | set(after)):
+              b, a = before.get(name), after.get(name)
+              if not b or not a:
+                  continue
+              lines.append(
+                  f"{name}: version {b['version']} -> {a['version']}; "
+                  f"constraints {b['constraints']} -> {a['constraints']}; "
+                  f"h1 {len(b['h1'])} -> {len(a['h1'])}; zh {len(b['zh'])} -> {len(a['zh'])}; "
+                  f"h1 removed={sorted(b['h1'] - a['h1'])}; zh removed={sorted(b['zh'] - a['zh'])}; "
+                  f"h1 added={len(a['h1'] - b['h1'])}; zh added={len(a['zh'] - b['zh'])}; "
+                  f"other lines {b['other']} -> {a['other']}")
+              if b["version"] != a["version"]:
+                  problems.append(f"{name}: version changed {b['version']} -> {a['version']}")
+              if b["constraints"] != a["constraints"]:
+                  problems.append(f"{name}: constraints changed {b['constraints']} -> {a['constraints']}")
+              if (b["h1"] - a["h1"]) or (b["zh"] - a["zh"]):
+                  problems.append(f"{name}: previously recorded checksums were removed")
+              if a["other"]:
+                  problems.append(f"{name}: unexpected lines in hash block")
+          note("before/after comparison", "\n".join(lines))
+
+          declared = {k.lower(): v for k, v in re.findall(
+              r'source\s*=\s*"([^"]+)"\s*\n\s*version\s*=\s*"([^"]+)"',
+              open(f"{M}/versions.tf", encoding="utf-8").read())}
+          note("versions.tf declared constraints", str(declared))
+          for name, a in after.items():
+              src = name.replace("registry.terraform.io/", "").lower()
+              if declared.get(src) != a["constraints"]:
+                  problems.append(f"{src}: constraints {a['constraints']!r} != declared {declared.get(src)!r}")
+
+          # --- manifests ---
+          hb, ha = {}, {}
+          for name, store in (("hashes-before.txt", hb), ("hashes-after.txt", ha)):
+              for line in (read(name) or "").splitlines():
+                  h, _, p = line.partition("  ")
+                  store[p] = h
+          added = sorted(set(ha) - set(hb))
+          removed = sorted(set(hb) - set(ha))
+          changed = sorted(p for p in set(ha) & set(hb) if ha[p] != hb[p])
+          note("hashes diff", f"added={added}\nremoved={removed}\nchanged={changed}")
+          if added or removed or changed not in ([], ["./" + LOCK]):
+              problems.append("file manifest shows changes other than the module's lock file")
+
+          pb = set((read("paths-before.txt") or "").splitlines())
+          pa = set((read("paths-after.txt") or "").splitlines())
+          note("paths diff", f"added={sorted(pa - pb)}\nremoved={sorted(pb - pa)}")
+          if pa != pb:
+              problems.append("path/type/mode manifest differs (files or directories added, removed or re-moded)")
+
+          st = (read("status-after.txt") or "").strip()
+          sti = (read("status-after-ignored.txt") or "").strip()
+          stray = (read("stray.txt") or "").strip()
+          note("git status (non-ignored)", st or "(empty)")
+          note("git status (with ignored)", sti or "(empty)")
+          note("git diff --stat", (read("diff-stat.txt") or "").strip() or "(empty)")
+          note("stray artefacts", stray or "(none)")
+          if st not in ("", f"M {LOCK}"):
+              problems.append("git status shows changes beyond the module's lock file")
+          if sti != st:
+              problems.append("git status --ignored differs from git status (unexpected ignored files)")
+          if stray:
+              problems.append("stray terraform artefacts present")
+
+          same = read("lock-sha-before.txt").split()[0] == read("lock-sha-after.txt").split()[0]
+          note("lock file changed?", "NO (byte-identical)" if same else "YES (content differs)")
+
+          if problems:
+              note("RESULT", "FAILED CHECKS:\n" + "\n".join(problems))
+              print("FAILED CHECKS:")
+              for p in problems:
+                  print(" -", p)
+              sys.exit(1)
+          note("RESULT", "all trial checks passed")
+          PY
+
+      - name: Upload report and before/after lock files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h1-lock-trial-blog-post07
+          path: ${{ runner.temp }}/h1-report
+          if-no-files-found: warn
