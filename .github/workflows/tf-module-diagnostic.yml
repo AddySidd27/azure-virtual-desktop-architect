@@ -1,0 +1,904 @@
+name: Terraform module diagnostic (read-only)
+
+# Read-only diagnostic. Validates every Terraform root module (any directory
+# with a versions.tf) of ONE pinned source commit, one job per module, and
+# never stops at the first failing module.
+#
+# Workflow code  = the commit on branch diag/tf-module-validation (this file only).
+# Validated code = SOURCE_SHA below, fetched explicitly by actions/checkout.
+#
+# Source of truth = the structured results.json written by every module job
+# (schema_version 3, strictly validated by the report job). Annotations and
+# summaries are derived from it.
+#
+# Result semantics
+#   first_failure_phase = first failing phase in PIPELINE order (fmt, init,
+#                         provider_resolution, validate); "none" if no phase fails.
+#   failing_phases      = every failing phase, in pipeline order.
+#   primary_diagnostic  = the MOST BLOCKING failure (init, then validate, then fmt)
+#                         with a concise message. It can differ from the first
+#                         failing phase (for example fmt fails first, validate is
+#                         the blocking finding).
+#   indeterminate / not_applicable_qualified / not_run are NOT failures.
+#
+# Documentation basis (Terraform CLI docs, checked 2026-10-15):
+#  - validate -json: fields format_version, valid, error_count, warning_count,
+#    diagnostics are documented; "error_count will always be zero when valid is
+#    true" is documented; the page does NOT document exit codes, so exit codes
+#    are recorded and cross-checked as advisories, never used as the verdict.
+#  - fmt -check: exit 0 when formatted, otherwise non-zero plus a list of file
+#    names is documented; the exit code 3, stdout-vs-stderr, path style and file
+#    extensions are NOT documented. Every fmt status and every fmt path
+#    classification below is therefore a HEURISTIC until verified on a real run.
+#  - .terraform.lock.hcl: provider blocks with version / constraints / hashes are
+#    documented, init "creates or updates" it. The .terraform/providers layout is
+#    NOT documented, so installed-directory evidence is observation only: it can
+#    corroborate the lock file but never override it.
+#
+# Exit policy (implemented once, in the report job, from verdict.fail_reasons)
+#   The report job FAILS only when the diagnosis cannot be trusted or is incomplete:
+#     - integrity not ok (missing / duplicate / unexpected / malformed module result,
+#       missing or failed artifact, wrong source SHA, discover or validate job not
+#       successful, artifact download not successful, coverage-gap file missing), or
+#     - an untrustworthy module result (fmt status error, validate status error or
+#       inconsistent), or
+#     - the repo-wide CI-equivalent fmt status is error (non-zero exit, no file list).
+#   The report job does NOT fail for genuine Terraform findings: a module fmt fail,
+#   init fail, validate fail, a repo-wide fmt fail, indeterminate provider evidence,
+#   validate advisories, or a Terraform version that differs between jobs. Those are
+#   reported (annotations, summary, aggregated.json) but are the data, not a broken
+#   diagnostic. A repo-wide fmt fail is always annotated as an error and shown in its
+#   own section, separate from the per-module results.
+#
+# No Azure login, no secrets, no backend/state, no plan/apply/refresh.
+
+on:
+  push:
+    branches:
+      - diag/tf-module-validation
+
+run-name: Terraform module diagnostic of ${{ github.sha }}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tf-module-diagnostic
+  cancel-in-progress: false
+
+env:
+  # PR #2 head commit. This is the code that gets validated.
+  SOURCE_SHA: 7bf6e93326a0eb9bb134ae5e51c52d29c2c469d6
+  # Existing CI uses hashicorp/setup-terraform@v3 with no terraform_version
+  # input. Per that action's action.yml the input defaults to "latest",
+  # resolved when the step runs. "latest" here applies the same selection RULE;
+  # it does not guarantee the same VERSION as any earlier CI run. The version
+  # actually installed is recorded per job and compared across all jobs.
+  TF_VERSION: latest
+  EXPECTED_MODULES: "34"
+  LC_ALL: C.UTF-8
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "0"
+  CHECKPOINT_DISABLE: "1"
+
+jobs:
+  discover:
+    name: Discover modules, coverage gaps and repo-wide CI-equivalent fmt
+    if: ${{ github.event_name == 'push' && github.repository == 'AddySidd27/azure-virtual-desktop-architect' && github.ref == 'refs/heads/diag/tf-module-validation' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+    steps:
+      - name: Check out the pinned source commit (not the diagnostic branch)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify the checkout is exactly the pinned commit
+        run: |
+          set -euo pipefail
+          head=$(git rev-parse HEAD)
+          if [ "$head" != "$SOURCE_SHA" ]; then
+            echo "::error title=Checkout mismatch::HEAD is $head, expected $SOURCE_SHA"
+            exit 1
+          fi
+          echo "Validated source commit : $head"
+          echo "Source terraform/ tree  : $(git rev-parse HEAD:terraform)"
+          echo "Workflow code commit    : $GITHUB_SHA (branch $GITHUB_REF_NAME)"
+
+      - name: Install Terraform CLI
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Run the existing CI fmt command once, repo-wide (same command and scope as terraform-check.yml)
+        run: |
+          set -uo pipefail
+          d="$RUNNER_TEMP/discovery"
+          mkdir -p "$d"
+          cd "$GITHUB_WORKSPACE" || exit 1
+          # Exact command from terraform-check.yml: terraform fmt -check -recursive -diff terraform/
+          rc=0
+          terraform fmt -check -recursive -diff terraform/ >"$d/ci_fmt.log" 2>&1 || rc=$?
+          # Same scope, stdout only, for the file list (stdout vs stderr is not documented)
+          lrc=0
+          terraform fmt -check -recursive -no-color terraform/ >"$d/ci_fmt_files.txt" 2>"$d/ci_fmt_files.err" || lrc=$?
+          # HEURISTIC status: pass = exit 0; fail = non-zero AND a file list was produced; error = non-zero without a list
+          if [ "$rc" -eq 0 ]; then status=pass
+          elif grep -Eq '\.(tf|tfvars|hcl)$' "$d/ci_fmt_files.txt"; then status=fail
+          else status=error; fi
+          ver=$(terraform version 2>/dev/null | head -1 | sed -nE 's/^Terraform v([0-9][^ ]*).*/\1/p')
+          [ -n "$ver" ] || ver=unknown
+          # files_raw = exactly as printed; files_needing_format = normalized (trimmed, workspace prefix and ./ removed, // collapsed)
+          jq -n --argjson rc "$rc" --argjson lrc "$lrc" --arg status "$status" --arg ver "$ver" --arg ws "${GITHUB_WORKSPACE%/}/" --rawfile files "$d/ci_fmt_files.txt" '
+            def n: gsub("^\\s+|\\s+$"; "") | ltrimstr($ws) | ltrimstr("./") | gsub("/+"; "/");
+            ($files | split("\n") | map(select(length > 0))) as $raw
+            | {command: "terraform fmt -check -recursive -diff terraform/", status: $status,
+               status_basis: "heuristic: exit code plus presence of a stdout file list; exit code 3, stdout/stderr and path style are not documented",
+               exit_code: $rc, list_exit_code: $lrc, terraform_version: $ver,
+               files_raw: $raw, files_needing_format: ($raw | map(n))}' > "$d/ci_fmt.json"
+          if ! jq -e '.status' "$d/ci_fmt.json" >/dev/null 2>&1; then
+            echo "::error title=ci_fmt.json not written::the repo-wide fmt result could not be recorded"
+            exit 1
+          fi
+          echo "Repo-wide CI-equivalent fmt (heuristic status): status=$status exit_code=$rc (terraform $ver)"
+          if [ "$status" != pass ]; then
+            echo "::error title=Repo-wide CI-equivalent fmt exit code $rc ($status, heuristic)::terraform fmt -check -recursive -diff terraform/ did not exit 0; see ci_fmt.json in the tf-discovery artifact"
+          fi
+
+      - name: Find root modules (versions.tf) and directories without versions.tf
+        id: find
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/discovery"
+          mkdir -p "$d"
+          cd "$GITHUB_WORKSPACE"
+          test -d terraform
+
+          # Same discovery rule as terraform-check.yml: directories containing versions.tf
+          find terraform -name versions.tf -not -path '*/.terraform/*' -printf '%h\n' | sort -u > "$d/with_versions.txt"
+          # All directories containing any .tf file
+          find terraform -name '*.tf' -not -path '*/.terraform/*' -printf '%h\n' | sort -u > "$d/all_tf_dirs.txt"
+          # Coverage gap: .tf directories with no versions.tf (not validated by the existing CI)
+          comm -23 "$d/all_tf_dirs.txt" "$d/with_versions.txt" > "$d/coverage_gap.txt"
+
+          count=$(wc -l < "$d/with_versions.txt")
+          gap=$(wc -l < "$d/coverage_gap.txt")
+          if [ "$count" -eq 0 ]; then
+            echo "::error title=No modules found::no versions.tf under terraform/; an empty matrix would hide the problem"
+            exit 1
+          fi
+          jq -R -s -c 'split("\n") | map(select(length > 0)) | map({dir: ., slug: gsub("/"; "__")})' "$d/with_versions.txt" > "$d/modules.json"
+          echo "matrix=$(jq -c '{include: .}' "$d/modules.json")" >> "$GITHUB_OUTPUT"
+
+          if [ "$count" != "$EXPECTED_MODULES" ]; then
+            echo "::warning title=Module count differs from expectation::found $count modules with versions.tf, expected $EXPECTED_MODULES"
+          fi
+          {
+            echo "### Module discovery"
+            echo ""
+            echo "- Validated commit: \`$SOURCE_SHA\`"
+            echo "- Modules with \`versions.tf\` (validated per module by this workflow): **$count**"
+            echo "- Directories with \`.tf\` files but **no** \`versions.tf\` (coverage gap, no per-module checks): **$gap**"
+            echo "- Repo-wide CI-equivalent fmt (separate from module checks, heuristic status): \`$(jq -r '.status' "$d/ci_fmt.json")\`, exit code $(jq -r '.exit_code' "$d/ci_fmt.json"), files listed: $(jq -r '.files_needing_format | length' "$d/ci_fmt.json")"
+            echo ""
+            echo "<details><summary>Coverage-gap directories</summary>"
+            echo ""
+            echo '```'
+            cat "$d/coverage_gap.txt"
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload discovery data
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tf-discovery
+          path: ${{ runner.temp }}/discovery
+          if-no-files-found: warn
+          retention-days: 14
+
+  validate:
+    name: tf ${{ matrix.dir }}
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    steps:
+      - name: Check out the pinned source commit (not the diagnostic branch)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify the checkout is exactly the pinned commit
+        run: |
+          set -euo pipefail
+          head=$(git rev-parse HEAD)
+          if [ "$head" != "$SOURCE_SHA" ]; then
+            echo "::error title=Checkout mismatch::HEAD is $head, expected $SOURCE_SHA"
+            exit 1
+          fi
+
+      - name: Install Terraform CLI
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Diagnose module (fmt, init, provider evidence, validate)
+        env:
+          MODULE_DIR: ${{ matrix.dir }}
+          SLUG: ${{ matrix.slug }}
+        run: |
+          set -uo pipefail
+          OUT="$RUNNER_TEMP/diag/$SLUG"
+          mkdir -p "$OUT"
+          cd "$GITHUB_WORKSPACE/$MODULE_DIR" || { echo "::error title=Diagnostic setup::cannot enter $MODULE_DIR"; exit 1; }
+
+          one_line() { tr '\n\r' '  ' | sed -E 's/[│╷╵]//g; s/[[:space:]]+/ /g; s/^ //; s/ $//'; }
+          excerpt() { # $1 = file, $2 = max chars
+            local t
+            t=$(grep -E -A4 'Error:' "$1" 2>/dev/null | grep -v '^--$' | one_line | cut -c1-"$2")
+            if [ -z "$t" ]; then t=$(tail -c 600 "$1" 2>/dev/null | one_line | cut -c1-"$2"); fi
+            printf '%s' "$t"
+          }
+          esc() { local s=$1; s=${s//'%'/'%25'}; s=${s//$'\r'/'%0D'}; s=${s//$'\n'/'%0A'}; printf '%s' "$s"; }
+          is_json() { printf '%s' "$1" | jq -s -e 'length == 1' >/dev/null 2>&1; } # exactly one valid JSON value
+          is_uint() { printf '%s' "$1" | grep -Eq '^[0-9]+$'; }
+
+          # parse_lock: "complete" means the file parsed WITHOUT ANOMALY. It does not mean the file lists providers.
+          # complete == true requires ALL of: no unclosed provider block, no content outside provider blocks,
+          # every provider block yields exactly one record (non-empty address), every record has a non-empty version,
+          # every version looks like semver (assumption), and no duplicate addresses. Anything else is listed in problems[].
+          # A provider-selection verdict additionally requires blocks > 0 (checked by the caller).
+          parse_lock() { # $1 = lock file; prints one JSON object
+            if [ ! -f "$1" ]; then echo '{"present":false,"blocks":0,"complete":false,"records":[],"problems":["file not present"]}'; return 0; fi
+            awk -F'"' '
+              /^[[:space:]]*(#.*)?$/ { next }
+              /^[[:space:]]*provider[[:space:]]+"/ { if (addr != "") unclosed++; addr = $2; ver = ""; cons = ""; blocks++; inblock = 1; next }
+              /^[[:space:]]*version[[:space:]]*=/ { if (inblock && addr != "") ver = $2; next }
+              /^[[:space:]]*constraints[[:space:]]*=/ { if (inblock && addr != "") cons = $2; next }
+              /^\}/ { if (inblock) { if (addr != "") print addr "\t" ver "\t" cons; addr = ""; inblock = 0 } next }
+              { if (!inblock) stray++ }
+              END { if (inblock) unclosed++; print "#META\t" blocks + 0 "\t" unclosed + 0 "\t" stray + 0 }
+            ' "$1" | jq -R -s -c '
+              split("\n") | map(select(length > 0)) as $l
+              | ($l | map(select(startswith("#META"))) | (.[0] // "#META\t0\t0\t0") | split("\t")) as $m
+              | ($m[1] | tonumber) as $b | ($m[2] | tonumber) as $u | ($m[3] | tonumber) as $st
+              | ($l | map(select(startswith("#META") | not) | split("\t") | {address: (.[0] | ascii_downcase), version: (.[1] // ""), constraints: (.[2] // "")}) | sort_by(.address)) as $r
+              | ( [ (if $u > 0 then "unclosed provider block" else empty end),
+                    (if $st > 0 then "content outside provider blocks" else empty end),
+                    (if ($r | length) != $b and $u == 0 then "provider block without a usable address" else empty end),
+                    (if ($r | any(.version == "")) then "provider block without version" else empty end),
+                    (if ($r | any(.version != "" and ((.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+([-+][0-9A-Za-z.+-]+)?$")) | not))) then "version is not semver-like" else empty end),
+                    (if (($r | map(.address) | unique | length) != ($r | length)) then "duplicate provider address" else empty end) ] ) as $p
+              | {present: true, blocks: $b, records: $r, problems: $p, complete: (($p | length) == 0)}'
+          }
+          parse_installed() { # observation of .terraform/providers. The layout is NOT documented: this is never authoritative.
+            # observed layout: <host>/<namespace>/<type>/<version>/<platform>/<file>
+            # layout_recognized  = every entry matched that layout (a property of the LAYOUT)
+            # inventory_complete = find read every entry without error AND the layout was recognized (a property of the INVENTORY)
+            if [ ! -d .terraform/providers ]; then
+              echo '{"present":false,"find_exit_code":null,"layout_recognized":false,"inventory_complete":false,"raw_count":0,"nonconforming_count":0,"nonconforming_samples":[],"raw_records":[],"normalized_records":[],"duplicates":[],"multi_version_addresses":[]}'
+              return 0
+            fi
+            local frc=0
+            ( cd .terraform/providers && find . \( -type f -o -type l \) -print 2>"$OUT/installed.find.err" ) > "$OUT/installed.paths.txt" || frc=$?
+            jq -R -s -c --argjson frc "$frc" '
+              split("\n") | map(select(length > 0) | ltrimstr("./")) as $p
+              | ($p | map(. as $x | ($x | split("/")) as $s
+                  | if ($s | length) == 6
+                    then {path: $x, layout_ok: true, host: $s[0], namespace: $s[1], type: $s[2], version: $s[3], platform: $s[4], file: $s[5]}
+                    else {path: $x, layout_ok: false} end)) as $raw
+              | ($raw | map(select(.layout_ok))) as $ok
+              | ($raw | map(select(.layout_ok | not))) as $bad
+              | ($ok | map({raw_address: (.host + "/" + .namespace + "/" + .type), address: ((.host + "/" + .namespace + "/" + .type) | ascii_downcase), version: .version})) as $n0
+              | ($n0 | group_by(.address + "@" + .version)) as $groups
+              | ($groups | map({address: .[0].address, version: .[0].version})) as $norm
+              | { present: true, find_exit_code: $frc,
+                  layout_recognized: (($bad | length) == 0 and ($raw | length) > 0),
+                  inventory_complete: (($bad | length) == 0 and ($raw | length) > 0 and $frc == 0),
+                  raw_count: ($raw | length), nonconforming_count: ($bad | length),
+                  nonconforming_samples: ($bad | map(.path) | .[0:10]),
+                  raw_records: ($raw | .[0:200]),
+                  normalized_records: ($norm | sort_by(.address)),
+                  duplicates: ($groups | map(select((map(.raw_address) | unique | length) > 1) | {key: (.[0].address + "@" + .[0].version), raw_spellings: (map(.raw_address) | unique)})),
+                  multi_version_addresses: ($norm | group_by(.address) | map(select(length > 1) | {address: .[0].address, versions: map(.version)})) }' "$OUT/installed.paths.txt"
+          }
+          scan_provider_free() { # QUALIFIED evidence only: a line-regex scan of ./*.tf. Never authoritative proof.
+            local nfiles tfjson=false r d p m e i rp
+            nfiles=$(find . -maxdepth 1 -type f -name '*.tf' | wc -l)
+            compgen -G './*.tf.json' >/dev/null && tfjson=true
+            r=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*resource[[:space:]]+"' || true)
+            d=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*data[[:space:]]+"' || true)
+            p=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*provider[[:space:]]+"' || true)
+            m=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*module[[:space:]]+"' || true)
+            e=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*ephemeral[[:space:]]+"' || true)
+            i=$(cat ./*.tf 2>/dev/null | grep -Ec '^[[:space:]]*import[[:space:]]+\{' || true)
+            rp=$(cat ./*.tf 2>/dev/null | grep -Ec 'required_providers[[:space:]]*[={]' || true)
+            jq -n -c --argjson nfiles "$nfiles" --argjson tfjson "$tfjson" \
+              --argjson r "$r" --argjson d "$d" --argjson p "$p" --argjson m "$m" --argjson e "$e" --argjson i "$i" --argjson rp "$rp" '
+              {qualified: true, authoritative: false,
+               method: "line-regex scan of ./*.tf in the module directory plus presence of *.tf.json",
+               free: ($nfiles > 0 and (($tfjson | not)) and ([$r, $d, $p, $m, $e, $i, $rp] | all(. == 0))),
+               tf_json_present: $tfjson, files_scanned: $nfiles,
+               keyword_counts: {resource: $r, data: $d, provider: $p, module: $m, ephemeral: $e, import: $i, required_providers: $rp},
+               limitation: "does not follow module sources, subdirectories, dynamic blocks or generated files; block comments and heredocs can cause false matches"}'
+          }
+
+          # ---- evidence captured BEFORE init: committed lock file and provider requirements ----
+          lock_tracked=false
+          git ls-files --error-unmatch .terraform.lock.hcl >/dev/null 2>&1 && lock_tracked=true
+          if [ "$lock_tracked" = true ] && [ -f .terraform.lock.hcl ]; then
+            cp .terraform.lock.hcl "$OUT/terraform.lock.hcl.committed"
+          fi
+          terraform providers -no-color >"$OUT/providers.pre-init.log" 2>&1 || true
+          lock_pre=$(parse_lock "$OUT/terraform.lock.hcl.committed")
+          pf_json=$(scan_provider_free)
+
+          # ---- phase 1: fmt (this module's directory only, non-recursive; status is a HEURISTIC) ----
+          fmt_rc=0
+          terraform fmt -check -diff -no-color >"$OUT/fmt.log" 2>&1 || fmt_rc=$?
+          fmt_lrc=0
+          terraform fmt -check -no-color >"$OUT/fmt.files.txt" 2>"$OUT/fmt.files.err" || fmt_lrc=$?
+          if [ "$fmt_rc" -eq 0 ]; then fmt_status=pass
+          elif grep -Eq '\.(tf|tfvars|hcl)$' "$OUT/fmt.files.txt"; then fmt_status=fail
+          else fmt_status=error; fi
+          fmt_listing=$(jq -R -s -c 'split("\n") | map(select(length > 0))' "$OUT/fmt.files.txt")
+          fmt_excerpt=""
+          [ "$fmt_status" != pass ] && fmt_excerpt=$(head -c 500 "$OUT/fmt.log" | one_line | cut -c1-300)
+
+          # ---- phase 2: init (no backend, no state, no input) ----
+          init_rc=0
+          terraform init -backend=false -input=false -no-color >"$OUT/init.log" 2>&1 || init_rc=$?
+          if [ "$init_rc" -eq 0 ]; then init_status=pass; init_ok=true; else init_status=fail; init_ok=false; fi
+
+          # HEURISTIC hint only (pattern match on the log). It never decides a status.
+          init_class="n/a"
+          if [ "$init_rc" -ne 0 ]; then
+            if grep -Eiq 'Failed to query available provider|available provider|provider packages|Failed to install provider|Incompatible provider|no available releases match' "$OUT/init.log"; then
+              init_class="looks-provider-related"
+            elif grep -Eiq 'Failed to download module|Unreadable module directory|Module not installed|could not download module' "$OUT/init.log"; then
+              init_class="looks-module-related"
+            elif grep -Eiq 'Unsupported Terraform Core version|required_version' "$OUT/init.log"; then
+              init_class="looks-core-version-related"
+            else
+              init_class="unclassified"
+            fi
+          fi
+          init_excerpt=""
+          [ "$init_status" != pass ] && init_excerpt=$(excerpt "$OUT/init.log" 500)
+
+          # ---- toolchain evidence ----
+          terraform version >"$OUT/version.txt" 2>&1 || true
+          terraform version -json >"$OUT/version.json" 2>"$OUT/version.err" || true
+          terraform providers -no-color >"$OUT/providers.post-init.log" 2>&1 || true
+          tf_version=$(head -1 "$OUT/version.txt" | sed -nE 's/^Terraform v([0-9][^ ]*).*/\1/p')
+          tf_version_json=$(jq -r '.terraform_version // empty' "$OUT/version.json" 2>/dev/null || true)
+          [ -n "$tf_version" ] || tf_version=${tf_version_json:-unknown}
+
+          # ---- provider evidence AFTER init, kept separate from the committed lock file ----
+          lock_changed=null
+          if [ -f "$OUT/terraform.lock.hcl.committed" ]; then
+            if [ -f .terraform.lock.hcl ] && cmp -s .terraform.lock.hcl "$OUT/terraform.lock.hcl.committed"; then lock_changed=false; else lock_changed=true; fi
+          fi
+          [ -f .terraform.lock.hcl ] && cp .terraform.lock.hcl "$OUT/terraform.lock.hcl.after-init"
+          lock_post=$(parse_lock .terraform.lock.hcl)
+          installed=$(parse_installed)
+
+          # The post-init lock file (documented) is the only AUTHORITATIVE selection evidence.
+          # The installed directory (undocumented layout) can corroborate it or disagree with it, nothing more.
+          provider_obj=$(jq -n -c \
+            --argjson pre "$lock_pre" --argjson post "$lock_post" --argjson inst "$installed" \
+            --argjson changed "$lock_changed" --argjson tracked "$lock_tracked" \
+            --argjson pf "$pf_json" --argjson initok "$init_ok" '
+            def addrver: map(.address + "@" + .version) | sort;
+            ( if ($initok | not) then
+                {status: "unresolved", corroboration: "not_assessed", reason: "init failed"}
+              elif ($post.complete and $post.blocks > 0) then
+                ( if ($inst.layout_recognized and $inst.inventory_complete) then
+                    ( if ($post.records | addrver) == ($inst.normalized_records | addrver) then "corroborated" else "disagrees" end )
+                  elif $inst.present then "not_corroborated_layout_unrecognized_or_incomplete"
+                  else "not_corroborated_no_installed_dir" end ) as $c
+                | if $c == "disagrees"
+                  then {status: "indeterminate", corroboration: $c, reason: "post-init lock file (documented) and the observed installed layout (undocumented) list different address+version records"}
+                  else {status: "pass", corroboration: $c, reason: "selection taken from the post-init lock file (documented); installed-directory cross-check: \($c)"} end
+              elif ($post.present and ($post.complete | not)) then
+                {status: "indeterminate", corroboration: "not_assessed", reason: ("post-init lock file is present but did not parse cleanly: " + ($post.problems | join("; ")))}
+              elif ($post.blocks == 0 and ($inst.present | not) and $pf.free) then
+                {status: "not_applicable_qualified", corroboration: "not_assessed", reason: "QUALIFIED, not authoritative: no lock-file providers, no .terraform/providers directory, and the line-regex scan found nothing that needs a provider"}
+              elif ($post.blocks == 0 and $inst.present) then
+                {status: "indeterminate", corroboration: "not_assessed", reason: "no lock-file providers, but an installed directory exists (undocumented layout)"}
+              else
+                {status: "indeterminate", corroboration: "not_assessed", reason: "no provider evidence and the line-regex scan does not show the module is provider-free"}
+              end
+            ) as $d
+            | ( if ($d.status == "pass") then $post.records else [] end ) as $best
+            | $d + { records: ($best | map({address, version})),
+                     versions: (if ($best | length) > 0 then ($best | map(.address + "@" + .version) | join(", ")) elif $d.status == "not_applicable_qualified" then "none (qualified provider-free)" else $d.status end),
+                     evidence: { committed_lock: ($pre + {tracked: $tracked}), post_init_lock: ($post + {changed_by_init: $changed}),
+                                 installed_dir: $inst, provider_free_scan: $pf } }')
+
+          # ---- phase 3: validate (only if init passed) ----
+          val_status=not_run; val_rc=null; parse_ok=null; valid_raw=null; reported_errors=null; format_version=null
+          counted_errors=0; counted_warnings=0; diagnostics='[]'; inconsistency=""; exit_agrees=null; adv=""
+          add_adv() { adv="${adv}$1"$'\n'; }
+          if [ "$init_rc" -eq 0 ]; then
+            val_rc=0
+            terraform validate -json -no-color >"$OUT/validate.json" 2>"$OUT/validate.err" || val_rc=$?
+            if jq -e 'type == "object"' "$OUT/validate.json" >/dev/null 2>&1; then
+              parse_ok=true
+              # every extracted value is normalised to valid JSON of a known type (or null); anything else is an extraction failure
+              valid_raw=$(jq -c 'if (.valid | type) == "boolean" then .valid else null end' "$OUT/validate.json")
+              valid_type=$(jq -r '.valid | type' "$OUT/validate.json")
+              format_version=$(jq -c 'if (.format_version | type) == "string" then .format_version else null end' "$OUT/validate.json")
+              reported_errors=$(jq -c 'if (.error_count | type) == "number" then .error_count else null end' "$OUT/validate.json")
+              ec_type=$(jq -r '.error_count | type' "$OUT/validate.json")
+              diag_type=$(jq -r '.diagnostics | type' "$OUT/validate.json")
+              counted_errors=$(jq '[(.diagnostics | if type == "array" then .[] else empty end) | select(.severity == "error")] | length' "$OUT/validate.json")
+              counted_warnings=$(jq '[(.diagnostics | if type == "array" then .[] else empty end) | select(.severity == "warning")] | length' "$OUT/validate.json")
+              diagnostics=$(jq -c '[(.diagnostics | if type == "array" then .[] else empty end) | select(.severity == "error")][0:5] | map({summary: ((.summary // "") | tostring), detail: ((.detail // "" | tostring) | gsub("\\s+"; " ") | .[0:200]), file: (.range.filename // null), line: (.range.start.line // null)})' "$OUT/validate.json")
+              extract_ok=true
+              for v in valid_raw format_version reported_errors diagnostics; do is_json "${!v}" || extract_ok=false; done
+              for v in counted_errors counted_warnings; do is_uint "${!v}" || extract_ok=false; done
+              [ -n "$valid_type" ] || extract_ok=false
+              # Verdict uses only documented fields: .valid (boolean) and, when valid is true, error_count == 0.
+              if [ "$extract_ok" != true ]; then
+                val_status=error; inconsistency="validate -json parsed as an object but its fields could not be extracted reliably"
+                valid_raw=null; format_version=null; reported_errors=null; counted_errors=0; counted_warnings=0; diagnostics='[]'
+              elif [ "$valid_type" != boolean ]; then
+                val_status=inconsistent; inconsistency=".valid is missing or not a boolean"
+              elif [ "$valid_raw" = true ]; then
+                if { [ "$reported_errors" != null ] && [ "$reported_errors" != 0 ]; } || [ "$counted_errors" -gt 0 ]; then
+                  val_status=inconsistent
+                  inconsistency="valid=true but error_count=$reported_errors with $counted_errors error diagnostic(s); the docs state error_count is always zero when valid is true"
+                else
+                  val_status=pass
+                fi
+                if [ "$val_rc" -eq 0 ]; then exit_agrees=true; else exit_agrees=false; add_adv "exit code $val_rc although valid=true (exit codes are not documented on the validate page)"; fi
+              else
+                val_status=fail
+                [ "$counted_errors" -eq 0 ] && add_adv "valid=false but no error diagnostics were present"
+                if [ "$val_rc" -ne 0 ]; then exit_agrees=true; else exit_agrees=false; add_adv "exit code 0 although valid=false (exit codes are not documented on the validate page)"; fi
+                if [ "$reported_errors" != null ] && [ "$reported_errors" != "$counted_errors" ]; then add_adv "error_count $reported_errors differs from $counted_errors error diagnostic(s)"; fi
+              fi
+              if [ "$val_status" != error ]; then
+                [ "$(printf '%s' "$format_version" | jq -r 'type')" = string ] || add_adv "format_version missing or not a string"
+                [ "$ec_type" = number ] || add_adv "error_count missing or not a number"
+                [ "$diag_type" = array ] || add_adv "diagnostics missing or not an array"
+              fi
+            else
+              parse_ok=false
+              val_status=error
+              inconsistency="validate -json stdout is not a parseable JSON object (exit code $val_rc); the docs warn stdout may not be JSON if Terraform fails before validation: $(excerpt "$OUT/validate.err" 200)"
+            fi
+          fi
+          advisories=$(printf '%s' "$adv" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+
+          # ---- every value handed to jq --argjson must be exactly one valid JSON value; otherwise do NOT write a result ----
+          bad=""
+          for v in lock_pre lock_post installed pf_json provider_obj fmt_listing advisories diagnostics valid_raw format_version reported_errors counted_errors counted_warnings lock_changed lock_tracked val_rc parse_ok exit_agrees fmt_rc fmt_lrc init_rc; do
+            is_json "${!v}" || bad="$bad $v"
+          done
+          if [ -n "$bad" ]; then
+            echo "::error title=$MODULE_DIR internal error::invalid JSON value(s) for:$bad; this module is NOT diagnosed"
+            printf 'invalid json in:%s\n' "$bad" > "$OUT/internal_error.txt"
+            rm -f "$OUT/results.json"
+            exit 1
+          fi
+
+          # ---- results.json: the source of truth. Base object first, then derived failure semantics ----
+          jq -n \
+            --arg module "$MODULE_DIR" --arg slug "$SLUG" --arg source_sha "$SOURCE_SHA" \
+            --arg runner_image "${ImageOS:-unknown}/${ImageVersion:-unknown}" \
+            --arg tf_version "$tf_version" --arg tf_version_json "${tf_version_json:-}" \
+            --arg fmt_status "$fmt_status" --argjson fmt_rc "$fmt_rc" --argjson fmt_lrc "$fmt_lrc" --argjson fmt_listing "$fmt_listing" --arg fmt_excerpt "$fmt_excerpt" \
+            --arg init_status "$init_status" --argjson init_rc "$init_rc" --arg init_class "$init_class" --arg init_excerpt "$init_excerpt" \
+            --argjson provider "$provider_obj" \
+            --arg val_status "$val_status" --argjson val_rc "$val_rc" --argjson parse_ok "$parse_ok" --argjson valid "$valid_raw" \
+            --argjson format_version "$format_version" --argjson reported_errors "$reported_errors" \
+            --argjson counted_errors "$counted_errors" --argjson counted_warnings "$counted_warnings" \
+            --argjson exit_agrees "$exit_agrees" --argjson advisories "$advisories" \
+            --argjson diagnostics "$diagnostics" --arg inconsistency "$inconsistency" '
+            {schema_version: 3, module: $module, slug: $slug, source_sha: $source_sha, runner_image: $runner_image,
+             terraform: {version: $tf_version, version_from_json: $tf_version_json},
+             fmt: {scope: "this directory only, non-recursive",
+                   status: $fmt_status,
+                   status_basis: "heuristic: exit code plus presence of a stdout file list; exit code 3, stdout/stderr and path style are not documented",
+                   exit_code: $fmt_rc, list_exit_code: $fmt_lrc, listing: $fmt_listing, excerpt: $fmt_excerpt},
+             init: {status: $init_status, exit_code: $init_rc, failure_class_heuristic: $init_class, excerpt: $init_excerpt},
+             provider_resolution: $provider,
+             validate: {status: $val_status, exit_code: $val_rc, exit_code_documented: false, json_parseable: $parse_ok,
+                        format_version: $format_version, valid: $valid, reported_error_count: $reported_errors,
+                        counted_errors: $counted_errors, warnings: $counted_warnings, exit_code_agrees_with_valid: $exit_agrees,
+                        advisories: $advisories, inconsistency: $inconsistency, diagnostics: $diagnostics}}
+            | . as $r
+            | ( [ {phase: "fmt", status: $r.fmt.status}, {phase: "init", status: $r.init.status},
+                  {phase: "provider_resolution", status: $r.provider_resolution.status}, {phase: "validate", status: $r.validate.status} ]
+                | map(select(.status | IN("fail", "error", "inconsistent", "unresolved"))) ) as $fp
+            | def clip: gsub("[\\t\\r\\n]+"; " ") | .[0:300];
+              . + { failing_phases: $fp,
+                    first_failure_phase: ($fp[0].phase // "none"),
+                    primary_diagnostic:
+                      ( if $r.init.status != "pass" then
+                          {phase: "init", status: $r.init.status,
+                           message: ("init: " + (if ($r.init.excerpt | length) > 0 then $r.init.excerpt else "exit code \($r.init.exit_code), no output captured" end) | clip)}
+                        elif ($r.validate.status | IN("fail", "error", "inconsistent")) then
+                          {phase: "validate", status: $r.validate.status,
+                           message: ("validate: " + (([$r.validate.inconsistency] + [$r.validate.diagnostics[].summary]) | map(select(length > 0)) | join("; ") | if length > 0 then . else "status \($r.validate.status), exit code \($r.validate.exit_code), valid=\($r.validate.valid), no error diagnostic available" end) | clip)}
+                        elif $r.fmt.status != "pass" then
+                          {phase: "fmt", status: $r.fmt.status,
+                           message: ("fmt: " + (if ($r.fmt.excerpt | length) > 0 then $r.fmt.excerpt else "status \($r.fmt.status), exit code \($r.fmt.exit_code), no output captured" end) | clip)}
+                        else null end ) }' > "$OUT/results.json"
+
+          if ! jq -e '.schema_version == 3 and (.module | type == "string")' "$OUT/results.json" >/dev/null 2>&1; then
+            echo "::error title=$MODULE_DIR::results.json could not be written or is invalid; this module is NOT diagnosed"
+            exit 1
+          fi
+
+          # ---- annotations: concise, derived from results.json (full detail is in the artifact) ----
+          jq -r '
+            def one: gsub("[\\t\\r\\n]+"; " ");
+            def ctx: "tf=\(.terraform.version) providers=\(.provider_resolution.versions)";
+            def ann($l; $t; $m): [$l, $t, ($m | one | .[0:300])] | @tsv;
+            . as $r
+            | ( if $r.first_failure_phase == "none" then ann("notice"; $r.module; "no failing phase; " + ($r | ctx) + "; provider evidence " + $r.provider_resolution.status) else empty end ),
+              ( if $r.fmt.status != "pass" then ann("error"; "\($r.module) fmt \($r.fmt.status) (heuristic)"; ($r | ctx) + "; exit=\($r.fmt.exit_code); " + $r.fmt.excerpt) else empty end ),
+              ( if $r.init.status != "pass" then ann("error"; "\($r.module) init fail (heuristic=\($r.init.failure_class_heuristic))"; ($r | ctx) + "; " + $r.init.excerpt) else empty end ),
+              ( if ($r.provider_resolution.status | IN("indeterminate")) then ann("warning"; "\($r.module) provider evidence indeterminate"; $r.provider_resolution.reason) else empty end ),
+              ( if ($r.validate.status | IN("fail", "error", "inconsistent")) then ann("error"; "\($r.module) validate \($r.validate.status)"; ($r | ctx) + "; exit=\($r.validate.exit_code) valid=\($r.validate.valid) errors=\($r.validate.counted_errors); " + $r.validate.inconsistency + " " + ($r.validate.diagnostics[0].summary // "")) else empty end ),
+              ( if ($r.validate.advisories | length) > 0 then ann("warning"; "\($r.module) validate advisory"; ($r.validate.advisories | join("; "))) else empty end ),
+              ( if $r.validate.status == "not_run" then ann("warning"; "\($r.module) validate not_run"; "init failed, so validate was not run") else empty end )
+          ' "$OUT/results.json" | while IFS=$'\t' read -r lvl title msg; do
+            echo "::${lvl} title=${title}::$(esc "$msg")"
+          done
+
+          # ---- job summary, derived from results.json ----
+          jq -r '
+            def cell: gsub("\\|"; "/") | gsub("[\\r\\n]+"; " ");
+            "### `\(.module)`\n\nTerraform `\(.terraform.version)` · provider evidence: `\(.provider_resolution.versions | cell)` · source `\(.source_sha[0:7])`\n\nFirst failing phase (pipeline order): `\(.first_failure_phase)` · primary diagnostic: `\(.primary_diagnostic.phase // "none")`\n\n| phase | status | detail |\n|---|---|---|",
+            "| fmt (module dir only, heuristic) | \(.fmt.status) | exit \(.fmt.exit_code); \(.fmt.excerpt | cell) |",
+            "| init | \(.init.status) | exit \(.init.exit_code); heuristic: \(.init.failure_class_heuristic); \(.init.excerpt | cell) |",
+            "| provider evidence | \(.provider_resolution.status) | \(.provider_resolution.reason | cell); corroboration: \(.provider_resolution.corroboration); lock changed by init: \(.provider_resolution.evidence.post_init_lock.changed_by_init) |",
+            "| validate | \(.validate.status) | exit \(.validate.exit_code) (not documented); parseable \(.validate.json_parseable); valid \(.validate.valid); errors \(.validate.counted_errors); \(.validate.inconsistency | cell) \([.validate.diagnostics[].summary] | join("; ") | cell) \(.validate.advisories | join("; ") | cell) |"
+          ' "$OUT/results.json" >> "$GITHUB_STEP_SUMMARY"
+
+          exit 0
+
+      - name: Upload raw outputs for this module
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tf-diag-${{ matrix.slug }}
+          path: ${{ runner.temp }}/diag/${{ matrix.slug }}
+          if-no-files-found: error
+          retention-days: 14
+
+  report:
+    name: Aggregate report and completeness check
+    needs: [discover, validate]
+    if: ${{ always() && needs.discover.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download discovery data and per-module results
+        id: dl
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          path: ${{ runner.temp }}/all
+
+      - name: Aggregate and verify completeness
+        if: ${{ always() }}
+        env:
+          DISCOVER_RESULT: ${{ needs.discover.result }}
+          VALIDATE_RESULT: ${{ needs.validate.result }}
+          DOWNLOAD_OUTCOME: ${{ steps.dl.outcome }}
+        run: |
+          set -uo pipefail
+          shopt -s nullglob
+          A="$RUNNER_TEMP/all"
+          S="$RUNNER_TEMP/summary"
+          mkdir -p "$S"
+          MODS="$A/tf-discovery/modules.json"
+          CIFMT="$A/tf-discovery/ci_fmt.json"
+          GAP="$A/tf-discovery/coverage_gap.txt"
+
+          esc() { local s=$1; s=${s//'%'/'%25'}; s=${s//$'\r'/'%0D'}; s=${s//$'\n'/'%0A'}; printf '%s' "$s"; }
+          # Always leave something uploadable: what was downloaded, what the job results were.
+          if [ -d "$A" ]; then find "$A" -maxdepth 2 | sort > "$S/download_listing.txt"; else echo "(download directory does not exist)" > "$S/download_listing.txt"; fi
+          die() { # unrecoverable: explain in annotation, step summary, incomplete.md and integrity.json, then fail
+            echo "::error title=Diagnosis incomplete::$(esc "$1")"
+            { echo "### Terraform module diagnostic: INCOMPLETE"; echo ""; echo "$1"; echo ""
+              echo "- Job results: discover=$DISCOVER_RESULT validate=$VALIDATE_RESULT"
+              echo "- Artifact download step outcome: $DOWNLOAD_OUTCOME"
+              echo "- Validated commit: \`$SOURCE_SHA\`"
+              echo "- Downloaded files are listed in download_listing.txt (artifact tf-diag-summary)"; } | tee "$S/incomplete.md" >> "$GITHUB_STEP_SUMMARY"
+            jq -n --arg r "$1" --arg d "$DISCOVER_RESULT" --arg v "$VALIDATE_RESULT" --arg o "$DOWNLOAD_OUTCOME" \
+              '{ok: false, reason: $r, job_results: {discover: $d, validate: $v}, download_outcome: $o}' > "$S/integrity.json"
+            exit 1
+          }
+
+          # strict per-module result validator (exact key sets, types, enums, cross-field rules); prints an array of failed checks
+          cat > "$S/result_validator.jq" <<'JQ'
+          def exact($k): (type == "object") and ((keys | sort) == ($k | sort));
+          def chk($n; c): if (try (c) catch false) then empty else $n end;
+          def isnum: type == "number";
+          def isstr: type == "string";
+          [
+            chk("top-level keys"; exact(["schema_version","module","slug","source_sha","runner_image","terraform","fmt","init","provider_resolution","validate","first_failure_phase","failing_phases","primary_diagnostic"])),
+            chk("schema_version"; .schema_version == 3),
+            chk("module"; (.module | isstr) and ((.module | length) > 0)),
+            chk("slug matches module"; .slug == (.module | gsub("/"; "__"))),
+            chk("source_sha"; .source_sha | test("^[0-9a-f]{40}$")),
+            chk("runner_image"; (.runner_image | isstr) and ((.runner_image | length) > 0)),
+            chk("terraform"; (.terraform | exact(["version","version_from_json"])) and (.terraform.version | isstr) and ((.terraform.version | length) > 0) and (.terraform.version_from_json | isstr)),
+            chk("fmt keys"; .fmt | exact(["scope","status","status_basis","exit_code","list_exit_code","listing","excerpt"])),
+            chk("fmt values"; (.fmt.status | IN("pass","fail","error")) and (.fmt.exit_code | isnum) and (.fmt.list_exit_code | isnum) and (.fmt.listing | (type == "array") and all(.[]; isstr)) and (.fmt.excerpt | isstr) and (.fmt.status_basis | isstr) and (.fmt.scope | isstr)),
+            chk("fmt status vs exit code"; (.fmt.status == "pass") == (.fmt.exit_code == 0)),
+            chk("init keys"; .init | exact(["status","exit_code","failure_class_heuristic","excerpt"])),
+            chk("init values"; (.init.status | IN("pass","fail")) and (.init.exit_code | isnum) and (.init.failure_class_heuristic | IN("n/a","looks-provider-related","looks-module-related","looks-core-version-related","unclassified")) and (.init.excerpt | isstr)),
+            chk("init status vs exit code"; (.init.status == "pass") == (.init.exit_code == 0)),
+            chk("provider keys"; .provider_resolution | exact(["status","corroboration","reason","versions","records","evidence"])),
+            chk("provider values"; (.provider_resolution.status | IN("pass","unresolved","indeterminate","not_applicable_qualified")) and (.provider_resolution.corroboration | IN("corroborated","disagrees","not_corroborated_no_installed_dir","not_corroborated_layout_unrecognized_or_incomplete","not_assessed")) and (.provider_resolution.reason | isstr) and (.provider_resolution.versions | isstr) and (.provider_resolution.records | (type == "array") and all(.[]; exact(["address","version"]) and (.address | isstr) and (.version | isstr)))),
+            chk("provider evidence keys"; .provider_resolution.evidence | exact(["committed_lock","post_init_lock","installed_dir","provider_free_scan"])),
+            chk("lock evidence"; (.provider_resolution.evidence.committed_lock | exact(["present","blocks","complete","records","problems","tracked"])) and (.provider_resolution.evidence.post_init_lock | exact(["present","blocks","complete","records","problems","changed_by_init"])) and (.provider_resolution.evidence.committed_lock.complete | type == "boolean") and (.provider_resolution.evidence.post_init_lock.complete | type == "boolean") and (.provider_resolution.evidence.post_init_lock.blocks | isnum) and (.provider_resolution.evidence.post_init_lock.problems | (type == "array") and all(.[]; isstr)) and (.provider_resolution.evidence.committed_lock.records | type == "array") and (.provider_resolution.evidence.post_init_lock.records | type == "array")),
+            chk("installed evidence"; (.provider_resolution.evidence.installed_dir | exact(["present","find_exit_code","layout_recognized","inventory_complete","raw_count","nonconforming_count","nonconforming_samples","raw_records","normalized_records","duplicates","multi_version_addresses"])) and (.provider_resolution.evidence.installed_dir.raw_count | isnum) and (.provider_resolution.evidence.installed_dir.layout_recognized | type == "boolean") and (.provider_resolution.evidence.installed_dir.inventory_complete | type == "boolean") and (.provider_resolution.evidence.installed_dir.normalized_records | type == "array")),
+            chk("provider-free scan is qualified, not authoritative"; (.provider_resolution.evidence.provider_free_scan | exact(["qualified","authoritative","method","free","tf_json_present","files_scanned","keyword_counts","limitation"])) and (.provider_resolution.evidence.provider_free_scan.qualified == true) and (.provider_resolution.evidence.provider_free_scan.authoritative == false) and (.provider_resolution.evidence.provider_free_scan.free | type == "boolean")),
+            chk("provider unresolved iff init failed"; (.provider_resolution.status == "unresolved") == (.init.status == "fail")),
+            chk("provider pass needs a clean post-init lock with blocks"; (.provider_resolution.status != "pass") or ((.provider_resolution.evidence.post_init_lock.complete == true) and (.provider_resolution.evidence.post_init_lock.blocks > 0))),
+            chk("provider pass has records and is not disagreeing"; (.provider_resolution.status != "pass") or (((.provider_resolution.records | length) > 0) and (.provider_resolution.corroboration != "disagrees"))),
+            chk("not_applicable_qualified needs a qualified provider-free scan"; (.provider_resolution.status != "not_applicable_qualified") or ((.provider_resolution.evidence.provider_free_scan.free == true) and ((.provider_resolution.records | length) == 0))),
+            chk("validate keys"; .validate | exact(["status","exit_code","exit_code_documented","json_parseable","format_version","valid","reported_error_count","counted_errors","warnings","exit_code_agrees_with_valid","advisories","inconsistency","diagnostics"])),
+            chk("validate values"; (.validate.status | IN("pass","fail","inconsistent","error","not_run")) and ((.validate.exit_code | isnum) or (.validate.exit_code == null)) and ((.validate.valid | type == "boolean") or (.validate.valid == null)) and ((.validate.format_version | isstr) or (.validate.format_version == null)) and ((.validate.reported_error_count | isnum) or (.validate.reported_error_count == null)) and (.validate.exit_code_documented == false) and ((.validate.json_parseable | type == "boolean") or (.validate.json_parseable == null)) and (.validate.counted_errors | isnum) and (.validate.warnings | isnum) and ((.validate.exit_code_agrees_with_valid | type == "boolean") or (.validate.exit_code_agrees_with_valid == null)) and (.validate.advisories | (type == "array") and all(.[]; isstr)) and (.validate.inconsistency | isstr) and (.validate.diagnostics | (type == "array") and all(.[]; exact(["summary","detail","file","line"])))),
+            chk("validate not_run iff init failed"; (.validate.status == "not_run") == (.init.status == "fail")),
+            chk("validate not_run has no run data"; (.validate.status != "not_run") or ((.validate.exit_code == null) and (.validate.json_parseable == null))),
+            chk("validate pass requires valid=true and no errors"; (.validate.status != "pass") or ((.validate.valid == true) and (.validate.counted_errors == 0) and (.validate.json_parseable == true))),
+            chk("validate fail requires valid=false"; (.validate.status != "fail") or ((.validate.valid == false) and (.validate.json_parseable == true))),
+            chk("validate error needs unparseable output or a stated reason"; (.validate.status != "error") or (.validate.json_parseable == false) or ((.validate.inconsistency | length) > 0)),
+            chk("validate inconsistent/error carries a reason"; (.validate.status | IN("inconsistent","error") | not) or ((.validate.inconsistency | length) > 0)),
+            chk("validate ran => exit code recorded"; (.validate.status == "not_run") or (.validate.exit_code | isnum)),
+            chk("validate pass has no reported errors"; (.validate.status != "pass") or (.validate.reported_error_count == null) or (.validate.reported_error_count == 0)),
+            chk("first_failure_phase matches failing_phases"; .first_failure_phase == ((.failing_phases[0].phase) // "none")),
+            chk("failing_phases derived from statuses"; .failing_phases == ([{phase:"fmt",status:.fmt.status},{phase:"init",status:.init.status},{phase:"provider_resolution",status:.provider_resolution.status},{phase:"validate",status:.validate.status}] | map(select(.status | IN("fail","error","inconsistent","unresolved"))))),
+            chk("failing_phases"; .failing_phases | (type == "array") and all(.[]; exact(["phase","status"]) and (.phase | IN("fmt","init","provider_resolution","validate")) and (.status | IN("fail","error","inconsistent","unresolved")))),
+            chk("primary_diagnostic"; ((.primary_diagnostic == null) == (.first_failure_phase == "none")) and ((.primary_diagnostic == null) or ((.primary_diagnostic | exact(["phase","status","message"])) and (.primary_diagnostic.phase | IN("fmt","init","validate")) and (.primary_diagnostic.status | isstr) and (.primary_diagnostic.message | isstr) and ((.primary_diagnostic.message | length) > 0))))
+            ,chk("primary_diagnostic follows the documented precedence"; (.primary_diagnostic == null) or (.primary_diagnostic.phase == (if .init.status != "pass" then "init" elif (.validate.status | IN("fail","error","inconsistent")) then "validate" else "fmt" end))),
+            chk("primary_diagnostic status equals its phase status"; (.primary_diagnostic == null) or (.primary_diagnostic.status == .[.primary_diagnostic.phase].status))
+          ]
+          JQ
+
+          # 0. discovery data must exist and be strictly well formed (recovery path: explain, upload, fail)
+          [ -f "$MODS" ] || die "discovery artifact tf-discovery/modules.json is missing (download outcome: $DOWNLOAD_OUTCOME, discover job: $DISCOVER_RESULT, validate job: $VALIDATE_RESULT)"
+          jq -e 'type == "array" and length > 0
+                 and all(.[]; (keys | sort) == ["dir","slug"] and (.dir | type == "string") and (.slug | type == "string") and (.slug == (.dir | gsub("/"; "__"))))
+                 and ((map(.dir) | unique | length) == length) and ((map(.slug) | unique | length) == length)' "$MODS" >/dev/null 2>&1 \
+            || die "tf-discovery/modules.json is malformed, empty or has duplicate entries"
+          [ -f "$CIFMT" ] || die "discovery artifact tf-discovery/ci_fmt.json is missing"
+          jq -e '(keys | sort) == ["command","exit_code","files_needing_format","files_raw","list_exit_code","status","status_basis","terraform_version"]
+                 and (.status | IN("pass", "fail", "error")) and (.exit_code | type == "number") and (.list_exit_code | type == "number")
+                 and (.files_raw | type == "array" and all(.[]; type == "string")) and (.files_needing_format | type == "array" and all(.[]; type == "string"))
+                 and ((.files_raw | length) == (.files_needing_format | length))
+                 and (.terraform_version | type == "string") and (.command | type == "string") and (.status_basis | type == "string")
+                 and ((.status == "pass") == (.exit_code == 0))' "$CIFMT" >/dev/null 2>&1 \
+            || die "tf-discovery/ci_fmt.json is malformed or internally inconsistent"
+          gap_missing=false
+          if [ ! -f "$GAP" ]; then : > "$S/empty_gap.txt"; GAP="$S/empty_gap.txt"; gap_missing=true; fi
+
+          # 1. read every per-module artifact; a result file must exist, parse, and pass the strict validator
+          : > "$S/reported.ndjson"; : > "$S/bad_artifacts.ndjson"; : > "$S/present_artifacts.txt"
+          for dir in "$A"/tf-diag-*/; do
+            name=$(basename "$dir")
+            echo "$name" >> "$S/present_artifacts.txt"
+            f="${dir}results.json"
+            if [ ! -f "$f" ]; then
+              jq -n -c --arg a "$name" '{artifact: $a, errors: ["results.json missing"]}' >> "$S/bad_artifacts.ndjson"
+            elif ! jq -e . "$f" >/dev/null 2>&1; then
+              jq -n -c --arg a "$name" '{artifact: $a, errors: ["results.json is not parseable JSON"]}' >> "$S/bad_artifacts.ndjson"
+            else
+              errs=$(jq -c -f "$S/result_validator.jq" "$f" 2>/dev/null || echo '["validator could not run"]')
+              if [ "$errs" = "[]" ]; then
+                jq -c --arg a "$name" '. + {_artifact: $a}' "$f" >> "$S/reported.ndjson"
+              else
+                jq -n -c --arg a "$name" --argjson e "$errs" '{artifact: $a, errors: $e}' >> "$S/bad_artifacts.ndjson"
+              fi
+            fi
+          done
+          jq -s '.' "$S/reported.ndjson" > "$S/reported.json" || die "could not assemble reported results"
+          jq -s '.' "$S/bad_artifacts.ndjson" > "$S/bad_artifacts.json" || die "could not assemble malformed-artifact details"
+          present=$(jq -R -s -c 'split("\n") | map(select(length > 0))' "$S/present_artifacts.txt") || die "could not list artifacts"
+
+          # 2. robust JSON-array comparison: expected vs reported modules (missing, duplicate, unexpected) and artifacts
+          jq -n \
+            --slurpfile exp "$MODS" --slurpfile rep "$S/reported.json" --slurpfile bad "$S/bad_artifacts.json" \
+            --argjson present "$present" --argjson gapmissing "$gap_missing" \
+            --arg sha "$SOURCE_SHA" --arg dr "$DISCOVER_RESULT" --arg vr "$VALIDATE_RESULT" --arg dl "$DOWNLOAD_OUTCOME" '
+            ($exp[0]) as $E | ($rep[0]) as $R | ($bad[0]) as $B
+            | ($E | map(.dir)) as $ed | ($R | map(.module)) as $rd
+            | ($E | map("tf-diag-" + .slug)) as $ea
+            | { expected_count: ($E | length), reported_count: ($R | length),
+                missing: (($ed - $rd) | unique),
+                unexpected: (($rd - $ed) | unique),
+                duplicates: ($rd | group_by(.) | map(select(length > 1) | .[0])),
+                artifact_name_mismatch: [$R[] | select(._artifact != ("tf-diag-" + (.module | gsub("/"; "__")))) | {module, artifact: ._artifact}],
+                wrong_source_sha: [$R[] | select(.source_sha != $sha) | .module],
+                expected_artifacts_absent: (($ea - $present) | unique),
+                unexpected_artifacts: (($present - $ea) | unique),
+                artifacts_without_valid_result: ($B | map(.artifact)),
+                invalid_result_details: ($B | map({artifact, errors: (.errors | .[0:6])})),
+                coverage_gap_file_missing: $gapmissing,
+                job_results: {discover: $dr, validate: $vr}, download_outcome: $dl }
+            | . + { ok: ((.missing | length) == 0 and (.unexpected | length) == 0 and (.duplicates | length) == 0
+                         and (.artifact_name_mismatch | length) == 0 and (.wrong_source_sha | length) == 0
+                         and (.expected_artifacts_absent | length) == 0 and (.unexpected_artifacts | length) == 0
+                         and (.artifacts_without_valid_result | length) == 0 and (.coverage_gap_file_missing | not)
+                         and .expected_count == .reported_count
+                         and .job_results.discover == "success" and .job_results.validate == "success"
+                         and .download_outcome == "success") }
+          ' > "$S/integrity.json" || die "integrity comparison failed"
+
+          # 3. results that cannot be trusted (tool / parse / consistency problems), as opposed to real Terraform findings
+          jq '[.[] | select(.fmt.status == "error" or (.validate.status | IN("error", "inconsistent")))
+               | {module, fmt: .fmt.status, validate: .validate.status, note: .validate.inconsistency}]' "$S/reported.json" > "$S/untrustworthy.json" || die "untrustworthy-result scan failed"
+          # ...results that need human review but are not failures...
+          jq '[.[] | select(.provider_resolution.status == "indeterminate" or (.validate.advisories | length) > 0)
+               | {module, provider: .provider_resolution.status, corroboration: .provider_resolution.corroboration, reason: .provider_resolution.reason, advisories: .validate.advisories}]' "$S/reported.json" > "$S/needs_review.json" || die "needs-review scan failed"
+          # ...and results that rest on qualified (heuristic) evidence only
+          jq '[.[] | select(.provider_resolution.status == "not_applicable_qualified") | {module, scan: .provider_resolution.evidence.provider_free_scan.keyword_counts}]' "$S/reported.json" > "$S/qualified.json" || die "qualified-result scan failed"
+
+          # 4. toolchain consistency across every job that ran Terraform
+          jq -n --slurpfile rep "$S/reported.json" --slurpfile ci "$CIFMT" '
+            ([$rep[0][].terraform.version] + [$ci[0].terraform_version] | unique) as $v
+            | {terraform_versions: $v, consistent: (($v | length) == 1 and ($v[0] != "unknown")),
+               runner_images: ([$rep[0][].runner_image] | unique),
+               provider_versions: ([$rep[0][].provider_resolution.versions] | unique)}' > "$S/toolchain.json" || die "toolchain scan failed"
+
+          # 5. fmt scope (HEURISTIC until real Terraform output is verified). Every listed file is classified by its
+          #    normalized relative path against the validated module roots, using the LONGEST matching ancestor.
+          jq -n --slurpfile exp "$MODS" --slurpfile ci "$CIFMT" --slurpfile rep "$S/reported.json" --rawfile gap "$GAP" '
+            def norm: gsub("^\\s+|\\s+$"; "") | ltrimstr("./") | gsub("/+"; "/");
+            def isfile: test("\\.(tf|tfvars|hcl)$");
+            def dirof: if test("/") then sub("/[^/]*$"; "") else "." end;
+            def underorat($a; $d): ($d == $a) or ($d | startswith($a + "/"));
+            ($exp[0] | map(.dir)) as $M
+            | ($gap | split("\n") | map(select(length > 0))) as $G
+            | ($ci[0].files_needing_format | map(norm)) as $files
+            | ($M | map(. as $m | select(any($M[]; . as $p | $p != $m and ($m | startswith($p + "/")))))) as $nestedroots
+            | ( $files | map(. as $f
+                | if (isfile | not) then {file: $f, class: "unparsed_line"}
+                  else ($f | dirof) as $d
+                  | ([$M[] | select(. as $m | $d | startswith($m + "/"))] | sort_by(length) | last) as $anc
+                  | ([$G[] | select(. as $g | underorat($g; $d))] | sort_by(length) | last) as $gd
+                  | if ($M | index($d)) != null then {file: $f, class: "module_root", module: $d, module_is_nested_root: (($nestedroots | index($d)) != null)}
+                    elif $anc != null then {file: $f, class: "nested_under_module", module: $anc, in_coverage_gap_dir: $gd}
+                    elif $gd != null then (if $gd == $d then {file: $f, class: "coverage_gap_dir", dir: $d} else {file: $f, class: "coverage_gap_descendant", gap_dir: $gd, dir: $d} end)
+                    else {file: $f, class: "outside_any_module", dir: $d} end
+                  end) ) as $cls
+            | { basis: "heuristic: path style and stdout listing of terraform fmt are not verified against real Terraform output",
+                repo_wide_command: $ci[0].command, repo_wide_status: $ci[0].status, repo_wide_exit_code: $ci[0].exit_code,
+                nested_module_roots: $nestedroots,
+                classified_files: $cls,
+                class_counts: ($cls | group_by(.class) | map({(.[0].class): length}) | add // {}),
+                not_covered_by_per_module_fmt: [$cls[] | select(.class != "module_root")],
+                modules_with_nested_files_not_reflected_in_module_fmt:
+                  ([$cls[] | select(.class == "nested_under_module")] | group_by(.module) | map({module: .[0].module, nested_files: length})),
+                per_module_vs_repo_wide_disagreements:
+                  [ $rep[0][] | select(.fmt.status | IN("pass", "fail")) | . as $r
+                    | ([$cls[] | select(.class == "module_root" and .module == $r.module)] | length) as $c
+                    | select((($r.fmt.status == "fail") != ($c > 0)))
+                    | {module: $r.module, per_module_fmt: $r.fmt.status, repo_wide_files_in_module_root: $c} ] }' > "$S/fmt_scope.json" || die "fmt scope classification failed"
+
+          # 6. assemble the single aggregated JSON (source of truth) and the markdown view
+          jq -n --arg sha "$SOURCE_SHA" --arg wf "$GITHUB_SHA" \
+            --slurpfile integrity "$S/integrity.json" --slurpfile untrust "$S/untrustworthy.json" --slurpfile review "$S/needs_review.json" --slurpfile qual "$S/qualified.json" \
+            --slurpfile tool "$S/toolchain.json" --slurpfile fmt "$S/fmt_scope.json" --slurpfile ci "$CIFMT" \
+            --slurpfile results "$S/reported.json" --rawfile gap "$GAP" '
+            { source_sha: $sha, workflow_code_sha: $wf, integrity: $integrity[0],
+              repo_wide_fmt: ($ci[0] + {scope_classification: $fmt[0]}),
+              untrustworthy_results: $untrust[0], needs_review: $review[0], qualified_results: $qual[0], toolchain: $tool[0],
+              coverage_gap_dirs: ($gap | split("\n") | map(select(length > 0))), module_results: $results[0] }' > "$S/aggregated.json" || die "aggregation failed"
+          jq -e '.integrity.expected_count != null' "$S/aggregated.json" >/dev/null 2>&1 || die "aggregated.json is invalid"
+          # the ONLY place the exit decision is made (see the exit policy in the header comment)
+          jq '. + {verdict: {fail_reasons: [
+                 (if .integrity.ok | not then "diagnosis incomplete" else empty end),
+                 (if (.untrustworthy_results | length) > 0 then "untrustworthy module results" else empty end),
+                 (if .repo_wide_fmt.status == "error" then "repo-wide fmt status error" else empty end)],
+               not_failure_reasons_note: "module fmt/init/validate failures, repo-wide fmt fail, indeterminate provider evidence, advisories and Terraform version differences are reported but do not fail the report"}}' "$S/aggregated.json" > "$S/aggregated.tmp" || die "verdict computation failed"
+          mv "$S/aggregated.tmp" "$S/aggregated.json" || die "verdict could not be stored"
+
+          {
+            echo "### Terraform module diagnostic: $(jq -r '.integrity.reported_count' "$S/aggregated.json") of $(jq -r '.integrity.expected_count' "$S/aggregated.json") modules reported"
+            echo ""
+            echo "- Validated commit: \`$SOURCE_SHA\` (workflow code commit \`$GITHUB_SHA\`)"
+            echo "- Report verdict: **$(jq -r 'if (.verdict.fail_reasons | length) == 0 then "pass (diagnosis complete and trustworthy)" else "FAIL: " + (.verdict.fail_reasons | join(", ")) end' "$S/aggregated.json")**"
+            echo "- Completeness: **$(jq -r 'if .integrity.ok then "complete" else "INCOMPLETE" end' "$S/aggregated.json")** (discover=$DISCOVER_RESULT, validate=$VALIDATE_RESULT, artifact download=$DOWNLOAD_OUTCOME)"
+            echo "- Untrustworthy results (fmt error / validate error or inconsistent): $(jq -r '.untrustworthy_results | length' "$S/aggregated.json")"
+            echo "- Results needing review (provider indeterminate / validate advisories): $(jq -r '.needs_review | length' "$S/aggregated.json")"
+            echo "- Results resting on qualified, non-authoritative evidence (static provider-free scan): $(jq -r '.qualified_results | length' "$S/aggregated.json")"
+            echo "- Terraform versions seen: \`$(jq -c '.toolchain.terraform_versions' "$S/aggregated.json")\` (consistent: $(jq -r '.toolchain.consistent' "$S/aggregated.json"))"
+            echo "- Runner images seen: \`$(jq -c '.toolchain.runner_images' "$S/aggregated.json")\`"
+            echo ""
+            echo "## Repo-wide CI-equivalent fmt (separate from the module results below; heuristic until real output is verified)"
+            echo ""
+            echo "- Command: \`$(jq -r '.repo_wide_fmt.command' "$S/aggregated.json")\`"
+            echo "- Status: **$(jq -r '.repo_wide_fmt.status' "$S/aggregated.json")**, exit code **$(jq -r '.repo_wide_fmt.exit_code' "$S/aggregated.json")**, files listed: $(jq -r '.repo_wide_fmt.files_needing_format | length' "$S/aggregated.json")"
+            echo "- Classification of listed files (heuristic): \`$(jq -c '.repo_wide_fmt.scope_classification.class_counts' "$S/aggregated.json")\`"
+            echo "- Nested module roots: \`$(jq -c '.repo_wide_fmt.scope_classification.nested_module_roots' "$S/aggregated.json")\`"
+            echo "- Listed files NOT reflected in any per-module fmt result: \`$(jq -c '[.repo_wide_fmt.scope_classification.not_covered_by_per_module_fmt[] | {file, class}]' "$S/aggregated.json")\`"
+            echo "- Modules with nested unformatted files not reflected in their module-level fmt: \`$(jq -c '.repo_wide_fmt.scope_classification.modules_with_nested_files_not_reflected_in_module_fmt' "$S/aggregated.json")\`"
+            echo "- Per-module fmt vs repo-wide disagreements (module-root files only): \`$(jq -c '.repo_wide_fmt.scope_classification.per_module_vs_repo_wide_disagreements' "$S/aggregated.json")\`"
+            echo ""
+            echo "## Module results (fmt = module directory only, non-recursive, heuristic)"
+            echo ""
+            echo "| module | terraform | provider status | provider evidence (corroboration) | fmt | init | validate | first failure (pipeline) | primary diagnostic |"
+            echo "|---|---|---|---|---|---|---|---|---|"
+            jq -r '.module_results[] | "| \(.module) | \(.terraform.version) | \(.provider_resolution.status) | \(.provider_resolution.versions | gsub("\\|"; "/")) (\(.provider_resolution.corroboration)) | \(.fmt.status) | \(.init.status) | \(.validate.status) | \(.first_failure_phase) | \(if .primary_diagnostic == null then "-" else ((.primary_diagnostic.phase + ": " + .primary_diagnostic.message) | gsub("[|\\r\\n]"; " ") | .[0:200]) end) |"' "$S/aggregated.json"
+            echo ""
+            echo "## Needs review (not failures)"
+            echo '```json'
+            jq '.needs_review' "$S/aggregated.json"
+            echo '```'
+            echo ""
+            echo "## Qualified provider-free results (static scan, NOT authoritative)"
+            echo '```json'
+            jq '.qualified_results' "$S/aggregated.json"
+            echo '```'
+            echo ""
+            echo "## Coverage gap (.tf directories without versions.tf: repo-wide fmt only, no init/validate)"
+            echo '```'
+            cat "$GAP"
+            echo '```'
+            echo ""
+            echo "## Integrity detail"
+            echo '```json'
+            jq '.integrity' "$S/aggregated.json"
+            echo '```'
+          } > "$S/aggregated.md"
+          cat "$S/aggregated.md" >> "$GITHUB_STEP_SUMMARY"
+
+          # 7. concise annotations and the exit verdict
+          msg=$(jq -r '.module_results[] | select(.first_failure_phase != "none") | "\(.module) | first=\(.first_failure_phase) | tf \(.terraform.version) | \(.provider_resolution.versions) | \(.primary_diagnostic.message[0:150])"' "$S/aggregated.json" | head -c 6000)
+          echo "::notice title=Modules with a failing phase::$(esc "$msg")"
+
+          ci_status=$(jq -r '.repo_wide_fmt.status' "$S/aggregated.json")
+          ci_rc=$(jq -r '.repo_wide_fmt.exit_code' "$S/aggregated.json")
+          if [ "$ci_status" != pass ]; then
+            echo "::error title=Repo-wide CI-equivalent fmt exit code $ci_rc ($ci_status, heuristic)::$(esc "$(jq -c '.repo_wide_fmt | {status, exit_code, files_needing_format, classes: .scope_classification.class_counts}' "$S/aggregated.json" | head -c 1500)")"
+          fi
+          fail=0
+          if [ "$(jq -r '.verdict.fail_reasons | length' "$S/aggregated.json")" != 0 ]; then fail=1; fi
+          if [ "$(jq -r '.integrity.ok' "$S/aggregated.json")" != true ]; then
+            echo "::error title=Diagnosis incomplete::$(esc "$(jq -c '.integrity | del(.ok)' "$S/aggregated.json" | head -c 1500)")"
+          fi
+          if [ "$(jq -r '.untrustworthy_results | length' "$S/aggregated.json")" != 0 ]; then
+            echo "::error title=Untrustworthy results::$(esc "$(jq -c '.untrustworthy_results' "$S/aggregated.json" | head -c 1500)")"
+          fi
+          if [ "$ci_status" = error ]; then
+            echo "::error title=Repo-wide fmt result untrustworthy::exit code $ci_rc without a file list"
+          fi
+          if [ "$(jq -r '.needs_review | length' "$S/aggregated.json")" != 0 ]; then
+            echo "::warning title=Results needing review::$(esc "$(jq -c '.needs_review' "$S/aggregated.json" | head -c 1500)")"
+          fi
+          if [ "$(jq -r '.toolchain.consistent' "$S/aggregated.json")" != true ]; then
+            echo "::warning title=Terraform version differs between jobs or is unknown::$(esc "$(jq -c '.toolchain.terraform_versions' "$S/aggregated.json")")"
+          fi
+          exit "$fail"
+
+      - name: Upload aggregated report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tf-diag-summary
+          path: ${{ runner.temp }}/summary
+          if-no-files-found: warn
+          retention-days: 14
