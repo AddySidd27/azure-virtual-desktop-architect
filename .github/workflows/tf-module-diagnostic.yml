@@ -67,9 +67,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # Head of fix/tf-azurerm-v5-schema (remediation commit on top of PR #2 head 7bf6e93).
+  # Head of fix/tf-azurerm-v5-schema (schema fix bf77412 plus fmt-only fix, on top of PR #2 head 7bf6e93).
   # This is the code that gets validated.
-  SOURCE_SHA: bf77412d1cf429ed2fcb72013b85ccf9ebaed4dc
+  SOURCE_SHA: 6fffd7b99ab4a2686293a44ece38a21b85dd17c3
   # Existing CI uses hashicorp/setup-terraform@v3 with no terraform_version
   # input. Per that action's action.yml the input defaults to "latest",
   # resolved when the step runs. "latest" here applies the same selection RULE;
