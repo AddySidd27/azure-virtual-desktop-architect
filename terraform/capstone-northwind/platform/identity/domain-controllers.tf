@@ -1,7 +1,7 @@
 ############################################
 # Domain controllers - two per region, per Part A/Chapter 7's existing
 # decision. Joins the EXISTING on-premises forest - does not create a
-# new forest or a new domain. Matches Lab 4/Lab 12's proven pattern.
+# new forest or a new domain. Follows the Lab 4/Lab 12 pattern.
 ############################################
 
 resource "azurerm_network_interface" "eastus2_dc" {

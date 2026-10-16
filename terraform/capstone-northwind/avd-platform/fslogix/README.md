@@ -4,8 +4,8 @@ Terraform for [Part F](../../../../capstone/parts/part-f-avd-platform-architectu
 
 One FSLogix storage account per region, Premium tier, ZRS replication (the
 only two options Premium file shares support), Private Endpoint only,
-matching [Lab 5](../../../../labs/lab-05-storage.md)/[Lab 13](../../../../labs/lab-13-regional-storage-foundation.md)'s
-proven pattern exactly.
+following a similar pattern to [Lab 5](../../../../labs/lab-05-storage.md)/[Lab 13](../../../../labs/lab-13-regional-storage-foundation.md),
+using Premium FileStorage, ZRS, and a Private Endpoint.
 
 ## Finance isolation, per ADR-CAP-06
 

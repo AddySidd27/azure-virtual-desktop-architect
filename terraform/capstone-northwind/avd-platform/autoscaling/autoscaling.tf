@@ -1,7 +1,7 @@
 ############################################
 # One independent scaling plan PER PERSONA, not one combined plan
 # per region with three host-pool associations - matching the master
-# plan's "six independent scaling plans" exactly, and Lab 17's proven
+# plan's "six independent scaling plans" exactly, and Lab 17's
 # resource shape. Standard Power Management Autoscale throughout -
 # the same SHC/Dynamic Autoscaling reconciliation as Part F8: no
 # Dynamic Autoscaling dependency, since that requires Session Host

@@ -23,7 +23,7 @@ variable "service_resource_group_name" {
   default = "rg-avd-service-lab-eus2-01"
 }
 variable "host_pool_name" {
-  description = "Host pool created in Lab 7. RemoteApp needs its own host pool per ch03/ch25 unless preferred_app_group_type is RemoteApp; the lab pool from Lab 7 is Desktop, so this module creates a second small pool for the RemoteApp path rather than fighting the preferred-type constraint."
+  description = "Host pool created in Lab 7. RemoteApp needs its own host pool per ch03/ch25 unless preferred_app_group_type is RailApplications; the lab pool from Lab 7 is Desktop, so this module creates a second small pool for the RemoteApp path rather than fighting the preferred-type constraint."
   type        = string
   default     = "hp-avd-lab-eus2-01"
 }
