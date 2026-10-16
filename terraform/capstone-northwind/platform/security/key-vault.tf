@@ -22,7 +22,7 @@ resource "azurerm_key_vault" "platform" {
   resource_group_name        = azurerm_resource_group.security.name
   tenant_id                  = var.tenant_id
   sku_name                   = "standard"
-  enable_rbac_authorization  = true
+  rbac_authorization_enabled = true
   purge_protection_enabled   = true
   soft_delete_retention_days = 90
 

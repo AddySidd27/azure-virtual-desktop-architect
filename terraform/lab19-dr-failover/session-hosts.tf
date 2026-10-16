@@ -150,7 +150,11 @@ resource "azurerm_capacity_reservation" "dr" {
   count                         = var.enable_capacity_reservation ? 1 : 0
   name                          = "cr-avd-dr-${local.suffix}"
   capacity_reservation_group_id = azurerm_capacity_reservation_group.dr[0].id
-  sku_name                      = var.vm_size
-  capacity                      = var.host_count
-  tags                          = local.common_tags
+
+  sku {
+    name     = var.vm_size
+    capacity = var.host_count
+  }
+
+  tags = local.common_tags
 }
