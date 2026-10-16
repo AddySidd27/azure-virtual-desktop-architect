@@ -102,7 +102,7 @@ New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name ReAttachIntervalSe
 | `VolumeType` | VHDX | VHDX rather than VHD. There is no reason to choose VHD for a new deployment |
 | `SizeInMBs` | 30000 | Maximum container size. This is a ceiling, not an allocation. See section 4 |
 | `FlipFlopProfileDirectoryName` | 1 | Names folders `username_SID` instead of `SID_username`. Purely a naming change, and it makes the share browsable by a human at 3am |
-| `DeleteLocalProfileWhenVHDShouldApply` | 1 | Removes a leftover local profile when a container should be used. Prevents users silently working in a local profile and losing data at sign-out |
+| `DeleteLocalProfileWhenVHDShouldApply` | 1 | Deletes a local profile that exists and matches the container, at sign-in (permanent). Microsoft recommends it so users do not use local profiles and lose data unexpectedly |
 | `ProfileType` | 0 | Normal, single session per container. Concurrency is a deliberate exception. See [Chapter 19](ch19-why-profiles-cause-avd-failure.md#4-concurrency-one-user-more-than-one-session) |
 | `LockedRetryCount` and `LockedRetryInterval` | 3 and 15 | Retry when the container is locked, rather than failing straight to a temporary profile. Covers a slow release from a previous session |
 | `ReAttachRetryCount` and `ReAttachIntervalSeconds` | 3 and 15 | Retry if the container detaches mid-session, for example during a brief storage blip |
@@ -202,7 +202,7 @@ Microsoft supports this through object specific configuration: the default VHDLo
 
 ## 7. Architect's Reality Check
 
-**What engineers commonly get wrong.** They copy a settings list without knowing what each value prevents. The two that hurt most when missed are `DeleteLocalProfileWhenVHDShouldApply`, because users silently work in a local profile and lose it, and the antivirus exclusions, because the damage is corruption rather than a clean failure.
+**What engineers commonly get wrong.** They copy a settings list without knowing what each value prevents. The two worth the closest attention are `DeleteLocalProfileWhenVHDShouldApply`, which Microsoft recommends so users do not use local profiles and lose data unexpectedly (and which permanently deletes an existing local profile), and the antivirus exclusions, because the damage is corruption rather than a clean failure.
 
 **What I would check first in production.** Whether antivirus exclusions are actually applied on the session host, not whether they were requested. Then whether the container is attaching, from the FSLogix log rather than from the user's description.
 
@@ -278,9 +278,9 @@ Then look for local profile folders on hosts that were in use that day, and chec
 
 **Evidence.** The setting is absent. The FSLogix log shows the container attach failing, and a local profile folder exists on the host from that date.
 
-**Root cause.** Without `DeleteLocalProfileWhenVHDShouldApply`, a failed container attach falls back to a local profile. The session works normally, so nobody reports a problem, and the data is lost when the host is rebuilt.
+**Root cause.** The container failed to attach and sessions used a temporary or local profile. Microsoft documents that outcome separately from `DeleteLocalProfileWhenVHDShouldApply`, whose documented purpose is to delete an existing local profile when a container should apply. The session works normally, so nobody reports a problem, and the data is lost when the host is rebuilt. Whether the setting would have changed this outcome has not been tested here.
 
-**Resolution.** Set the value, so a failed attach does not silently fall back. Consider also whether users should be blocked from signing in at all when the container cannot attach, which turns silent data loss into a visible failure. That is a deliberate trade: an outage is better than data loss for most organisations, and it should be a decision the business makes rather than a default.
+**Resolution.** Decide whether users should be blocked from signing in when the container cannot attach (`PreventLoginWithFailure` and `PreventLoginWithTempProfile`; RemoteApp users are not blocked). That turns a quiet temporary-profile session into a visible failure. It is a deliberate trade between an outage and a session on a temporary profile, and it should be a decision the business makes rather than a default. Microsoft's troubleshooting page for temporary and local profiles also lists a known issue involving these two settings with no current workaround, so test the behaviour before relying on it; it has not been tested here.
 
 Recover what can be recovered from any surviving host, quickly, before it is rebuilt.
 
@@ -290,7 +290,7 @@ Recover what can be recovered from any surviving host, quickly, before it is reb
 
 **Architect lesson.** The dangerous failure is the one that looks like success. A working desktop that saves to the wrong place is worse than a failed sign-in, because the user only finds out when the data is gone.
 
-**Interview lesson.** Framing this as a choice between an outage and silent data loss, and saying the business should decide, shows you can present a technical setting as a risk decision.
+**Interview lesson.** Framing this as a choice between an outage and a session on a temporary profile, and saying the business should decide, shows you can present a technical setting as a risk decision.
 
 ### Scenario 3: Storage cost doubles in eight months
 
@@ -344,7 +344,7 @@ Do this in stages and validate that nothing users rely on has been excluded. An 
 - `VHDLocations`. Changing it orphans every existing profile, and users get new empty containers.
 - Reducing `SizeInMBs` below the size of existing containers.
 - Aggressive exclusions applied estate wide without a pilot, because users lose settings they expect to keep.
-- Removing `DeleteLocalProfileWhenVHDShouldApply` to make sign-in work. That is choosing silent data loss.
+- Removing `DeleteLocalProfileWhenVHDShouldApply` to make sign-in work without understanding why the local profile exists. Microsoft recommends the setting so users do not use local profiles and lose data unexpectedly.
 - Editing configuration on individual hosts. It disappears at the next image update.
 
 **When do I escalate to Microsoft?** When configuration matches the documented guidance, exclusions are verified on the host, permissions and connectivity are proven, and containers still fail to attach or corrupt. Collect: the FSLogix log files, the registry values in use, the antivirus and security tooling exclusion configuration, the FSLogix agent version, the storage platform and authentication method, and whether it affects one user or all users.
@@ -370,10 +370,10 @@ Do this in stages and validate that nothing users rely on has been excluded. An 
 ### Q60. What are the FSLogix settings you would always configure?
 
 **Simple answer**
-Enabled, VHDLocations, VolumeType as VHDX, SizeInMBs as a sensible ceiling, FlipFlopProfileDirectoryName for readable folder names, DeleteLocalProfileWhenVHDShouldApply to prevent silent local profile use, and the locked and reattach retry settings.
+Enabled, VHDLocations, VolumeType as VHDX, SizeInMBs as a sensible ceiling, FlipFlopProfileDirectoryName for readable folder names, DeleteLocalProfileWhenVHDShouldApply so users do not use local profiles and lose data unexpectedly (Microsoft's stated reason; it deletes an existing local profile permanently), and the locked and reattach retry settings.
 
 **Strong senior architect answer**
-"I would rather explain what each one prevents than list them. Enabled and VHDLocations are obvious. VHDX because there is no reason to use VHD now. SizeInMBs as a ceiling rather than a target, because the container is dynamically expanding and setting it too low shows up as applications failing to save rather than as a storage error. FlipFlopProfileDirectoryName because at three in the morning you want to find a user's folder by name rather than by SID. DeleteLocalProfileWhenVHDShouldApply is the one I care about most, because without it a failed attach falls back to a local profile, the session works, and the user loses a day of work when the host is rebuilt. Then the locked and reattach retries, which cover a container that has not been released yet or a brief storage blip. And I would put all of it in policy rather than the image, so a correction takes minutes instead of a full image rebuild and rollout."
+"I would rather explain what each one prevents than list them. Enabled and VHDLocations are obvious. VHDX because there is no reason to use VHD now. SizeInMBs as a ceiling rather than a target, because the container is dynamically expanding and setting it too low shows up as applications failing to save rather than as a storage error. FlipFlopProfileDirectoryName because at three in the morning you want to find a user's folder by name rather than by SID. DeleteLocalProfileWhenVHDShouldApply is recommended by Microsoft so that users do not use local profiles and lose data unexpectedly, but it permanently deletes an existing local profile, so the local profiles on a host are reviewed before it is enabled. A container that fails to attach is a separate matter: PreventLoginWithFailure trades an outage for visibility, and enabling it is a business decision. Then the locked and reattach retries, which cover a container that has not been released yet or a brief storage blip. And I would put all of it in policy rather than the image, so a correction takes minutes instead of a full image rebuild and rollout."
 
 **Follow-up you should expect**
 "What about multiple VHDLocations for resiliency?" That does not provide resiliency. Multiple entries are searched in order, so if the first share is unavailable the user gets a new empty container on the second one. Resilience is Cloud Cache or storage level redundancy.
@@ -399,7 +399,7 @@ There is a security conversation underneath this too. You are asking a security 
 ## 12. Key Takeaways
 
 - Put FSLogix configuration in policy, not in the image. The agent belongs in the image.
-- `DeleteLocalProfileWhenVHDShouldApply` prevents silent local profile use, which is the worst data loss failure in FSLogix.
+- `DeleteLocalProfileWhenVHDShouldApply` is recommended by Microsoft so users do not use local profiles and lose data unexpectedly; it permanently deletes an existing local profile when a container should apply.
 - Multiple `VHDLocations` entries do not provide resiliency. They are searched in order.
 - Use VHDX. There is no reason to use VHD in a new deployment.
 - `SizeInMBs` is a ceiling on a dynamically expanding disk, not an allocation.
@@ -433,7 +433,7 @@ FSLogix configuration, exclusions, and validation steps are in **Lab 6**.
 You can configure FSLogix for production, explain what each setting prevents, apply exclusions correctly, and control profile size before it becomes a cost problem.
 
 **What you should test**
-On any environment you can reach, run the registry query from Scenario 2 and check whether `DeleteLocalProfileWhenVHDShouldApply` is set. If it is not, you have found a real risk.
+On any environment you can reach, run the registry query from Scenario 2 and check whether `DeleteLocalProfileWhenVHDShouldApply` is set and whether that is intended. Microsoft recommends it, and it permanently deletes local profiles when set to 1, so review the local profiles first.
 
 **What comes next**
 Chapter 22 closes Part V with profile operations, failure and recovery. Locked containers, corruption, compaction, backup and what Cloud Cache actually does.

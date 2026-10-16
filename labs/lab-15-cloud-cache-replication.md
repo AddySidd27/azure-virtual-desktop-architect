@@ -126,7 +126,7 @@ az vm run-command invoke -g rg-avd-identity-lab-cus-01 -n vm-avdlab-dc02 \
 1. Sign in as the test user to the `eastus2` desktop entry. Leave the session active - do not sign out.
 2. While that session is still active, sign in as the **same test user** to the `centralus` desktop entry, using a second device or a second Windows App profile.
 
-**Expected result: the second sign-in fails**, or falls back to a temporary local profile depending on your `DeleteLocalProfileWhenVHDShouldApply` and retry settings. Check the FSLogix log on the `centralus` host for the specific error:
+**Expected result:** this repository has not run this step, so the outcome is not established here. Microsoft documents that a user who signs in while the profile container is in use on another computer can get a temporary profile, and that `PreventLoginWithTempProfile` can block that sign-in (RemoteApp users are not blocked). The outcome you observe depends on the FSLogix configuration of the host (for example the `PreventLoginWithFailure`, `PreventLoginWithTempProfile` and lock retry settings), and may be a failed sign-in or a session on a temporary profile. Record what actually happens. Check the FSLogix log on the `centralus` host for the specific error:
 
 ```powershell
 Get-Content "C:\ProgramData\FSLogix\Logs\Profile\*.log" -Tail 50 | Select-String "ERROR_LOCK_VIOLATION"
