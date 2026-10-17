@@ -93,6 +93,8 @@ Refer to [Chapter 4, section 3](../chapters/ch04-connection-flow-end-to-end.md#3
 
 **Important limitation.** NSGs work with IP addresses, ports and **service tags** - not FQDNs. Some required endpoints (`azkms.core.windows.net`, `oneocsp.microsoft.com`, `catalogartifact.azureedge.net`) can only be filtered by FQDN in Azure Firewall or an NGFW. In this lab, the NSG allows the service tags explicitly and permits the remaining outbound traffic; Chapter 13 covers proper egress control with Azure Firewall and the AVD FQDN tag.
 
+**Private endpoint subnet caveat (U23, Learn verified 16 October 2026).** Network policies for private endpoints are disabled by default on a subnet, and while they are disabled, NSG rules are bypassed for traffic to private endpoints in that subnet ([Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy); [Azure Firewall scenarios to inspect traffic destined to a private endpoint](https://learn.microsoft.com/azure/private-link/inspect-traffic-with-azure-firewall)). This lab's `nsg-storage` is attached to the subnet that holds the Lab 5 private endpoint, and `azurerm_subnet.storage` does not set the private endpoint network policy argument. Treat the `Allow-SMB-From-Session-Hosts` rule as documentation of intent, **not** as an enforced control, until policies are enabled on that subnet. The module was not changed because the exact AzureRM argument name and value were not verified against the provider documentation in this review, and the behaviour was not tested. Test plan: `reviews/TEST-PLANS.md`, U23.
+
 ---
 
 ## Step 3 - Write the Terraform

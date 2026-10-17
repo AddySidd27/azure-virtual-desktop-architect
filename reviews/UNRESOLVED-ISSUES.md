@@ -1,6 +1,29 @@
 # Consolidated unresolved issues
 
+> Last updated 2026-10-17 (final readiness gate). Learn retrieval dates: 2026-10-16 and 2026-10-17. Local only; nothing pushed.
+
 Maintained during the 2026-10-16 chapter review. Each item lists what is in conflict or unverified so it is not re-investigated without new evidence. Process note: all reviews so far were single-process, not independent.
+
+## Blocking classification, 2026-10-17
+
+Definitions. **Blocks publication:** a reader would be misled by a false or unflagged claim. **Blocks implementation:** a reader following the steps could not complete the lab, or would deploy an unintended configuration. **Caveat:** documented, flagged in the text, does not stop either use.
+
+| ID | Blocks publication | Blocks implementation | Classification and reason |
+|---|---|---|---|
+| U3 | No | No | Caveat. Learn conflict, stated in Ch1 and the ADR. Design does not depend on the label |
+| U4 | No | No | Caveat. Ephemeral OS disks are not used in any lab. Both Learn positions are stated |
+| U8 | No | No | Caveat. Out-of-scope client dates, flagged in Ch6 |
+| U9 | No | No | Caveat. Both labels are stated in Ch6 |
+| U12 | No | No | Caveat. Ch6 states no pinning method is documented |
+| U15 | No | **Yes, for session-host-configuration pools only** | Caveat for publication (flagged). Blocks implementation of the Entra-joined SHC path, since the access mechanism is undocumented. Labs use standard pools, where the role is documented |
+| U18 | No | No | Caveat. Ch8 does not assert Windows App support |
+| U23 | No | **Yes, if the reader relies on nsg-storage** | The NSG is not enforced on the private endpoint subnet by default (Learn). Documented in Lab 3 and Lab 5. Module unchanged. Not tested |
+| U24 | No | Conditional | Unknown whether a Lab 3 re-apply reverts VNet DNS. Reader is told to apply Lab 3 before Lab 4 |
+| U25 | **Yes, for any claim of validated Terraform** | **Yes** | Terraform fmt, init, validate and plan NOT RUN. The repo does not claim they passed |
+| U26 | No | Conditional | Full provider list untested. Only Microsoft.DesktopVirtualization is source verified |
+| U27 | No | Conditional | Commands written from Learn, not executed. Forwarding timeout rule added |
+| U28 | No | **Yes, for Start VM on Connect and autoscale** | Manual role assignments documented. Not in Terraform (approval needed). Not tested |
+| U35 | No | No | Caveat. Learn conflict on autoscale role scope. Subscription scope satisfies both pages |
 
 ## Disposition summary, 2026-10-16 close-out pass
 
@@ -10,6 +33,8 @@ All verification dated 2026-10-16 (Microsoft Learn). Process note: single review
 - **Open, Learn conflict:** U3, U4, U9.
 - **Open, evidence unavailable or undocumented:** U8, U12, U15, U18.
 - **Open, not tested:** U23, U24, U25 (Terraform fmt, init, validate, plan NOT RUN), U26, U27, U28.
+- **Added 2026-10-17:** U35 (open, Learn conflict).
+- **Re-verified 2026-10-17 and unchanged:** U3, U4, U8, U9, U12, U15, U18. No new Learn evidence found for any of them.
 
 | ID | Topic | Detail | Affected | Status |
 |---|---|---|---|---|
@@ -35,11 +60,11 @@ All verification dated 2026-10-16 (Microsoft Learn). Process note: single review
 | U20 | Who requests the session host SSO token | set-up-mfa authentication flow step 3: the gateway initiates session host SSO via Windows Cloud Login (Policy 2). Ch8 mermaid and paragraph corrected. Source: /set-up-mfa | Ch8 | CLOSED |
 | U21 | Per-feature scope guidance for AVD service roles (Power On, Power On Off, DV VM Contributor) not independently fetched | service-principal-assign-roles, autoscale-create-assign-scaling-plan, start-virtual-machine-connect: Power Management autoscale needs Power On Off Contributor at subscription scope (lower scope breaks autoscale); Dynamic adds DV Virtual Machine Contributor, subscription scope; Start VM on Connect needs Power On Contributor at any scope containing the pool and hosts (subscription recommended); configuring account needs Host Pool Contributor; assignment needs roleAssignments/write. Ch10 table added. Session host configuration role scope not re-read | Ch10 | CLOSED with caveat (SHC role scope not re-read) |
 | U22 | Private Link setup page, private endpoint DNS and Entra join private-connectivity statements not fetched in Ch11 review | private-link-setup: sub-resources connection, feed, global (one global per deployment); DNS zones privatelink-global.wvd.microsoft.com (global) and privatelink.wvd.microsoft.com (feed, connection); restart RDAgentBootLoader; UDP opt-in; public Shortpath unsupported, managed-network Shortpath supported; supported clients are Remote Desktop app (Windows client 1.2.4066+) and Windows App on macOS and iOS/iPadOS only; PowerShell in 5.0.0-preview. Ch11 flag replaced. Entra join private-connectivity statements not separately checked | Ch11 | CLOSED with caveat (Entra join statements not separately checked) |
-| U23 | Storage subnet NSG and private endpoints | Lab 3 attaches nsg-storage (allow TCP 445 from hosts) to the subnet that holds private endpoints. Whether NSG rules apply to private endpoint traffic depends on the subnet's private endpoint network policy setting, which the module does not set and this review did not check | Ch11, Lab 3, Lab 5 | Unverified |
-| U24 | Lab 3 re-apply after Lab 4 DNS change | Lab 4 sets VNet DNS by CLI. The Lab 3 module has no dns_servers argument. Whether a later Lab 3 plan reverts it was not checked | Lab 3, Lab 4 | Unverified |
+| U23 | Storage subnet NSG and private endpoints | Lab 3 attaches nsg-storage (allow TCP 445 from hosts) to the subnet that holds private endpoints. Learn (retrieved 2026-10-17, /private-link/disable-private-endpoint-network-policy and /inspect-traffic-with-azure-firewall): network policies for private endpoints are disabled by default, and NSG rules are bypassed for private endpoint traffic until they are enabled. The module sets no policy argument, so nsg-storage is not enforced on that subnet. The provider argument name was not verified, so the module was not changed. Lab 3 and Lab 5 now document this. Test plan in reviews/TEST-PLANS.md | Ch11, Lab 3, Lab 5 | OPEN (source verified, not tested, module unchanged) |
+| U24 | Lab 3 re-apply after Lab 4 DNS change | Lab 4 sets VNet DNS by CLI. The Lab 3 module has no dns_servers argument. Whether a later Lab 3 plan reverts it was not checked and cannot be settled from documentation (provider behaviour). Test plan in reviews/TEST-PLANS.md | Lab 3, Lab 4 | OPEN (unverified) |
 | U25 | Terraform execution | Terraform and OpenTofu cannot be installed in this environment (registry and release downloads blocked), so no fmt, init, validate or plan was run on any module. Only HCL syntax parsing (python-hcl2) and static reading were done | All terraform/ modules | Not tested |
-| U26 | Resource provider list for AzureRM 5.0 | Lab 1 list derived by reading resource types; not tested on a clean subscription | Lab 1, all labs | Not tested |
-| U27 | Lab 4 Step 5b DNS forwarders | Based on Learn guidance for VM-based custom DNS; the exact commands were not run | Lab 4, Lab 5 | Not tested |
+| U26 | Resource provider list for AzureRM 5.0 | Lab 1 list derived by reading resource types; not tested on a clean subscription. Learn (2026-10-17): Microsoft.DesktopVirtualization must be registered and registering needs the */register/action permission (Contributor or Owner). Whether AzureRM 5.0 auto-registers providers is unverified | Lab 1, all labs | OPEN (partly source verified, not tested) |
+| U27 | Lab 4 Step 5b DNS forwarders | Based on Learn guidance for VM-based custom DNS; the exact commands were not run. Learn (2026-10-17, name resolution for VMs): a DC forwarding to 168.63.129.16 needs a forwarding timeout above 4 seconds or private-zone names can resolve publicly; custom DNS makes port 53 bypass NSGs; keep the Azure DNS IP when a VPN gateway is used. Added to Lab 4 Step 5b | Lab 4, Lab 5 | OPEN (source verified, not tested) |
 | U28 | Lab 7 Start VM on Connect role | Learn confirms role, scope and that Start VM on Connect is configured on an existing pool. Lab 7 Step 2b and new Lab 10 Step 0 document the exact assignments and commands. No role assignment was added to Terraform and the `start_vm_on_connect = true` argument was left (no provider or baseline change authorised). Whether the provider create path accepts it is untested | Lab 7, Lab 8, Lab 10, Lab 14 | OPEN (documented, not fixed in code, not tested) |
 | U29 | Lab 5 `azure_files_authentication` and join cmdlet | Lab 13 Step 4 now uses AzFilesHybrid Join-AzStorageAccount, matching Lab 5; Join-AzStorageAccountForAuth removed repo-wide except where cited as obsolete. Provider behaviour of directory_type = AD and running the join via run-command are untested. Sources: /storage/files/storage-files-identity-ad-ds-enable | Lab 5, Lab 13 | CLOSED in text, not tested |
 | U30 | Lab 5 share-level RBAC vs unsynced AD users | Lab 4 Step 7 now states the selected design (AD DS joined hosts with Entra Cloud Sync of OU=Users,OU=AVD), prerequisites (test tenant, verified domain, alternative UPN suffix, Hybrid Identity Administrator, DA/EA for gMSA, agent on domain-joined server, msDS-ExternalDirectoryObjectId), limitations and the Entra-only alternative. Lab 5 default share-level permission path kept. Sources: cloud-sync/how-to-prerequisites, microsoft-365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization. Not executed | Lab 4, Lab 5, Lab 6 | CLOSED in text, not tested |
@@ -47,3 +72,4 @@ All verification dated 2026-10-16 (Microsoft Learn). Process note: single review
 | U32 | Lab chain 4 to 8: unsynced AD users cannot sign in via AVD | Lab 4 Step 7 selects the design and states that Lab 8 Step 5 needs it; Lab 4 objective corrected (AD DS join, not hybrid join); Lab 8 prerequisite note retained. End-to-end sign-in cannot be completed without a sync tenant and was never run | Lab 4, Lab 8, Project 04 | CLOSED in text (design documented), not tested |
 | U33 | Ch12 CAF AVD topology page deprecated | Two CAF AVD pages were read and both carry a deprecation notice (removal 2026-10-30): eslz-network-topology-and-connectivity and enterprise-scale-landing-zone (the latter says the avdaccelerator GitHub repo is unaffected). The other eslz-* pages cited (identity, security) were not opened. Deprecation notes now on README, SOURCE-VERIFICATION, Ch2, Ch4, Ch7, Ch11, Ch12 and Ch24 references. Ch12 claims re-sourced earlier | Ch12, other chapters | CLOSED with caveat (links will break after removal) |
 | U34 | Project 11 session-timeout control | Exact settings recorded in Project 11 from configure-session-lock-behavior, autoscale-create-assign-scaling-plan (Configure a time limit policy) and Policy CSP ADMX_TerminalServer: idle limit, disconnected limit, End session when time limits are reached, and the two Disconnect remote session on lock policies. Not applied. Whether 15 minutes meets the regulation is a compliance judgement | Project 11 | CLOSED with caveat (not tested; compliance judgement is the reader's) |
+| U35 | Autoscale role scope, Learn internal conflict | Create and assign a scaling plan (Prerequisites) says Power On Off Contributor must be at subscription scope and a lower scope prevents autoscale from working properly. Troubleshoot autoscale (retrieved 2026-10-17) says the role is assigned at host pool, resource group or subscription scope. Neither page explains the difference. Judgement, not Learn: subscription scope satisfies both and is used in Ch10, Lab 10 Step 0, Project 07 and the SHC ADR, each carrying the caveat. Sources: /virtual-desktop/autoscale-create-assign-scaling-plan, /troubleshoot/azure/virtual-desktop/troubleshoot-autoscale | Ch10, Lab 10, Project 07, ADR | OPEN (Learn conflict) |

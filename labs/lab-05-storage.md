@@ -115,7 +115,7 @@ terraform apply tfplan
 **Common errors:**
 
 - *Account kind cannot be changed after creation.* If you created a `StorageV2` account by hand first and are now trying to import it, delete and recreate rather than trying to convert it.
-- *Private endpoint subnet does not support private endpoint policies.* Confirm `private_endpoint_network_policies_enabled` is not blocking it on the storage subnet from Lab 3.
+- *Private endpoint cannot be created in the subnet.* Confirm the storage subnet from Lab 3 has free addresses and no conflicting delegation. Separately, note that NSG rules on that subnet are not applied to private endpoint traffic while the subnet's private endpoint network policies are disabled (the default), see [Lab 3 Step 2](lab-03-vnet-subnets-nsg-dns.md) and U23. The exact provider argument was not verified.
 - *Quota errors on the storage account name.* Storage account names are globally unique; if `stfslogixlabeus01` is taken, adjust the name in `storage.tf`.
 
 ---

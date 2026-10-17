@@ -251,6 +251,8 @@ az vm run-command invoke \
 
 **What this does:** creates a conditional forwarder for the Azure Files namespace (the pattern in Microsoft's Azure Files DNS forwarding guidance) and a general forwarder so public Azure and internet names resolve through Azure DNS rather than only through root hints. The command was not executed in the review. `[VERIFY BEFORE IMPLEMENTATION]` Check the verification output and run `Resolve-DnsName` against a public name before moving on.
 
+**Forwarding timeout (Learn, retrieved 16 October 2026).** Learn says that when Windows DNS servers forward to Azure DNS, the forwarding timeout should be more than four seconds so Azure's recursive resolvers can finish, and that too short a timeout can make private DNS zone names resolve to public IP addresses ([Configure DNS name resolution for Azure virtual networks](https://learn.microsoft.com/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances), Name resolution that uses your own DNS server). Check `(Get-DnsServer).ServerForwarder.Timeout` or the forwarder properties and raise it if it is four seconds or less. Also per that page, once custom DNS servers are set, port 53 traffic bypasses the subnet and NIC NSGs, and if a VPN gateway is later used with custom DNS, the Azure DNS IP must stay in the VNet DNS list. Not executed (U27).
+
 **Common error:** a forwarder already exists. Read the list with `Get-DnsServerForwarder` first.
 
 ---

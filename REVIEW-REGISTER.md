@@ -73,6 +73,13 @@ Diagram, lab, scenario and Terraform checks for Chapters 1 to 12 are recorded pe
 
 Chapter 1 was reviewed by one assistant doing both passes in sequence, so neither pass is an independent review. The limitation is recorded in the evidence record.
 
+## Final readiness gate records (2026-10-17)
+
+- [Readiness assessment](reviews/READINESS-ASSESSMENT.md): two independent verdicts (documentation publication, hands-on implementation).
+- [Unresolved issues](reviews/UNRESOLVED-ISSUES.md): U1 to U35 with blocking classification.
+- [Test plans](reviews/TEST-PLANS.md): U23 to U28 and the Lab 4 to 8 sign-in chain. None executed.
+- [Lab dependency matrix](labs/LAB-DEPENDENCY-MATRIX.md): Labs 1 to 10.
+
 ## Open follow-up items
 
 | Item | Where it is recorded |

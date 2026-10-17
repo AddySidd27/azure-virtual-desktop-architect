@@ -54,3 +54,7 @@ Terraform files changed in this pass: `session-hosts.tf` in `lab14-active-active
 
 Chapter rows above remain as written; the close-out dispositions per chapter are in each `reviews/chNN-review-record.md`.
 
+
+## 2026-10-17 additions
+
+New assets: `labs/LAB-DEPENDENCY-MATRIX.md` (static, source verified only, nothing executed) and `reviews/TEST-PLANS.md` (plans only, none executed). No diagram, SVG or drawio file changed in this pass.

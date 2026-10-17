@@ -77,4 +77,14 @@ All pages below were read on 2026-10-16 (Microsoft Learn). Process note: single 
 | CAF deprecation | [Enterprise-scale landing zone](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone) | Deprecation notice | U33 |
 | Built-in roles | [RBAC for AVD](https://learn.microsoft.com/azure/virtual-desktop/rbac) | Power On roles | U21 |
 
+### Added 2026-10-17 (final readiness gate)
+
+| Topic | Primary Microsoft source | Finding | Issue |
+|---|---|---|---|
+| Private endpoint network policies (NSG bypass) | [Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy), [Inspect traffic](https://learn.microsoft.com/azure/private-link/inspect-traffic-with-azure-firewall) | Policies disabled by default, NSG bypassed until enabled (2026-10-17) | U23 |
+| Name resolution for VMs and custom DNS | [Name resolution for VMs](https://learn.microsoft.com/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances) | Forwarding timeout above 4 seconds, port 53 bypasses NSGs (2026-10-17) | U27 |
+| Resource provider registration | [Resource providers and types](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types), AVD prerequisites | Microsoft.DesktopVirtualization registration needs */register/action (2026-10-17) | U26 |
+| Autoscale role scope | [Troubleshoot autoscale](https://learn.microsoft.com/troubleshoot/azure/virtual-desktop/troubleshoot-autoscale), [Create and assign a scaling plan](https://learn.microsoft.com/azure/virtual-desktop/autoscale-create-assign-scaling-plan) | Pages disagree on role scope (2026-10-17) | U35 |
+| Re-verified unchanged (2026-10-17) | Autoscale scenarios, Prerequisites, Ephemeral OS disks, Windows App get-started, KDC proxy, azure-ad-joined-session-hosts, Intune MSIX guidance | No new evidence | U3, U4, U8, U9, U12, U15, U18 |
+
 Not verified in this pass: Windows 365, AVD Hybrid (Arc) and managed identity beyond the What's new entries. Chapter 1 statements on them rest on What's new only.

@@ -4,6 +4,8 @@ These 20 labs form one progressive learning path. Complete prerequisites and cos
 
 **Validation status:** all labs are documented practice procedures. This repository does not include Azure execution logs or other evidence that would justify calling them lab validated. Treat every command result as expected output until you run it in your own authorized subscription and retain evidence.
 
+**Before you start Lab 4:** read the [Lab dependency matrix](LAB-DEPENDENCY-MATRIX.md). It shows which identity, DNS, storage and role prerequisites each lab consumes, and that Lab 4 Step 7 (Entra sync) is required before the Lab 8 sign-in step.
+
 ## Single-region path
 
 | Lab | Outcome |
