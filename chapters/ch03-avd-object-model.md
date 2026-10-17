@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -123,9 +123,9 @@ flowchart TB
 
 ### What the diagram shows
 
-One workspace at the top. Users subscribe to it and see everything they are entitled to inside it. Underneath sit three application groups - one publishing a full desktop, two publishing sets of applications. Each application group points at exactly one host pool. Each host pool contains session hosts. Access is granted by assigning Entra ID groups to application groups, not to host pools.
+One workspace at the top. Users subscribe to it and see everything they are entitled to inside it. Underneath sit two application groups in the diagram - one publishing a full desktop from Host Pool A, one publishing applications from Host Pool B. Each application group points at exactly one host pool. Each host pool contains session hosts. Access is granted by assigning Entra ID groups to application groups, not to host pools.
 
-Notice that `hp-office-prd-eus2-01` has two application groups attached: a desktop group and a RemoteApp group. That is allowed, and section 4 explains the setting that keeps it from causing trouble.
+The diagram deliberately keeps desktop and RemoteApp delivery on separate host pools. Microsoft does allow a desktop group and RemoteApp groups on the same pooled host pool, and section 4 explains the setting that governs what users see in that case.
 
 ### Step-by-step flow
 
@@ -160,17 +160,19 @@ These are the constraints that decide your design. Learn them properly, because 
 | RemoteApp availability | Desktop application groups work with pooled or personal host pools. RemoteApp application groups are available with pooled host pools only. |
 | User → application groups | Users can be assigned to multiple application groups across multiple host pools, which lets you vary the applications and desktops they can access. |
 | Multiple RemoteApp groups | Users assigned to multiple RemoteApp application groups on the same host pool get access to the aggregate of all applications in those groups. |
-| Host pool type | Once you create a host pool, you can't change its type. You can move registered VMs to a different host pool of another type. |
+| Host pool type | Once you create a host pool, you can't change its type (pooled or personal). You can move registered VMs to a host pool of the other type. |
+| Management approach | Standard or session host configuration is set at creation and can't be changed. A host pool created without a session host configuration can't get one later. |
+| Deployment scope | Geographical or Regional is set at creation and can't be changed. A workspace can only have application groups of the same deployment scope registered to it. |
 
 ### The location rule
 
 This one catches people out during multi-region designs.
 
-All service resources have a location. A host pool's location determines which geography the service metadata for the host pool is stored in. To make sure data isn't transferred between multiple locations, the application group's location should be the same as the host pool's, and workspaces must be in the same location as their application groups.
+All service resources have a location. A host pool's location determines which geography the service metadata for the host pool is stored in. To make sure data isn't transferred between multiple locations, the application group's location should be the same as the host pool's, and workspaces must be in the same location as their application groups (Microsoft Learn FAQ, "What are location restrictions?").
 
 **Practical consequence:** you cannot have one global workspace containing application groups from every region. In a multi-region design you will have a workspace per region. Users in more than one region subscribe to more than one workspace. Plan for that in your communications and client rollout, because "why do I have two workspaces?" is a helpdesk question you can avoid by explaining it up front.
 
-`CURRENCY FLAG - see Chapter 2 on regional versus geographical host pools, which changes where metadata is stored. Re-verify the current model before writing a data residency statement for a customer.`
+`CURRENCY FLAG - reviewed 16 October 2026. Regional host pools change where metadata is stored; Learn is in CONFLICT on their status (What's new says generally available, September 2026; the data locations page still lists only Central US and East US 2). See Chapter 2 and the Review register. Re-verify the current model before writing a data residency statement for a customer. [VERIFY BEFORE IMPLEMENTATION]`
 
 ---
 
@@ -178,17 +180,18 @@ All service resources have a location. A host pool's location determines which g
 
 This setting exists to solve a specific, real problem, and it is a favourite interview question because it shows whether you have run an environment or just built one.
 
-**The problem.** A pooled host pool can have both a desktop application group and RemoteApp application groups attached. If a user is assigned to both, they could open a full desktop *and* a published app from the same host pool. That means two separate sessions to the same host pool, for the same user, at the same time.
+**The problem.** A pooled host pool can have both a desktop application group and RemoteApp application groups attached. Historically, a user assigned to both could open a full desktop *and* a published app from the same host pool, which means two separate sessions to the same host pool, for the same user, at the same time.
 
-Microsoft is direct about the consequence: if a user ends up with two different sessions to the same host pool, it can cause a negative experience and session performance issues for that user and for other users. Two sessions means double the profile handling, double the resource consumption, and a real chance of profile conflicts.
+Microsoft is direct about the consequence: if a user ends up with two different sessions to the same host pool, it can cause a negative experience and session performance issues for that user and for other users. Learn lists overloaded session hosts, users stuck at sign-in, failed connections, black screens and application crashes. Two sessions also means double the profile handling and resource consumption; profile conflicts are a reasonable engineering concern, though that last point is this book's inference rather than a Learn statement.
 
-**The control.** Pooled host pools have a Preferred application group type setting to help prevent users connecting to a desktop and a RemoteApp from application groups assigned to the same host pool. You set it to Desktop or RemoteApp.
+**The control.** Pooled host pools have a Preferred application group type setting to help prevent users connecting to a desktop and a RemoteApp from application groups assigned to the same host pool. You set it to Desktop or RemoteApp. When a user is assigned to both types on that host pool, Windows App or the Remote Desktop app shows only the resources of the preferred type. It does not stop the same user having desktop access on one host pool and RemoteApp access on another.
 
 **Details worth knowing:**
 
-- You must specify the preferred application group type when you create the host pool.
+- You must specify the preferred application group type when you create the host pool. You can change it later.
+- For older host pools with no preferred type set, Learn says the Desktop type is now enforced, so only the desktop is shown. Learn describes that enforcement as still rolling out to all Azure regions (as retrieved 16 October 2026).
 - The Azure portal defaults it to Desktop, and automatically creates and assigns a desktop application group named after the host pool with a `-DAG` suffix - for example `hp01-DAG` - regardless of which type you select. You can remove that application group afterwards if you only want RemoteApp. These portal-specific default behaviours don't occur when you create a host pool with PowerShell or the CLI.
-- It's still technically possible to connect to both a desktop and RemoteApp from the same host pool using the `ms-avd:connect` URI scheme regardless of this setting, but Microsoft doesn't recommend it.
+- It's still technically possible to connect to both a desktop and RemoteApp from the same host pool using the `ms-avd:connect` URI scheme regardless of this setting, but Microsoft doesn't recommend it. The setting controls what the client shows, not what the service allows.
 
 **Architect's rule of thumb.** Do not mix desktop and RemoteApp delivery on the same host pool for the same users unless you have a specific reason and have thought through the session behaviour. If a persona needs both, the cleaner design is usually two host pools. It costs more compute but it removes a whole class of support ticket.
 
@@ -198,17 +201,17 @@ Microsoft is direct about the consequence: if a user ends up with two different 
 
 ## 5. Two Host Pool Management Approaches
 
-`CURRENCY FLAG - verified August 2026. This is a recent and significant change.`
+`CURRENCY FLAG - reviewed 16 October 2026. Learn's What's new lists automated host pools (session host configuration) as available from June 2026 but carries no explicit GA label, and some Learn deployment article text still uses preview wording. Treat GA status as UNVERIFIED and confirm it before designing around it.`
 
 Microsoft now offers two ways to manage a host pool:
 
-**Session host configuration** is available for pooled host pools with session hosts on Azure. AVD manages the lifecycle of the session hosts for you using a combination of native features. **Standard management** is available for pooled and personal host pools with session hosts on Azure or Azure Local, and you manage creating, updating and scaling session hosts yourself.
+**Session host configuration** is available for pooled host pools only. AVD manages the lifecycle of the session hosts for you using a combination of native features, and Learn states it is currently not supported with Azure Local. **Standard management** is available for pooled and personal host pools, and you manage creating, updating and scaling session hosts yourself. With session host configuration you can't create, update or scale session hosts outside the service with tooling built for standard management.
 
 In plain terms: session host configuration is the newer, configuration-driven model where you describe what a session host should look like and the service builds and updates them. Standard management is the classic model where you build the VMs.
 
-`[VERIFY BEFORE IMPLEMENTATION]` - documentation for this feature has been changing as it moved to general availability. Confirm current GA status, supported scenarios, and any limitations for your region and host pool type before designing around it. Chapter 16 covers this properly, including brownfield migration.
+`[VERIFY BEFORE IMPLEMENTATION]` - confirm current status, supported scenarios and limitations for your region and host pool type before designing around it. Chapter 16 covers this properly, including brownfield migration.
 
-**Why it appears here:** because the management approach is chosen at host pool creation and you cannot change a host pool's type afterwards. It belongs in the object model conversation, not only in the deployment conversation.
+**Why it appears here:** because the management approach is chosen at host pool creation and cannot be changed afterwards. If you create a host pool without a session host configuration, you can't add one later. This is a separate rule from the pooled-versus-personal type, which is also fixed at creation. It belongs in the object model conversation, not only in the deployment conversation.
 
 ---
 
@@ -306,7 +309,10 @@ Add the timing dimension. Group membership changes are not always instant end to
 - Azure Virtual Desktop terminology - https://learn.microsoft.com/en-us/azure/virtual-desktop/terminology
 - Preferred application group type behavior - https://learn.microsoft.com/en-us/azure/virtual-desktop/preferred-application-group-type
 - Deploy Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/deploy-azure-virtual-desktop
-- Azure Virtual Desktop FAQ - https://learn.microsoft.com/en-us/azure/virtual-desktop/faq
+- Azure Virtual Desktop FAQ (location restrictions, host pool type) - https://learn.microsoft.com/en-us/azure/virtual-desktop/faq
+- Host pool management approaches - https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches
+- Data locations for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/data-locations
+- Delegated access in Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/delegated-access-virtual-desktop
 
 ---
 
@@ -316,7 +322,7 @@ This chapter's practical work is in **[Lab 2](../labs/lab-02-terraform-foundatio
 
 ---
 
-## 9. Production Scenarios
+## 11. Production Scenarios
 
 ### Scenario 1: New starters see an empty workspace
 
@@ -333,10 +339,14 @@ This chapter's practical work is in **[Lab 2](../labs/lab-02-terraform-foundatio
 Portal path: *Azure portal > Azure Virtual Desktop > Application groups > `ag-desktop-office` > Assignments*.
 
 ```powershell
-Get-AzRoleAssignment -ResourceGroupName rg-avd-service-lab-eus2-01 |
+# Role assignments for the app group scope. This also returns assignments inherited from higher scopes.
+$ag = Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 -Name ag-desktop-office
+Get-AzRoleAssignment -Scope $ag.Id |
   Where-Object { $_.RoleDefinitionName -eq "Desktop Virtualization User" } |
-  Select-Object DisplayName, Scope
+  Select-Object DisplayName, ObjectType, Scope
 ```
+
+Learn assigns the Desktop Virtualization User role to the user or group with the application group as scope. `Get-AzRoleAssignment -ResourceGroupName` lists assignments effective at the resource group, which would not show a role assigned on the application group itself, so the query above uses the application group's resource ID as the scope.
 
 Then confirm the application group is actually attached to the workspace the users subscribed to:
 
@@ -355,8 +365,6 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **Prevention.** Assign through groups only, never individual users. Make AVD group membership part of the joiner process, and add a check for it. Consider dynamic group membership so this cannot be forgotten.
 
-**Architect lesson.** An empty feed means the compute layer has not been consulted yet, so start at assignment.
-
 **Interview lesson.** Correctly saying that assignment lives on the application group answers the question most candidates get wrong.
 
 **Architect's lesson.** Empty feed almost always means assignment, and the compute layer has not even been consulted yet.
@@ -365,7 +373,7 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **Problem.** A finance user reports a very slow desktop. Their profile appears twice on the host.
 
-**Symptoms.** The user has both a published desktop and a published application from the same host pool. Performance is poor for them and for others on the same host.
+**Symptoms.** The user has both a published desktop and a published application from the same host pool. Performance is poor for them and for others on the same host. Learn lists overloaded hosts, stuck sign-ins, black screens and application crashes as possible results of two sessions to one host pool.
 
 **Business impact.** One user with a poor experience and measurable degradation for everyone else sharing that host.
 
@@ -373,17 +381,15 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **Investigation.** List application groups attached to the host pool and check which ones the user is assigned to. Then check the preferred application group type setting on the host pool.
 
-**Evidence.** Two assignments on the same host pool, and two active sessions for the same user in the session host view.
+**Evidence.** Two assignments on the same host pool, and two active sessions for the same user in the session host view. Check how the second session was launched.
 
-**Root cause.** Both groups were assigned to the same Entra group, and preferred application group type was never set deliberately.
+**Root cause.** Both groups were assigned to the same Entra group. Either the host pool predates a deliberately set preferred application group type and the Desktop default is not yet enforced in that region, or the second session was started outside the normal client view, for example through an `ms-avd:connect` link, which the setting does not block.
 
 **Fix.** Decide which delivery method that persona needs, and remove the other assignment. Set preferred application group type explicitly. If the persona genuinely needs both, split them into two host pools.
 
 **Validation.** The user connects and holds one session only. Host CPU and memory return to expected levels.
 
 **Prevention.** Make preferred application group type part of the host pool build standard. Add a check that no Entra group is assigned to both a desktop and a RemoteApp group on the same host pool.
-
-**Architect lesson.** Two sessions doubles a user's footprint and degrades the host for everyone on it.
 
 **Interview lesson.** Explaining why the preferred application group type setting exists shows you understand the failure it prevents.
 
@@ -411,15 +417,13 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **Prevention.** Put workspace per region into the design pattern and into the user communication plan, because "why do I have two workspaces" becomes a helpdesk question otherwise.
 
-**Architect lesson.** Constraints found during build become rework. Found during design they become architecture.
-
 **Interview lesson.** Knowing the location rule prevents the common wrong answer of one global workspace.
 
 **Architect's lesson.** Constraints found during build become rework. Constraints found during design become architecture.
 
 ---
 
-## 10. The Architect's Four Questions
+## 12. The Architect's Four Questions
 
 **What do I check first?** Whether the feed is empty or the launch fails. Empty feed is assignment or workspace association. Launch failure is host pool or session hosts.
 

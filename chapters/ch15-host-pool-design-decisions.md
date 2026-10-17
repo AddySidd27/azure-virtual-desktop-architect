@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part IV:** Host Pool and Session Host Architecture
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -33,7 +33,7 @@
 
 ## Why This Matters
 
-Host pool design decides your compute bill, your user experience and your operational load. It is also close to irreversible. As established in [Chapter 3](ch03-avd-object-model.md#3-the-cardinality-rules), the host pool type cannot be changed after creation.
+Host pool design decides your compute bill, your user experience and your operational load. It is also close to irreversible. As established in [Chapter 3](ch03-avd-object-model.md#3-the-cardinality-rules), the host pool type (pooled or personal), the management approach and the deployment scope are all fixed at creation.
 
 The default answers in the portal are reasonable and almost never optimal. This chapter is about choosing deliberately.
 
@@ -58,7 +58,7 @@ flowchart TB
     Q3 -->|"No"| POOL
 
     POOL --> C1["Autoscale"]
-    PERS --> C2["Always allocated"]
+    PERS --> C2["One VM per user"]
 
     classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
     classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
@@ -72,7 +72,7 @@ flowchart TB
 
 **Step by step.** If users can share a machine, pooled. If they cannot, find out why. Local admin rights or software that must persist between sessions means personal. A GPU workload or a user who can saturate a host alone also means personal. If none of those apply, go back to pooled, because "the users would prefer their own machine" is a preference, not a requirement.
 
-**Architect's interpretation.** Personal host pools are not wrong, they are expensive. Each user's virtual machine is allocated whether they are working or not, which removes the autoscaling saving that justifies AVD in the first place. For a persona that genuinely needs personal desktops, compare against Windows 365 before committing, because at 1:1 the simplicity argument gets strong. See [Chapter 1](ch01-what-avd-actually-is.md#6-avd-vs-windows-365-vs-citrix-daas-vs-on-premises-vdi).
+**Architect's interpretation.** Personal host pools are not wrong, they are expensive. Each user gets a dedicated virtual machine, so you lose the multi-session density that drives most of AVD's cost advantage. Autoscale does support personal host pools (it can start VMs on a schedule or with Start VM on Connect, then deallocate or hibernate them based on session state), which narrows the gap but does not restore sharing. For a persona that genuinely needs personal desktops, compare against Windows 365 before committing, because at 1:1 the simplicity argument gets strong. See [Chapter 1](ch01-what-avd-actually-is.md#6-avd-vs-windows-365-vs-citrix-daas-vs-on-premises-vdi).
 
 **Official Microsoft reference:** https://learn.microsoft.com/en-us/azure/virtual-desktop/terminology
 
@@ -81,17 +81,17 @@ flowchart TB
 Personal host pools assign a user to a specific virtual machine. Microsoft's deployment guidance shows the two types set at creation, with `PersonalDesktopAssignmentType` as `Automatic` or `Direct`.
 
 - **Automatic.** The first time a user connects, they are assigned the next available host and keep it.
-- **Direct.** You assign the user to a specific host yourself.
+- **Direct.** You assign the user to a specific host yourself. Learn is explicit that a user assigned only to the host pool, without a session host, sees **No resources available**.
 
 Automatic suits most cases. Direct is useful when a specific machine has something a specific user needs, such as a particular GPU or a locally licensed application.
 
-`CURRENCY FLAG - verified August 2026.` Microsoft documents additional `LoadBalancerType` values for personal host pools, `Persistent` and `MultiplePersistent`, with the second supporting multi-personal desktop assignment. `[VERIFY BEFORE IMPLEMENTATION]` confirm current availability and behaviour before designing around multi-personal assignment.
+`CURRENCY FLAG - reviewed 16 October 2026.` Microsoft documents additional `LoadBalancerType` values for personal host pools, `Persistent` and `MultiplePersistent`; the second supports assigning multiple personal desktops to one user. Learn states this works only with the Direct assignment type, cannot be disabled once enabled, and that setting it with PowerShell needed a preview version (5.3.0-preview or later) of the Az.DesktopVirtualization module at the time the page was retrieved. `[VERIFY BEFORE IMPLEMENTATION]` confirm the module version and current behaviour before designing around multi-personal assignment.
 
 ---
 
 ## 2. How the Broker Chooses a Host
 
-Load balancing only applies to pooled host pools. Microsoft is explicit: load balancing doesn't apply to personal host pools because users always have a 1:1 mapping to a session host within the host pool.
+Load balancing only applies to pooled host pools. Microsoft is explicit: load balancing doesn't apply to personal host pools because users always have a 1:1 mapping to a session host within the host pool. The role needed to change it is Desktop Virtualization Host Pool Contributor.
 
 ```mermaid
 ---
@@ -124,16 +124,17 @@ sequenceDiagram
 1. The user launches a desktop.
 2. The broker checks for an existing session belonging to that user.
 3. If one exists, the user is sent back to it. This happens regardless of the load balancing algorithm.
-4. If there is no existing session, the broker filters to hosts that accept new connections.
+4. If there is no existing session, the broker filters to hosts that accept new connections. A host in drain mode is not considered for a user with no existing session.
 5. It then applies breadth-first or depth-first to choose among them.
 
-**Architect's interpretation.** The reconnect path is the behaviour that surprises people. Microsoft documents it clearly: if a user already has a session in the host pool and is reconnecting to that session, the load balancer will successfully redirect them to the session host with their existing session. This behavior applies even if that session host's AllowNewConnections property is set to False.
+**Architect's interpretation.** The reconnect path is the behaviour that surprises people. Microsoft documents it clearly: if a user already has an active or disconnected session in the host pool and signs in again, the load balancer redirects them to the session host with their existing session. Learn states this applies even when drain mode has been enabled for that session host.
 
 That is why drain mode does not empty a host. It stops new sessions, but users with disconnected sessions keep coming back. Draining a host for maintenance means waiting for those users to sign out properly, or signing them out yourself. Plan maintenance windows around that.
 
 **Important design decisions.**
 - **Drain mode is not eviction.** Build maintenance runbooks that account for reconnects. See [Project 02](../scenarios/project-02-enterprise-850-users.md) and [Project 15](../scenarios/project-15-production-troubleshooting.md), where day-2 operations are worked through in full.
-- **Session limit is per host pool, not per host.** It applies to every host in the pool.
+- **Session limit is a host pool setting.** It applies to every host in the pool. Learn also notes that under high concurrent connection load the number of sessions on a host can exceed the limit, and that lowering the limit does not affect existing sessions.
+- **Autoscale changes the picture.** For pooled host pools, autoscale overwrites drain mode and applies the load balancing algorithm from the scaling plan schedule instead of the host pool setting. Use the exclusion tag on hosts you are draining for maintenance.
 - **Algorithm is set per host pool.** Microsoft notes you can only configure one of the load balancing algorithms at a time per pooled host pool.
 
 **Interview lesson.** This is documented behaviour few candidates know, and it explains why maintenance runbooks stall.
@@ -145,9 +146,9 @@ That is why drain mode does not empty a host. It stops new sessions, but users w
 | All hosts draining | "No resources available" | `AllowNewSession` across the pool |
 | Session limit reached everywhere | Same symptom, hosts healthy | Session count against the limit |
 | Reconnect to a draining host | Maintenance never completes | Active and disconnected sessions on the host |
-| Uneven distribution | Some hosts hot, others idle | Algorithm in use, and whether a scaling plan is overriding it |
+| Uneven distribution | Some hosts hot, others idle | Algorithm in use, session limit, and whether a scaling plan is overriding it. Breadth-first is randomised, so it is not perfectly even by design |
 
-**Official Microsoft reference:** https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-host-pool-load-balancing
+**Official Microsoft reference:** https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-host-pool-load-balancing, and for autoscale behaviour https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-scenarios
 
 ---
 
@@ -159,21 +160,19 @@ Two algorithms, two different goals.
 
 **Depth-first** fills hosts one at a time. It keeps starting new user sessions on one session host until the maximum session limit is reached. Once the session limit is reached, any new user connections are directed to the next session host in the host pool until it reaches its session limit, and so on.
 
-The selection logic, from Microsoft's documentation of the behaviour: breadth-first first queries session hosts that allow new connections, then selects the session host with the least number of sessions. If there is a tie, the method selects the first session host in the query. Depth-first first queries session hosts that allow new connections and haven't gone over their maximum session limit, then selects the session host with highest number of sessions.
+The selection logic, from Microsoft's documentation of the behaviour: breadth-first first queries session hosts that allow new connections, then selects a session host randomly from the half of the available hosts that have the fewest sessions. A new session therefore does not always land on the emptiest host, and Learn says sessions may not be evenly distributed because of the randomisation. Depth-first first queries session hosts that allow new connections and haven't reached their maximum session limit, then selects the session host with the most sessions, taking the first host in the query on a tie.
 
 ### Which to use
 
-Microsoft's Well-Architected guidance gives a nuanced answer rather than a fixed one: breadth-first load balancing distributes user sessions across session hosts. Users are assigned to the session host that has the lowest usage, which can improve the user experience. Depth-first load balancing saturates one session host at a time before assigning user sessions to other session hosts, which ensures efficient use of resources. This approach is particularly cost-effective, because it fully uses the capacity of a single host before allocating users to the next session host. Depth-first load balancing is especially beneficial in scale-down scenarios.
-
-And the pattern it recommends: use a breadth-first approach during your ramp-up period to avoid excessive sign-ins that might overwhelm a session host because of users starting their workday. Then, shift to a depth-first approach during peak, ramp-down, and off-peak hours.
+Microsoft's own descriptions point in different directions. Breadth-first is described as optimising for session performance because host resources are generally less contended. Depth-first is described as suited to cost-conscious organisations because it makes it easier to scale down the number of hosts powered on. The autoscale scaling plan guidance combines them: it recommends breadth-first for the ramp-up phase, lets you choose either for peak, and recommends depth-first for off-peak so sessions consolidate onto fewer hosts. The algorithm in the scaling plan schedule overrides the host pool setting while autoscale is active.
 
 So the honest answer to "breadth-first or depth-first" is "both, at different times of day", and that is what scaling plans do. See [Project 07](../scenarios/project-07-call-centre-high-density.md), where scaling plans are worked through in full.
 
 ### The trap with depth-first
 
-Depth-first depends entirely on the maximum session limit being correct. Breadth-first does not require one at all.
+Depth-first depends entirely on the maximum session limit being correct, and Learn says you must set one. Breadth-first does not require one. Learn adds that if you create a host pool with breadth-first, the maximum session limit defaults to `999999`, so switching to depth-first without changing it removes any practical cap.
 
-If you set depth-first and leave the session limit at a default that does not reflect the host's real capacity, the algorithm keeps packing users onto a host past the point where it performs well. You get worse performance and none of the cost saving, because the hosts you hoped to switch off are still needed once users complain.
+If you set depth-first and leave the session limit at a value that does not reflect the host's real capacity (including that `999999` default), the algorithm keeps packing users onto a host past the point where it performs well. You get worse performance and none of the cost saving, because the hosts you hoped to switch off are still needed once users complain.
 
 This is the practical version of the density point from [Chapter 5](ch05-operating-systems-multisession-licensing.md#3-density-what-actually-determines-it). Depth-first turns a measured number into a hard operational dependency. Measure it before you enable depth-first.
 
@@ -240,7 +239,7 @@ The most common design mistake in AVD is building host pools around the org char
 - Someone wants "their own capacity"
 - It feels tidier
 
-Every host pool has a capacity floor. Even at low usage you need enough hosts to serve the users who are online, and autoscaling cannot go below one available host without users failing to connect. Ten small host pools cost more than three right-sized ones, and they multiply your image, monitoring and patching work by ten.
+Every host pool has a capacity floor. Even at low usage you need enough hosts to serve the users who are online. Autoscale lets you set a minimum percentage of hosts, including zero off-peak, but a pool scaled to zero needs a way to start hosts (for example Start VM on Connect) or users see no available resources. Ten small host pools cost more than three right-sized ones, and they multiply your image, monitoring and patching work by ten.
 
 **Interview lesson.** Answering a host pool count question with criteria rather than a number shows design thinking.
 
@@ -287,7 +286,7 @@ Get-AzWvdSessionHost -ResourceGroupName rg-avd-service-lab-eus2-01 -HostPoolName
 
 Then compare CPU and memory on the busiest hosts against the idle ones during the complaint window.
 
-**Evidence.** `MaxSessionLimit` is at a value nobody measured. The top hosts are at that limit with high CPU. Hosts further down the list have almost no sessions.
+**Evidence.** `MaxSessionLimit` is at a value nobody measured, possibly the `999999` default created with breadth-first. The top hosts are at that limit with high CPU. Hosts further down the list have almost no sessions.
 
 **Root cause.** Depth-first was enabled without setting a measured session limit. The algorithm did exactly what it was told.
 
@@ -347,7 +346,7 @@ Signing users out loses unsaved work. Message first, wait, then act. This belong
 
 **Validation.** Session count on the draining hosts reaches zero and stays there. Confirm the next morning, because that is when reconnects would appear.
 
-**Prevention.** Add a disconnected session check to the maintenance runbook. Set a sign-out policy for disconnected sessions so they do not persist indefinitely. Schedule maintenance with a defined drain window and an explicit sign-out step rather than hoping hosts empty on their own.
+**Prevention.** Add a disconnected session check to the maintenance runbook. Set a sign-out policy for disconnected sessions so they do not persist indefinitely (Learn's autoscale FAQ describes the Group Policy time limit for disconnected sessions). If autoscale is enabled, tag the hosts you are draining with the scaling plan exclusion tag, because autoscale otherwise overwrites drain mode. Schedule maintenance with a defined drain window and an explicit sign-out step rather than hoping hosts empty on their own.
 
 **Architect's lesson.** Drain mode is not eviction. Any runbook that assumes it is will stall, and the stall is discovered on the day of the change.
 
@@ -395,7 +394,7 @@ Then count session hosts and assigned users per pool, and compare the VM size us
 - Reducing the session limit during working hours, which can leave users unable to connect if the pool is near capacity.
 - Signing out user sessions without messaging first. Unsaved work is lost.
 - Removing session hosts from a pool.
-- Host pool type. It cannot be changed at all after creation.
+- Host pool type, management approach or deployment scope. None of them can be changed after creation.
 
 **When do I escalate to Microsoft?** When hosts are healthy, accepting connections, under their session limit, and the broker still fails to place users. Collect: host pool configuration including type, algorithm and limit, the output of `Get-AzWvdSessionHost` showing status and session counts, the client error and correlation ID, region and UTC timestamps.
 
@@ -422,7 +421,7 @@ Then count session hosts and assigned users per pool, and compare the VM size us
 Pooled unless there is a reason not to. Local admin rights, software that must persist, or a GPU workload that cannot share are the usual reasons for personal. Pooled gives multi-session density and the ability to switch capacity off, which is where AVD's cost advantage comes from.
 
 **Strong senior architect answer**
-"I start from whether users can share a machine, because that is where the economics live. If they can, pooled. If not, I want to know why, because 'users would prefer their own desktop' is a preference and 'this application needs local admin' is a requirement. Personal host pools mean the VM is allocated whether the user is working or not, so you lose the autoscaling saving. For a persona that genuinely needs 1:1, I would compare against Windows 365 before committing, because at that point the operational simplicity argument gets quite strong. And I would decide carefully, because host pool type cannot be changed after creation."
+"I start from whether users can share a machine, because that is where the economics live. If they can, pooled. If not, I want to know why, because 'users would prefer their own desktop' is a preference and 'this application needs local admin' is a requirement. Personal host pools mean one VM per user, so you lose the multi-session density saving, although autoscale can still deallocate or hibernate idle personal VMs. For a persona that genuinely needs 1:1, I would compare against Windows 365 before committing, because at that point the operational simplicity argument gets quite strong. And I would decide carefully, because host pool type cannot be changed after creation."
 
 **Follow-up you should expect**
 "How many host pools would you build for 3,000 users across six personas?" Fewer than six. Separate on sizing, image, OS, isolation and region. Combine where those are the same. Every pool carries a capacity floor and its own image pipeline.
@@ -433,7 +432,7 @@ Pooled unless there is a reason not to. Local admin rights, software that must p
 "Both, at different times. Breadth-first during ramp-up so a wave of morning sign-ins does not overwhelm one host, then depth-first for peak and off-peak so sessions consolidate and idle hosts can be shut down. Scaling plans do this for you. And depth-first only works if the maximum session limit is a measured number."
 
 **2 minute answer**
-Explain the mechanics. Breadth-first picks the host with the fewest sessions and does not require a session limit at all. Depth-first picks the host with the most sessions that is still under the limit, which is what lets you consolidate and deallocate the rest. Then the trap: with depth-first and a default session limit, you pack hosts past their real capacity, so you get worse performance and no saving, because you end up needing the hosts you hoped to switch off. Finish with the reconnect behaviour, since it applies to both. A user with an existing session goes back to it regardless of the algorithm, and regardless of whether that host is in drain mode.
+Explain the mechanics. Breadth-first picks randomly from the half of hosts with the fewest sessions and does not require a session limit. Depth-first picks the host with the most sessions that is still under the limit, which is what lets you consolidate and deallocate the rest. Then the trap: with depth-first and a default session limit, you pack hosts past their real capacity, so you get worse performance and no saving, because you end up needing the hosts you hoped to switch off. Finish with the reconnect behaviour, since it applies to both. A user with an existing session goes back to it regardless of the algorithm, and regardless of whether that host is in drain mode.
 
 **Deep dive answer**
 There is an operational consequence of the reconnect rule worth naming. Drain mode stops new sessions but not reconnects, so a maintenance runbook that drains hosts and waits will stall on disconnected sessions. That means the runbook needs a message step, a wait, and an explicit sign-out step, and a sign-out policy for disconnected sessions so they do not persist for days. Then note that a scaling plan can control the algorithm during parts of the day, so the value on the host pool is not necessarily what is in effect at any given moment. That surprises people during troubleshooting.
@@ -449,11 +448,11 @@ There is an operational consequence of the reconnect rule worth naming. Drain mo
 
 - Host pool type cannot be changed after creation. Decide deliberately.
 - Load balancing applies to pooled host pools only. Personal pools are a 1:1 mapping.
-- Breadth-first picks the host with the fewest sessions and needs no session limit.
+- Breadth-first picks randomly from the half of hosts with the fewest sessions and needs no session limit.
 - Depth-first picks the fullest host under the limit, and depends completely on that limit being measured.
 - Reconnects go to the existing session regardless of algorithm, and even when the host is in drain mode.
 - Drain mode is not eviction. Maintenance runbooks need a message and sign-out step.
-- A scaling plan can control the algorithm during parts of the day.
+- A scaling plan overrides the host pool algorithm and drain mode while autoscale is active.
 - Build host pools around sizing, image, OS, isolation and region. Not around departments.
 
 ---
@@ -463,8 +462,9 @@ There is an operational consequence of the reconnect rule worth naming. Drain mo
 - Configure host pool load balancing - https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-host-pool-load-balancing
 - Deploy Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/deploy-azure-virtual-desktop
 - Azure Virtual Desktop terminology - https://learn.microsoft.com/en-us/azure/virtual-desktop/terminology
-- Application delivery considerations for AVD workloads - https://learn.microsoft.com/en-us/azure/well-architected/azure-virtual-desktop/application-delivery
-- Enable multi-personal desktop assignment - https://learn.microsoft.com/en-us/azure/virtual-desktop/multi-personal-desktop-assignment
+- Autoscale scaling plans and example scenarios - https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-scenarios
+- Autoscale FAQ - https://learn.microsoft.com/en-us/azure/virtual-desktop/autoscale-faq
+- Configure personal desktop assignment (includes multiple personal desktops) - https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-host-pool-personal-desktop-assignment-type
 
 ---
 

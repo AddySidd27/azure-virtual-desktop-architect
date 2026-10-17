@@ -43,7 +43,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 |---|---|---|---|
 | [Chapter 1 - What Azure Virtual Desktop Actually Is (and What It Is Not)](chapters/ch01-what-avd-actually-is.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Chapter 1 record](reviews/ch01-review-record.md) |
 | [Chapter 2 - The Control Plane, Management Plane and Data Plane](chapters/ch02-control-plane-management-plane-data-plane.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch2 record](reviews/ch02-review-record.md) |
-| [Chapter 3 - The AVD Object Model: Host Pools, Application Groups and Workspaces](chapters/ch03-avd-object-model.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 3 - The AVD Object Model: Host Pools, Application Groups and Workspaces](chapters/ch03-avd-object-model.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch3 record](reviews/ch03-review-record.md) |
 | [Chapter 4 - The Connection Flow, End to End](chapters/ch04-connection-flow-end-to-end.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 5 - Operating Systems, Multi-session and Licensing](chapters/ch05-operating-systems-multisession-licensing.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 6 - Clients and the Endpoint Story](chapters/ch06-clients-and-the-endpoint-story.md) | Not Reviewed | Not Reviewed | None |
@@ -55,7 +55,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 | [Chapter 12 - Enterprise Topologies and IP Address Planning](chapters/ch12-enterprise-topologies-ip-planning.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 13 - Hybrid Connectivity and Egress Control](chapters/ch13-hybrid-connectivity-egress-control.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 14 - Protocol Optimisation and Network Performance](chapters/ch14-protocol-optimisation-network-performance.md) | Not Reviewed | Not Reviewed | None |
-| [Chapter 15 - Host Pool Design Decisions](chapters/ch15-host-pool-design-decisions.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 15 - Host Pool Design Decisions](chapters/ch15-host-pool-design-decisions.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch15 record](reviews/ch15-review-record.md) |
 | [Chapter 16 - Automated Host Pools and Session Host Configuration](chapters/ch16-automated-host-pools-session-host-configuration.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 17 - Session Host Sizing and Compute Selection](chapters/ch17-session-host-sizing-compute-selection.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 18 - Session Host Lifecycle and Hybrid Session Hosts](chapters/ch18-session-host-lifecycle-hybrid.md) | Not Reviewed | Not Reviewed | None |

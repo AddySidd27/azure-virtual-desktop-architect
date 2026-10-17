@@ -25,15 +25,14 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 5 | Regional host pools status/regions | Conflict | S3 lists Central US and East US 2 and geographical default; Learn What's new says GA (Sept 2026). Currency flag updated; no GA date asserted. |
 | 6 | Deployment scope cannot be changed after creation | Verified | Recorded in Ch1 review (S-host-pool management pages) |
 | 7 | `Update-AzWvdSessionHost -AllowNewSession:$true` syntax | Verified | S4 syntax and example |
-| 8 | `Get-AzWvdSessionHost` selecting Status, AllowNewSession, Session, UpdateState | Unverified | S6 excerpt confirms output type ISessionHost only; property names not confirmed against the full model page. Not executed. |
+| 8 | `Get-AzWvdSessionHost` selecting Status, AllowNewSession, Session, UpdateState | Verified (property names) | ISessionHost interface page (https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.powershell.cmdlets.desktopvirtualization.models.isessionhost, full fetch 2026-10-16) lists Name, Status, Session, AllowNewSession, UpdateState. Not executed. |
 | 9 | Stale cross-references to Chapters 30-32 and 36-38 | Corrected | Replaced with pointer to SUMMARY.md (structure-change-03). |
 | 10 | Duplicate "Architect lesson" lines | Corrected (readability) | Removed the shorter duplicate in 3 scenarios. |
 
 ## Outcomes
 
-- Technical pass: Verified with caveats (claim 5 conflict, claim 8 unverified, no runtime execution).
+- Technical pass: Verified with caveats (claim 5 conflict, no runtime execution, S5/S6 search excerpts only).
 - Readability pass: Reviewed with caveats (same process; no reader test).
 
 ## Follow-ups
 - Diagram `diagrams/architecture/ch02-avd-control-plane.svg` text not re-checked against corrected step 4 wording beyond a grep for "persistent" (no match).
-- Confirm Get-AzWvdSessionHost property names.
