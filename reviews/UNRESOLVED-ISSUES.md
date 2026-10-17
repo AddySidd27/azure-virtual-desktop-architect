@@ -4,6 +4,8 @@
 
 Maintained during the 2026-10-16 chapter review. Each item lists what is in conflict or unverified so it is not re-investigated without new evidence. Process note: all reviews so far were single-process, not independent.
 
+Detailed reassessment of U23, U24, U26, U27, U28, U35 and U36 (Learn source, what documentation can and cannot resolve, tests, approvals and acceptance criteria): [OPEN-ISSUES-REASSESSMENT](OPEN-ISSUES-REASSESSMENT.md).
+
 ## Blocking classification, 2026-10-17
 
 Definitions. **Blocks publication:** a reader would be misled by a false or unflagged claim. **Blocks implementation:** a reader following the steps could not complete the lab, or would deploy an unintended configuration. **Caveat:** documented, flagged in the text, does not stop either use.

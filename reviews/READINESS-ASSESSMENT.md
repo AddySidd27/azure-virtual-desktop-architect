@@ -86,4 +86,4 @@ Actions to reach YES: run Labs 1 to 8 end to end in a test tenant and record rea
 
 Publication verdict is unchanged: CONDITIONAL. The pass removed unsupported frequency claims, labelled illustrative scenarios and judgement sections, expanded acronyms at first use, and re-read the Chapter 4 Shortpath and Chapter 8 SSO sections against Learn. It did not add independent review and did not close any issue. Implementation verdict is unchanged: NO.
 
-CI note: the passing GitHub CI runs (39007047474, 39007048778, 39007050303) were on `6a11662`. The later commits are documentation and chapter edits only. They have not had a fresh CI run, and the Markdown link check workflow has not been run on them.
+CI note: manually dispatched GitHub CI passed on `6a11662` (runs 39007047474, 39007048778, 39007050303) and again on `b95af3f` (runs 39007931570, 39007932741, 39007933846), the commit that includes the Chapters 1 to 12 edits. Commits after `b95af3f` have not had a CI run.

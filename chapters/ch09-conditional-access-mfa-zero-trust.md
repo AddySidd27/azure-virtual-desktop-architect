@@ -97,7 +97,7 @@ Now the important part. The same setting does different things depending on the 
 | App | What sign-in frequency enforces |
 |---|---|
 | Azure Virtual Desktop | Reauthentication when a user subscribes, manually refreshes their resource list, and authenticates to the gateway during a connection. Once the reauthentication period is over, background feed refresh and diagnostics upload silently fail until the user completes their next interactive sign in. |
-| Microsoft Remote Desktop and Windows Cloud Login | Reauthentication when a user signs in to a session host when single sign-on is enabled. |
+| Windows Cloud Login | Reauthentication when a user signs in to a session host when single sign-on is enabled. (Learn's current table lists only this app for session host sign-in; see the note in section 1 about the Microsoft Remote Desktop app.) |
 
 Read the AVD app row again. **Background feed refresh and diagnostics upload silently fail.** Not an error the user sees. Not an alert. Your monitoring data quietly stops arriving for users whose reauthentication window has expired, and you will spend a long time looking at the Log Analytics workspace before you think to look at a Conditional Access policy.
 
@@ -129,7 +129,7 @@ And the symptom when it is not: when legacy per-user multifactor authentication 
 
 Learn adds: if you don't want to restrict sign in to strong authentication methods such as Windows Hello for Business on Entra joined hosts, you need to exclude the Azure Windows VM Sign-In app (the app that appears as AppId `372140e0-b3b7-4226-8ef9-d57986796201` in the Ch8 sign-in log query on Learn's troubleshooting page) from your Conditional Access policy. VM sign-ins do not support per-user enabled or enforced MFA. Conditional Access also cannot be used while Security Defaults are enabled, and needs Entra ID P1 or P2.
 
-**Architect's note.** In a large tenant, per-user MFA is usually a leftover from before Conditional Access existed. It is often enabled for a subset of users nobody remembers enabling it for, which is exactly why the failure looks random. Audit it before you design, not after go live.
+**Architect's note (judgement).** Per-user MFA can be a leftover from before Conditional Access existed, enabled for a subset of users nobody remembers enabling it for, which would make the failure look random. Audit it before you design, not after go live.
 
 ---
 

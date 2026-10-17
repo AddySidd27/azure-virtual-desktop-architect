@@ -43,3 +43,7 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Private Link CURRENCY FLAG replaced with setup-page evidence and client-support note; CAF deprecation note retained.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Learn re-check, 17 October 2026
+
+Full re-read of [Required FQDNs and endpoints for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint). Ports and the platform address rows match. Error corrected: the chapter (and Lab 3) said `oneocsp.microsoft.com` and `catalogartifact.azureedge.net` had no service tag, but Learn lists `AzureFrontDoor.FirstParty` and `AzureFrontDoor.Frontend`; `azkms.core.windows.net` carries only the generic `Internet` tag. Private Link section not re-read. Details in [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md).

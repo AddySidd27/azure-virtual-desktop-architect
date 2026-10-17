@@ -107,3 +107,15 @@ Pushed `6a11662` to `origin/docs/review-register-ch01-remediation`. A push to a 
 | Markdown link check | 39007050303 | success |
 
 This is schema-level validation only. It does not cover `plan`, `apply`, Azure behaviour or lab execution (U25 stays open for those).
+
+### Re-run on `b95af3f`, 17 October 2026
+
+Commit `b95af3f8e83f42747dd7a380687bb91bb3859134` (Chapters 1 to 12 editorial pass; documentation only, no Terraform change since `6a11662`). The same three workflows were dispatched manually on the branch and all passed:
+
+| Workflow | Run | Result |
+|---|---|---|
+| Terraform structural check | 39007931570 | success |
+| Repository check | 39007932741 | success |
+| Markdown link check | 39007933846 | success |
+
+Scope is unchanged: formatting, provider schema validation, repository structure, links and a secret scan. Commits made after `b95af3f` (including the one that records this table) have not had a CI run.

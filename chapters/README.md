@@ -44,4 +44,6 @@ Reading the evidence in the chapters:
 - `CURRENCY FLAG`: a time-sensitive statement with a retrieval date. Recheck before relying on it.
 - `[VERIFY BEFORE IMPLEMENTATION]` and `[UNTESTED]`: a Learn gap or conflict, or a procedure that has not been run.
 
+Which chapters were freshly re-read against Learn on 17 October 2026, and which were not, is listed in the [chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md).
+
 For hands-on work across Labs 3 to 8 start with the [guided journey](../labs/JOURNEY-LABS-3-8.md). Acronyms are expanded at first use in each chapter and collected in the [glossary](../appendices/glossary.md).

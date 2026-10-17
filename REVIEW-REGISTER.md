@@ -112,3 +112,9 @@ Single reviewer, not independent. Gap analysis of all twelve chapters found them
 - `chapters/README.md` now has a status table for Chapters 1 to 12 with labs and open issues.
 
 Mermaid blocks in Chapters 1 to 12 (8) render without error with mmdc and the Playwright Chromium. Rendered output was not visually inspected in this pass. No issue was closed. U23 to U28, U35 and U36 are unchanged.
+
+CI on `b95af3f` (dispatched manually, 17 October 2026): Terraform structural check 39007931570, Repository check 39007932741, Markdown link check 39007933846, all success. Structure, links, formatting and schema validation only. It does not validate chapter accuracy, Azure behaviour or lab execution.
+
+## Source recheck and issue reassessment, 17 October 2026
+
+Single reviewer. Full Learn re-reads: Chapter 9 (set-up-mfa) and Chapter 11 (required FQDNs), plus Chapter 4 and 8 earlier the same day. Two corrections: a stale app row in the Chapter 9 sign-in frequency table, and a service tag error in Chapter 11 and Lab 3. Chapters 1, 2, 3, 5, 6 and 12 were not re-read; see [CHAPTER-SOURCE-RECHECK](reviews/CHAPTER-SOURCE-RECHECK.md). Issues U23, U24, U26, U27, U28, U35 and U36 reassessed with acceptance criteria in [OPEN-ISSUES-REASSESSMENT](reviews/OPEN-ISSUES-REASSESSMENT.md); none closed. Lab 1 provider note corrected from a static read of resource types. Lab 3 and Lab 7 troubleshooting extended. README evidence boundary for the author's separate projects added.

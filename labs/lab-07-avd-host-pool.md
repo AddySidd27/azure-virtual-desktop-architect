@@ -140,6 +140,8 @@ az role assignment list \
 | `preferred_app_group_type` rejected on apply | The provider accepts exactly `None`, `Desktop` or `RailApplications`, case-sensitive. `RailApplications` is the value for RemoteApp application groups (the Azure portal labels it **RemoteApp**) | Correct the value in `host-pool.tf` |
 | Role assignment fails with `PrincipalNotFound` | The group object ID doesn't exist yet, or replication lag after creating it | Wait a minute after group creation and retry |
 | Registration token expired before Lab 8 | More than 24 hours passed between this lab and the next | `terraform apply -replace=azurerm_virtual_desktop_host_pool_registration_info.lab` |
+| Users see an empty feed in Windows App later (Lab 8 Step 5) | Usually an assignment problem: the role is on the host pool instead of the application group, the Entra group has no synced members (Lab 4 Step 7), or the user is not in AD DS and Entra both. See [Chapter 3](../chapters/ch03-avd-object-model.md). Judgement, not tested | Check the role assignment scope and the group membership before looking at the session host |
+| Start VM on Connect is on but a deallocated host does not start | The Power On Contributor role (Step 2b) was not assigned, or was assigned at a scope that does not contain the host | Assign the role as in Step 2b and retest. Not tested |
 
 ## Troubleshooting
 

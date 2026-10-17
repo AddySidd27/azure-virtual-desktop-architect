@@ -95,3 +95,8 @@ Not verified in this pass: Windows 365, AVD Hybrid (Arc) and managed identity be
 |---|---|---|---|
 | RDP Shortpath (Ch4) | [RDP Shortpath for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-shortpath) | Ports, ranges, selection and security statements match. Four wording corrections in Chapter 4 | none new |
 | Single sign-on (Ch8) | [Configure single sign-on](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on) | Prerequisites and steps match. Client list and external identity requirement added | U15, U18 unchanged |
+| Conditional Access for AVD (Ch9) | [set-up-mfa](https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-mfa) | Matches. One stale table row corrected | none |
+| Required endpoints (Ch11, Lab 3) | [required-fqdn-endpoint](https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint) | Service tag error corrected | none |
+| Private endpoint network policies (U23) | [Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy) | New CLI parameter and ARM values recorded | U23 open |
+| Start VM on Connect scope (U28) | [Configure Start VM on Connect](https://learn.microsoft.com/azure/virtual-desktop/start-virtual-machine-connect) | Lower scope guidance corrected by Learn; matches Ch10 | U28 open |
+| AzureRM 5.0 provider registration | [HashiCorp announcement](https://www.hashicorp.com/blog/terraform-azurerm-provider-50-now-generally-available) | No providers registered by default; upgrade guide not retrievable | U26 open |

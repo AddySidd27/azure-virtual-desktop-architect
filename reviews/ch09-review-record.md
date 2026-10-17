@@ -45,3 +45,7 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: audit-01 appendix entry for a4a365df struck through and cross-referenced.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Learn re-check, 17 October 2026
+
+Full re-read of [Enforce Microsoft Entra multifactor authentication for AVD using Conditional Access](https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-mfa). App IDs, the two-policy structure, sign-in frequency rules, per-user MFA and the authentication flow match. One correction: the sign-in frequency table named the Microsoft Remote Desktop app beside Windows Cloud Login; Learn's table lists only Windows Cloud Login. The per-user MFA 'architect's note' is now marked as judgement. Details in [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md).

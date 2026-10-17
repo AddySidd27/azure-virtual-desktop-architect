@@ -49,6 +49,8 @@ This portfolio builds on hands-on projects I completed while developing and test
 | Autoscale and cost optimization | Configured and tested an AVD scaling plan, schedule phases, host-pool association, and operational checks | Capacity planning, power management, user-impact controls, and cost awareness |
 | Golden image engineering | Designed the image workflow used to standardize session hosts and support repeatable replacement | Image versioning, validation, controlled rollout, and session-host lifecycle planning |
 
+The projects in this table are separate from the labs in this repository. Their logs and evidence are not committed here, so this page describes them as the author's account and a reader cannot verify them from the repository alone.
+
 The Northwind organization and the 15 named scenarios in this repository are fictional. I use them to demonstrate architecture decisions without presenting invented customer work as professional delivery history. The complete Northwind environment has not been deployed as one production platform. See [Validation Status](VALIDATION-STATUS.md) for the exact evidence boundary.
 
 ## Recommended review path
@@ -215,7 +217,7 @@ This is a learning and portfolio reference, not a production deployment package.
 
 - [Full table of contents](SUMMARY.md)
 - [Labs 3 to 8 guided journey](labs/JOURNEY-LABS-3-8.md) and [lab dependency matrix](labs/LAB-DEPENDENCY-MATRIX.md)
-- [Test plans](reviews/TEST-PLANS.md), [readiness assessment](reviews/READINESS-ASSESSMENT.md) and [decisions that need approval](reviews/DECISIONS-REQUIRED.md)
+- [Test plans](reviews/TEST-PLANS.md), [open issue reassessment](reviews/OPEN-ISSUES-REASSESSMENT.md), [chapter source recheck](reviews/CHAPTER-SOURCE-RECHECK.md), [readiness assessment](reviews/READINESS-ASSESSMENT.md) and [decisions that need approval](reviews/DECISIONS-REQUIRED.md)
 - [Validation status](VALIDATION-STATUS.md)
 - [Final architecture and operations review](FINAL-REVIEW.md)
 - [Terraform validation record](TERRAFORM-VALIDATION.md)

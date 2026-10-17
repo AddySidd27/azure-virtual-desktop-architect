@@ -120,7 +120,7 @@ flowchart TB
 
 NSGs filter on IP addresses, ports and service tags. They cannot filter on FQDNs.
 
-Several required endpoints have no service tag at all. `www.microsoft.com`, `oneocsp.microsoft.com`, `azkms.core.windows.net` and the platform addresses are examples. In an NSG you either allow the traffic broadly or you move FQDN filtering to Azure Firewall, which supports FQDN tags including one for AVD, or to a third party next generation firewall with a dynamic Azure address list.
+Several required endpoints have no service tag at all. In Learn's table (re-read 17 October 2026) `www.microsoft.com`, `ctldl.windowsupdate.com`, `aka.ms` and the platform addresses show no service tag. `azkms.core.windows.net` is listed only with the generic `Internet` tag, which is far broader than a service-specific tag. `oneocsp.microsoft.com` does have one (`AzureFrontDoor.FirstParty`), so an earlier version of this paragraph that named it as untagged was wrong. In an NSG you either allow the traffic broadly or you move FQDN filtering to Azure Firewall, which supports FQDN tags including one for AVD, or to a third party next generation firewall with a dynamic Azure address list.
 
 This is exactly the boundary [Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md) hits. The lab NSG allows service tags explicitly and permits the remaining outbound traffic. That is fine for a lab. It is not an egress control design. [Chapter 13](ch13-hybrid-connectivity-egress-control.md) builds the real one.
 
