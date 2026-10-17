@@ -56,7 +56,7 @@ Diagram, lab, scenario and Terraform checks for Chapters 1 to 12 are recorded pe
 | [Chapter 9 - Conditional Access, MFA and Zero Trust Access](chapters/ch09-conditional-access-mfa-zero-trust.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch9 record](reviews/ch09-review-record.md) |
 | [Chapter 10 - RBAC, Delegation and the Administrative Model](chapters/ch10-rbac-delegation-administrative-model.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch10 record](reviews/ch10-review-record.md) |
 | [Chapter 11 - Network Fundamentals and Required Connectivity](chapters/ch11-network-fundamentals-required-connectivity.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch11 record](reviews/ch11-review-record.md) |
-| [Chapter 12 - Enterprise Topologies and IP Address Planning](chapters/ch12-enterprise-topologies-ip-planning.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 12 - Enterprise Topologies and IP Address Planning](chapters/ch12-enterprise-topologies-ip-planning.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch12 record](reviews/ch12-review-record.md) |
 | [Chapter 13 - Hybrid Connectivity and Egress Control](chapters/ch13-hybrid-connectivity-egress-control.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 14 - Protocol Optimisation and Network Performance](chapters/ch14-protocol-optimisation-network-performance.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 15 - Host Pool Design Decisions](chapters/ch15-host-pool-design-decisions.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch15 record](reviews/ch15-review-record.md) |

@@ -315,7 +315,7 @@ Answer "no" first, confidently, then add the Shortpath nuance yourself. Voluntee
 - Understanding Azure Virtual Desktop network connectivity - https://learn.microsoft.com/en-us/azure/virtual-desktop/network-connectivity
 - Proxy server guidelines - https://learn.microsoft.com/en-us/azure/virtual-desktop/proxy-server-support
 - WVDConnections table reference - https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/wvdconnections
-- Network topology and connectivity design guidance - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+- Network topology and connectivity design guidance - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity (page deprecated by Microsoft, removal announced for 30 October 2026; see U33)
 - Service architecture and resilience - https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience
 
 ---

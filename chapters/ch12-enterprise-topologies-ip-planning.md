@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part III:** Network Architecture
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -34,7 +34,7 @@
 
 Topology is the hardest thing in this book to change once workloads are running. You can rebuild a session host in twenty minutes. You cannot renumber a virtual network that is peered to six others and connected to on-premises without a project.
 
-AVD makes this worse than most workloads for two reasons. Session host counts grow, sometimes suddenly after an acquisition. And rolling image updates temporarily double the host count, so the subnet has to hold more addresses than the steady state suggests.
+AVD makes this worse than most workloads for two reasons. Session host counts grow, sometimes suddenly after an acquisition. And rolling image updates can temporarily double the host count (the worst case, depending on batch size), so the subnet has to hold more addresses than the steady state suggests.
 
 ---
 
@@ -44,9 +44,9 @@ The first thing to get straight is ownership. Microsoft's guidance places AVD as
 
 That means the hub, the firewall, the ExpressRoute circuit and the DNS design usually belong to a platform team. The AVD architect consumes them and states requirements. This is a better position than it sounds, because it means you are not responsible for the hub, but you are responsible for stating clearly what AVD needs from it.
 
-Microsoft frames the AVD network design foundations as hybrid integration for connectivity between on-premises, multicloud and edge environments and global users, performance and reliability at scale for a consistent low-latency experience, zero trust based network security to help secure network perimeters and traffic flows, and extensibility for easily expanding a network footprint without design rework.
+`CURRENCY FLAG - reviewed 16 October 2026.` The Cloud Adoption Framework page this chapter originally drew on ([AVD network topology and connectivity](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity)) is marked deprecated and is due to be removed on 30 October 2026. Its current text no longer contains the four-point "design foundations" sentence this section used to quote, so that sentence is dropped here as `[UNVERIFIED]`. The landing zone placement point stands: the page still says to have an Azure landing zone in place and then deploy AVD resources into a workload landing zone. The topology claims below are re-sourced to the Cloud Adoption Framework topology pages and the Azure Architecture Center hub-spoke pages, which were fetched in full.
 
-That last one, extensibility without design rework, is the one people fail. Sections 3 and 5 are about getting it right.
+The point worth keeping from the old framing is extensibility without design rework. People fail that one. Sections 3 and 5 are about getting it right.
 
 ---
 
@@ -56,20 +56,20 @@ Both are valid landing zone topologies. Neither is universally correct.
 
 **Hub and spoke.** You build and operate the hub virtual network yourself. Microsoft describes it as a network architecture in which a hub virtual network acts as a central point of connectivity to several spoke virtual networks. The hub can also be the connectivity point to on-premises datacenters. The spoke virtual networks peer with the hub and help to isolate workloads.
 
-**Virtual WAN.** Microsoft operates the hub. It is a networking service that brings networking, security and routing functions together in a single operational interface. Microsoft's guidance is to use Virtual WAN when you require transit connectivity between many endpoints.
+**Virtual WAN.** Microsoft operates the hub. It is a networking service that brings networking, security and routing functions together in a single operational interface. Learn's current Cloud Adoption Framework guidance is to use a Virtual WAN topology if any of these apply: resources across several Azure regions with global connectivity between virtual networks and multiple on-premises locations; an SD-WAN deployment or more than 30 branch sites for native IPsec termination; or a need for transitive routing between VPN and ExpressRoute. A traditional hub and spoke topology fits one or several regions with some cross-region traffic but no full mesh, fewer than 30 site-to-site tunnels, and a wish for full control of routing.
 
 ### The scale trigger
 
 Microsoft's own recommendation for when to move: when your organization requires hub-and-spoke network architectures across more than two Azure regions and global transit connectivity between landing zone virtual networks across Azure regions, and you want to minimize network management overhead, we recommend a managed global transit network architecture that's based on Virtual WAN.
 
-So the trigger is more than two regions plus a need for global transit, not spoke count on its own.
+That recommendation is on the [Traditional Azure networking topology](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/traditional-azure-networking-topology) page (verified 16 October 2026). It is one of several triggers, not the only one. Spoke count on its own is not a trigger. Learn also lists 30 branch sites or SD-WAN and VPN to ExpressRoute transit as reasons for Virtual WAN, and says traditional hub and spoke suits one or several regions, using global virtual network peering to connect two regional hubs.
 
 ```mermaid
 ---
 title: Landing zone topology decision
 ---
 flowchart TB
-    Q{"More than two regions with transit?"}
+    Q{"More than two regions with global transit, or 30+ branches / SD-WAN, or VPN to ExpressRoute transit?"}
 
     Q -->|"No"| HS["Hub and Spoke"]
     Q -->|"Yes"| VW["Virtual WAN"]
@@ -95,9 +95,9 @@ The decision is about region count and transit needs, and it is a platform decis
 ### Step by step
 
 1. Count the Azure regions in scope, now and in the next two years.
-2. Ask whether landing zones in different regions need to talk to each other, and whether branch sites connect directly to Azure.
+2. Ask whether landing zones in different regions need to talk to each other, whether branch sites connect directly to Azure (and how many), and whether you need transit between VPN and ExpressRoute.
 3. One or two regions with straightforward connectivity points at hub and spoke.
-4. More than two regions with global transit, or a large branch estate, points at Virtual WAN.
+4. More than two regions with global transit, a large branch or SD-WAN estate, or VPN to ExpressRoute transit points at Virtual WAN.
 5. Whichever is chosen, AVD consumes it as a spoke.
 
 ### Architect's view
@@ -108,9 +108,9 @@ The two operational differences worth knowing, because they will come up:
 
 **Hub and spoke has no transitive routing by default.** Spoke to spoke traffic needs user defined routes and firewall rules. If your profile storage sits in a different spoke from your session hosts, that is a routing conversation.
 
-**Shared services cannot live inside the Virtual WAN hub.** Microsoft is explicit: deploy required shared services, like DNS servers, in a dedicated spoke virtual network. Customer-deployed shared resources can't be deployed inside the Virtual WAN hub itself. So domain controllers go in a spoke, not in the hub, and that changes where your identity subnet lives.
+**Shared services cannot live inside the Virtual WAN hub.** Learn's Virtual WAN topology page is explicit: deploy required shared services, like DNS servers, in a dedicated spoke virtual network, because customer-deployed shared resources can't be deployed inside the Virtual WAN hub itself (verified 16 October 2026). By contrast, the traditional hub and spoke page lists Active Directory domain controllers and DNS servers as optional shared services that can sit in the central hub. The Architecture Center hub-spoke guidance adds that application workloads belong in spokes. So with Virtual WAN, domain controllers go in a spoke, and that changes where your identity subnet lives. Also note that a Virtual WAN hub needs an address range of at least /24.
 
-**Official reference:** https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+**Official reference:** https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/define-an-azure-network-topology
 
 ---
 
@@ -132,7 +132,7 @@ The method:
 
 1. **Maximum users for the host pool.** Not today's number. The number the business plans for.
 2. **Divide by users per host.** From measurement, not a blog post. See [Project 07](../scenarios/project-07-call-centre-high-density.md), where density economics is worked through in full.
-3. **Double it.** During a rolling image update, old and new hosts coexist. This is the step people miss.
+3. **Double it.** During a rolling image update, old and new hosts can coexist. This is the step people miss. `Judgement:` doubling is a conservative worst case for an update that adds every new host before removing old ones. A batched update that removes old hosts as it adds new ones needs less, and the batch size is yours to choose, so state the assumption in the design.
 4. **Add the Azure reservation.** Five addresses per subnet, always.
 5. **Round up to the next power of two.**
 
@@ -154,7 +154,7 @@ A `/24` would have given 251 usable, which looks fine at steady state and fails 
 
 If you own the hub, size it once and stop thinking about it. A `/22` for the hub is a common enterprise allocation because it holds the gateway subnet, firewall subnet, Bastion subnet and shared services with room left over. Expanding a hub address space later means re-peering every spoke.
 
-The gateway subnet has a specific requirement. Microsoft's hub and spoke reference architecture states: create a gateway subnet with an IP address range of at least /26 or larger named GatewaySubnet. The /26 address range provides sufficient scalability to avoid gateway size limitations and accommodate extra ExpressRoute circuits in the future.
+The gateway subnet has a specific requirement. The Azure Architecture Center hub and spoke guidance says to create a gateway subnet of at least /26 named GatewaySubnet, so that it has room for gateway size limits and extra ExpressRoute circuits later. That is a recommendation, not the platform minimum. The ExpressRoute and VPN gateway pages say /27 or larger for most configurations and /26 or larger if you plan to connect 16 ExpressRoute circuits, and the Azure Networking design guide lists /27 as the minimum. Never put anything else in the gateway subnet, and do not attach an NSG to it. `AzureFirewallSubnet` and `AzureBastionSubnet` are /26 minimum.
 
 ### Reserved subnet names
 
@@ -191,6 +191,8 @@ This is one of the few places where a network design decision shows up directly 
 **What the lab does teach.** Subnet separation by function, NSGs per subnet, address space sized for growth, and the identity subnet pattern you would use in a real spoke. Everything transfers. In production the same subnets sit inside a spoke that peers to a hub, and the NSG rules are the same.
 
 **What differs in production.** A route table sending outbound traffic to the firewall, peering to the hub, and DNS pointing at central resolvers rather than a single lab domain controller.
+
+**The multi-region lab.** [Lab 11](../labs/lab-11-multiregion-network-foundation.md) connects two regional spokes with direct global peering and no hub. That matches the Traditional topology page, which describes spoke-to-spoke peering as a valid pattern, but traffic between directly peered spokes does not pass through any hub firewall or NVA, so it is a lab simplification and not a production inspection design. Peering is not transitive, so a third spoke would need its own peerings. `[UNTESTED]` in Azure.
 
 ---
 
@@ -252,7 +254,7 @@ az network vnet subnet show \
 
 Then count the current host NICs against the usable address count for the prefix.
 
-**Evidence.** The subnet is a /24 with 251 usable addresses. 118 old hosts plus 118 new hosts plus platform overhead exceeds it.
+**Evidence.** The subnet is a /24 with 251 usable addresses. 150 old hosts plus 150 new hosts is 300, which exceeds it.
 
 **Root cause.** The subnet was sized from steady state host count without allowing for the update overlap.
 
@@ -264,7 +266,7 @@ Proper fix: add an additional address prefix to the virtual network and create a
 
 **Validation.** A full rolling update completes end to end with the pool at maximum size, without exhausting addresses. Test it deliberately rather than waiting for the next real update.
 
-**Prevention.** Size session host subnets at double the steady state host count, plus the five Azure reserved addresses, then round up. Add a subnet utilisation alert at 70 percent.
+**Prevention.** Size session host subnets at double the steady state host count (or at the peak your update batch size creates), plus the five Azure reserved addresses, then round up. Add a subnet utilisation alert at 70 percent. `[UNVERIFIED]`: the alert threshold is a judgement, and the metric or query used for it was not checked against Learn.
 
 **Architect lesson.** Size for the peak the process creates, not the peak the users create.
 
@@ -311,7 +313,7 @@ Moving storage is not trivial. Plan it as a migration with a maintenance window,
 **What can I safely change now?** Adding a new subnet to an existing address space. Adding an address prefix to a virtual network. NSG rules. Reading peering and route configuration.
 
 **What must not be changed blindly?**
-- Virtual network address space on an existing network. Changing it can force resource recreation and break peering.
+- Virtual network address space on an existing network. Adding an address prefix is supported without an outage on a peered network, but each remote peering then needs a resync, and removing or changing an existing prefix can break peering and force resource recreation. Learn's IP planning page documents the add-and-resync behaviour; the removal risk is `Judgement`.
 - Route tables on the session host subnet. A wrong route breaks the outbound path every host depends on.
 - Peering configuration, particularly gateway transit settings.
 - Moving profile storage without planning for data migration.
@@ -335,7 +337,7 @@ az network nic show-effective-route-table \
 - Forgetting the five Azure reserved addresses per subnet.
 - Assuming spoke to spoke traffic routes by default in hub and spoke. It does not.
 - Trying to deploy domain controllers inside a Virtual WAN hub. Shared services go in a spoke.
-- Choosing Virtual WAN for two regions because it sounds more modern.
+- Choosing Virtual WAN for one or two regions because it sounds more modern, when none of Learn's triggers (global transit across several regions, 30+ branches or SD-WAN, VPN to ExpressRoute transit) apply.
 - Placing profile storage across a peering without modelling the data cost.
 - Using the wrong name for a reserved subnet.
 - Treating topology as an AVD decision when it is a platform decision.
@@ -350,7 +352,7 @@ az network nic show-effective-route-table \
 It is a platform decision rather than an AVD one. AVD is a spoke either way. Hub and spoke suits one or two regions with straightforward connectivity. Virtual WAN suits more than two regions where you need global transit and want Microsoft to manage the routing fabric.
 
 **Strong senior architect answer**
-"AVD sits in an application landing zone, so in most organisations the hub already exists and I consume it. My job is to state requirements clearly: address space with acquisition headroom, egress control that can filter on FQDNs because several required AVD endpoints have no service tag, DNS resolution to the right resolvers, and routing that does not break the outbound path the session hosts depend on. On the choice itself, Microsoft's trigger for Virtual WAN is more than two regions with global transit needs, not spoke count alone. The two practical differences I care about are that hub and spoke has no transitive routing by default, so spoke to spoke needs UDRs and firewall rules, and that shared services like domain controllers cannot sit inside a Virtual WAN hub, they have to go in a spoke. That changes where my identity subnet lives."
+"AVD sits in an application landing zone, so in most organisations the hub already exists and I consume it. My job is to state requirements clearly: address space with acquisition headroom, egress control that can filter on FQDNs because several required AVD endpoints have no service tag, DNS resolution to the right resolvers, and routing that does not break the outbound path the session hosts depend on. On the choice itself, Learn's triggers for Virtual WAN are more than two regions with global transit needs, a large branch or SD-WAN estate, or VPN to ExpressRoute transit, not spoke count alone. The two practical differences I care about are that hub and spoke has no transitive routing by default, so spoke to spoke needs UDRs and firewall rules, and that shared services like domain controllers cannot sit inside a Virtual WAN hub, they have to go in a spoke. That changes where my identity subnet lives."
 
 **Follow-up you should expect**
 "What if profile storage is in a different spoke?" Peering is billed per GB in both directions, and FSLogix moves the whole container at sign in and sign out. At scale that is a real cost line. Keep profile storage with the session hosts or model the charge deliberately.
@@ -376,12 +378,12 @@ Add the operational layer. A subnet utilisation alert at 70 percent gives you wa
 ## 10. Key Takeaways
 
 - AVD is deployed into an application landing zone. Topology is usually a platform decision.
-- Microsoft's Virtual WAN trigger is more than two regions with global transit, not spoke count.
+- Learn's Virtual WAN triggers are more than two regions with global transit, 30+ branches or SD-WAN, and VPN to ExpressRoute transit. Spoke count is not one of them.
 - Hub and spoke has no transitive routing by default. Spoke to spoke needs UDRs and firewall rules.
 - Shared services, including domain controllers, cannot be deployed inside a Virtual WAN hub.
 - Size session host subnets from peak host count during a rolling update, which is roughly double the steady state.
 - Azure reserves five addresses in every subnet.
-- GatewaySubnet should be /26 or larger. Reserved subnet names must be exact.
+- GatewaySubnet is /27 minimum for most configurations, with /26 recommended by the hub-spoke guidance. Reserved subnet names must be exact.
 - Profile storage across a peering is billed per GB in both directions and adds up at scale.
 - Address space overlap can only be fixed by renumbering. Take allocations from IPAM.
 
@@ -389,11 +391,13 @@ Add the operational layer. A subnet utilisation alert at 70 percent gives you wa
 
 ## 11. Official References
 
-- Network topology and connectivity for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+- Define an Azure network topology - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/define-an-azure-network-topology
+- Network topology and connectivity for Azure Virtual Desktop (deprecated, removal announced for 30 October 2026) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+- Plan for IP addressing - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/plan-for-ip-addressing
 - Traditional Azure networking topology - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/traditional-azure-networking-topology
 - Virtual WAN network topology in an Azure landing zone - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/virtual-wan-network-topology
 - Hub and spoke network topology in Azure - https://learn.microsoft.com/en-us/azure/architecture/networking/architecture/hub-spoke
-- Azure Virtual Desktop landing zone accelerator - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone
+- Azure Virtual Desktop landing zone accelerator - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone `[VERIFY BEFORE IMPLEMENTATION]` this CAF scenario page was not fetched and its sibling page is deprecated
 
 ---
 

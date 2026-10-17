@@ -234,7 +234,7 @@ It helps to name the plane separation explicitly: existing sessions ride the dat
 
 - AVD service architecture and resilience - https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience
 - Multiregion BCDR for AVD (Azure Architecture Center) - https://learn.microsoft.com/en-us/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr
-- AVD network topology and connectivity (Cloud Adoption Framework) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+- AVD network topology and connectivity (Cloud Adoption Framework) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity (page deprecated by Microsoft, removal announced for 30 October 2026; see U33)
 - Required URLs for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint
 
 ---

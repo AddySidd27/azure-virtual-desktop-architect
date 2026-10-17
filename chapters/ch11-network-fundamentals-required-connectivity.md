@@ -382,7 +382,7 @@ There is an assessment conversation worth having here. A security team asking fo
 - Proxy service guidelines for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/proxy-server-support
 - Azure Private Link with Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/private-link-overview
 - Set up Private Link with Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/private-link-setup
-- Network topology and connectivity design guidance - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
+- Network topology and connectivity design guidance - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity (page deprecated by Microsoft, removal announced for 30 October 2026; see U33)
 - Azure private endpoint DNS configuration - https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns
 
 ---

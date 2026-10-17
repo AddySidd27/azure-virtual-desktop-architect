@@ -2,7 +2,7 @@
 title: Landing zone topology decision
 ---
 flowchart TB
-    Q{"More than two regions with transit?"}
+    Q{"More than two regions with global transit, or 30+ branches / SD-WAN, or VPN to ExpressRoute transit?"}
 
     Q -->|"No"| HS["Hub and Spoke"]
     Q -->|"Yes"| VW["Virtual WAN"]
