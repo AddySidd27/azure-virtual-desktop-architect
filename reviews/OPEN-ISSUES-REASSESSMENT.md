@@ -8,8 +8,8 @@ Sources marked "Learn" were read through the Microsoft Learn search tool on the 
 
 | Issue | Documentation resolves it? | What is still needed | Status |
 |---|---|---|---|
-| U23 | Behaviour yes, Terraform argument no | Confirm the argument with `terraform providers schema -json`, approve the module change, run the test | OPEN |
-| U24 | No (provider behaviour) | `terraform plan` after Lab 4, then your choice of fix | OPEN |
+| U23 | Behaviour yes. Terraform argument found in provider source and docs at v5.10.0, schema dump not run | Approve the module change (D3), run the test | OPEN |
+| U24 | Provider source suggests no reset. A plan was not possible here | `terraform plan` after Lab 4 on a machine with Terraform and Azure access, then your choice of fix | OPEN |
 | U26 | Partly | Static analysis done below. Test on a clean subscription | OPEN |
 | U27 | Partly | Run the DNS commands on the lab DC | OPEN |
 | U28 | Roles and scope yes, Terraform no | Your decision on role assignments, then a test | OPEN |
@@ -26,10 +26,12 @@ Sources marked "Learn" were read through the Microsoft Learn search tool on the 
 - Azure CLI: `--private-endpoint-network-policies` accepts the same four values. The older `--disable-private-endpoint-network-policies` is documented as being replaced.
 - Another Learn page (configure an application security group with a private endpoint) states that network policies must be enabled for NSG rules to apply to the private endpoint.
 
-**Resolved by documentation?** The behaviour, yes: with the default, the lab's NSG rule does not filter private endpoint traffic. The AzureRM 5.0 argument name and values for `azurerm_subnet` are not confirmed. Learn's provider history records `private_endpoint_network_policies` from 3.103.0. A HashiCorp forum thread shows the name as "not expected" on 3.94.0, which fits that history but is not authoritative.
+**Provider source reading, 17 October 2026 (second pass).** Terraform could not be installed in this environment (the HashiCorp release host returned 403 and there is no pip package), so `terraform providers schema -json` was not run. Instead the AzureRM provider source and docs were read at tag v5.10.0, the version in the Lab 3 lock file (`terraform/lab03-network/.terraform.lock.hcl`). In `internal/services/network/subnet_resource.go` the schema is `private_endpoint_network_policies`: string, Optional, Default `Disabled`, validated against the SDK's possible values. The provider docs list `Disabled`, `Enabled`, `NetworkSecurityGroupEnabled` and `RouteTableEnabled`. So Lab 3 already sends `Disabled` on every apply. This is a source reading, not a schema dump from an installed provider, and the Lab 3 module does not set the argument.
+
+**Resolved by documentation?** The behaviour, yes: with the default, the lab's NSG rule does not filter private endpoint traffic. The argument name and values are now sourced from provider v5.10.0 code and docs. Whether enabling the policy makes `nsg-storage` filter the Lab 5 endpoint is still untested.
 
 **Needs.**
-1. Run `terraform providers schema -json` after `init` and read the attribute and its allowed values (no Azure access).
+1. Optional confirmation: run `terraform providers schema -json` after `init` on a machine with Terraform and registry access (no Azure access needed) and compare with the source reading above.
 2. Your approval to change `terraform/lab03-network` (D3).
 3. The U23 test in TEST-PLANS in a disposable subscription.
 
@@ -42,9 +44,13 @@ Sources marked "Learn" were read through the Microsoft Learn search tool on the 
 
 **Question.** Does `terraform apply` on Lab 3 reset VNet DNS servers that Lab 4 set with the CLI?
 
-**Learn.** None. This is Terraform provider behaviour. Learn only documents that custom DNS is set on the virtual network (see [Change DNS servers](https://learn.microsoft.com/azure/virtual-network/manage-virtual-network#change-dns-servers)). A web search for provider documentation returned no usable source, so the behaviour is unverified.
+**Learn.** None. This is Terraform provider behaviour. Learn only documents that custom DNS is set on the virtual network (see [Change DNS servers](https://learn.microsoft.com/azure/virtual-network/manage-virtual-network#change-dns-servers)).
 
-**Resolved by documentation?** No.
+**Provider source reading, 17 October 2026 (second pass).** In AzureRM v5.10.0 `azurerm_virtual_network.dns_servers` is Optional and Computed. The update function writes `DhcpOptions.DnsServers` only inside `if d.HasChange("dns_servers")`. The Lab 3 module does not set `dns_servers`. With an Optional+Computed attribute that is absent from configuration, Terraform normally accepts the value read back from Azure, so a plan would be expected to show no DNS change after Lab 4 sets it. That is an inference from the code and from how Optional+Computed attributes behave in the Terraform plugin SDK, not an observed plan. The provider docs also warn against mixing inline `dns_servers` with the separate `azurerm_virtual_network_dns_servers` resource on one network. `private_endpoint_vnet_policies` also exists on the VNet resource (Disabled or Basic); its behaviour is unverified and Lab 3 does not set it.
+
+**Could a plan establish the effect?** Yes in principle, and it is the only evidence that would settle it. A plan needs Terraform, provider download, the Lab 3 state (or a remote backend) and Reader access to the real VNet after Lab 4 Step 5. None of those exist in this environment, there is no Lab 3 state, and no Azure access is permitted for this task. No plan was run and none is claimed.
+
+**Resolved by documentation?** No. The provider source makes a reset unlikely, which lowers the risk, but the issue stays open.
 
 **Needs.** After Lab 4 Step 5, run `terraform plan` in `terraform/lab03-network` (read-only). Then a decision between `lifecycle { ignore_changes = [dns_servers] }` and the separate DNS servers resource (D4).
 

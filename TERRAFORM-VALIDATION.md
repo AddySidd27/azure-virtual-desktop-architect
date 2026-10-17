@@ -118,4 +118,20 @@ Commit `b95af3f8e83f42747dd7a380687bb91bb3859134` (Chapters 1 to 12 editorial pa
 | Repository check | 39007932741 | success |
 | Markdown link check | 39007933846 | success |
 
-Scope is unchanged: formatting, provider schema validation, repository structure, links and a secret scan. Commits made after `b95af3f` (including the one that records this table) have not had a CI run.
+Scope is unchanged: formatting, provider schema validation, repository structure, links and a secret scan. Commits made after `b95af3f` (including the one that records this table) have not had a CI run at that point.
+
+### Re-run on `c123676`, 17 October 2026
+
+Commit `c123676f4f6a0a93651c74e7f69f3cf3c59405ad` (source rechecks and issue reassessment; documentation only, no Terraform change). It was pushed to the existing branch `docs/review-register-ch01-remediation` with approval, and the same three workflows were dispatched manually on that branch. The runs report this exact SHA and all completed:
+
+| Workflow | Run | Result |
+|---|---|---|
+| Terraform structural check | 39008585420 | success |
+| Repository check | 39008586968 | success |
+| Markdown link check | 39008588332 | success |
+
+Scope is unchanged and still structural: no `plan`, `apply`, Azure behaviour or lab execution. Commits made after `c123676` have not had a CI run.
+
+### Terraform tooling in the authoring environment, 17 October 2026
+
+The Terraform CLI could not be installed in the environment used for the second source pass (the HashiCorp release host returned 403 and there is no pip package). No local `terraform validate`, `plan` or `providers schema` was run. The U23 argument name and the U24 provider behaviour were read from the AzureRM v5.10.0 source and docs instead; see [OPEN-ISSUES-REASSESSMENT](reviews/OPEN-ISSUES-REASSESSMENT.md).

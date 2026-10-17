@@ -43,3 +43,9 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Re-checked 2026-10-16: Learn unchanged for U8 and U9, no pinning guidance found for U12; chapter text states each.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Second source pass, 17 October 2026
+
+All Windows App platform, redirection, Shortpath, Multipath and browser statements match the full comparison and get-started pages. Store app wording and the stale status header corrected. U8, U9 and U12 unchanged.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

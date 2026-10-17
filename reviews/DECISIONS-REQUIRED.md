@@ -44,17 +44,17 @@ Judgement: C until the labs have been run once, then A with a clear destroy warn
 
 ## D3. Private endpoint network policies (U23)
 
-Learn: policies are disabled by default and NSG rules are bypassed for private endpoint traffic until enabled. Learn's Terraform provider history records the property as `private_endpoint_network_policies` from AzureRM 3.103.0. The values and the name in 5.x are unverified. CI would catch a wrong argument name, because `terraform validate` checks the provider schema, but not the behaviour.
+Learn: policies are disabled by default and NSG rules are bypassed for private endpoint traffic until enabled. Learn's Terraform provider history records the property as `private_endpoint_network_policies` from AzureRM 3.103.0. The name and values are now read from the AzureRM v5.10.0 source and docs (`private_endpoint_network_policies`, string, default `Disabled`; `Disabled`, `Enabled`, `NetworkSecurityGroupEnabled`, `RouteTableEnabled`), but no installed-provider schema dump or plan was run (Terraform was unavailable). CI would catch a wrong argument name, because `terraform validate` checks the provider schema, but not the behaviour.
 
 | Option | Notes |
 |---|---|
-| 1. Set `private_endpoint_network_policies` on `azurerm_subnet.storage` | Needs D1 or a local Terraform run to confirm the name. Behaviour needs the U23 test. Enabling policies also makes UDR and NSG rules apply to private endpoint traffic, which can break access if a rule is wrong |
+| 1. Set `private_endpoint_network_policies` on `azurerm_subnet.storage` | Name sourced from provider v5.10.0; a local `terraform validate` or schema dump would confirm it. Behaviour needs the U23 test. Enabling policies also makes UDR and NSG rules apply to private endpoint traffic, which can break access if a rule is wrong |
 | 2. Keep the NSG, document that it is intent only (current) | No risk, no enforcement |
 | 3. Remove the misleading allow rule | Simplest, but loses the teaching value of the example |
 
 ## D4. Lab 3 re-apply and Lab 4 DNS (U24)
 
-Run `terraform plan` in `terraform/lab03-network` after Lab 4 Step 5 first. If it shows a `dns_servers` change, the options are `lifecycle { ignore_changes = [dns_servers] }` on `azurerm_virtual_network.avd`, or the separate `azurerm_virtual_network_dns_servers` resource (it exists in the provider; Learn's provider history records it from 2.69.0). Do not use both ways of setting DNS on one VNet without testing. Neither option has been validated.
+Run `terraform plan` in `terraform/lab03-network` after Lab 4 Step 5 first. If it shows a `dns_servers` change, the options are `lifecycle { ignore_changes = [dns_servers] }` on `azurerm_virtual_network.avd`, or the separate `azurerm_virtual_network_dns_servers` resource (it exists in the provider; Learn's provider history records it from 2.69.0). Do not use both ways of setting DNS on one VNet without testing. Neither option has been validated. Provider v5.10.0 source suggests the plan will show no change (`dns_servers` is Optional+Computed and written only on change), so this decision may turn out to be unnecessary; the plan is the test.
 
 ## D5. `random` provider baseline
 

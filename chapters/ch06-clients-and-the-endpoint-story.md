@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026, with the client lifecycle, Windows App overview, get-started requirements and platform comparison pages re-read in full on 17 October 2026 (see [Review register](../REVIEW-REGISTER.md) and [Chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md)). Single reviewer, no independent pass
 
 ---
 
@@ -46,11 +46,11 @@ Client choice also quietly shapes the design. Whether you can use RDP (Remote De
 
 Microsoft has consolidated a confusing set of clients into one. The old names overlapped badly and people still mix them up, so start by getting the names straight.
 
-| Client | What it actually was | Status as of August 2026 |
+| Client | What it actually was | Status (Learn, re-read 17 October 2026) |
 |---|---|---|
 | **Windows App** | The current unified client for AVD, Windows 365, Dev Box, and (on some platforms) RDS and remote PCs. Platforms: Windows, macOS, iOS/iPadOS, Android/Chrome OS, web browsers and Meta Quest | Supported. This is the one you deploy |
 | Remote Desktop client for Windows (MSRDC, the MSI installer) | The standalone MSI, app name "Remote Desktop" | No longer supported for public cloud from 27 March 2026 (dates below) |
-| Remote Desktop app for Windows (Microsoft Store) | A separate Store app, also called "Remote Desktop" | End of support September 2025; no longer available to download |
+| Remote Desktop app for Windows (Microsoft Store) | A separate Store app, also called "Remote Desktop" | Learn says end of support was reached in September 2025 and that it is no longer available to download. The same page's connection matrix still says it was available until 27 May 2025, so treat 27 May 2025 as the end of downloads and September 2025 as the end of support |
 | Remote Desktop web client | The older browser client | No longer supported for public cloud from 27 March 2026 |
 | `mstsc.exe` | The built in Windows RDP tool | Still present. Learn's prerequisites page says AVD does not support connections from the RADC or MSTSC clients. Used for direct RDP to a machine |
 

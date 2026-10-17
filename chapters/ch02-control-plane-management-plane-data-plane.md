@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** August 2026 text; sources re-read in full on 17 October 2026 (see [Chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md))
 
 ---
 
@@ -88,7 +88,7 @@ Azure Resource Manager sits apart because it is how you administer the environme
 
 ### Step by step flow
 
-1. The user authenticates and requests their feed from the **web service** over HTTPS 443. The resource directory identifies which database holds the user's data, and the feed is built from the host pool, application group and workspace metadata held there.
+1. The user authenticates and requests their feed from the **web service** over HTTPS 443. Learn says Azure Traffic Manager routes the client to the closest web service for feed discovery, and that connections to a session then begin at Azure Front Door ([Service architecture and resilience](https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience#user-connections)). The resource directory identifies which database holds the user's data, and the feed is built from the host pool, application group and workspace metadata held there.
 2. The user launches a desktop or app. The request goes to the **broker service**, which reads host pool configuration from the metadata store.
 3. The broker selects a session host and instructs it through the AVD agent already running on it.
 4. Flows 2 to 4 in the numbered list are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP (Transmission Control Protocol) 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
@@ -115,7 +115,7 @@ The second thing to read from this diagram is the split of effort. Microsoft's h
 | Web service or resource directory | Cannot sign in, or empty feed | Service Health, then assignment |
 | Broker | Feed loads, launch fails | Session host availability and agent health |
 | Gateway | New connections fail | Service Health, then the client network path |
-| Session host outbound 443 | Hosts show unavailable | Event ID 3701 in the WVD-Agent log |
+| Session host outbound 443 | Host shows Needs Assistance (URL health check) or Unavailable | The host's health checks in the portal, then the Azure Virtual Desktop Agent URL Tool. Event ID 3701 in the WVD-Agent log lists the agent's region-specific FQDNs to compare against your rules |
 | Identity path | Sign in hangs or fails at Windows logon | Domain controller reachability and DNS (Domain Name System) |
 | Storage path | Slow logon or temporary profile | Share reachability, permissions, throttling |
 | Diagnostics | No user impact, monitoring gaps only | Diagnostic settings configuration |
@@ -130,7 +130,7 @@ This detail is easy to miss, and it decides your regional availability story.
 
 When you create a host pool, its configuration metadata is stored by the service. Microsoft now offers two models for where that happens, and the difference matters for resilience.
 
-Geographical host pools (the classic model) store host pool metadata in a geographical database serving multiple Azure regions within the same Azure geography. Regional host pools store metadata in a per-region database deployed into the region you select, with multiple replicas spanning availability zones in that region and metadata replicated to a paired region for cross-region failover.
+Geographical host pools (the classic model) store host pool metadata in a geographical database serving multiple Azure regions within the same Azure geography. Regional host pools store metadata in a per-region database deployed into the region you select, with multiple replicas spanning availability zones in that region and metadata replicated to a paired region (where applicable) for cross-region failover.
 
 The practical difference: with regional host pools, a problem in one region affects only the host pools in that region, which removes the cross-region dependency that the geographical model has. Otherwise, the two models work the same way - they differ only in database architecture, metadata location and resiliency characteristics.
 
@@ -141,7 +141,7 @@ The practical difference: with regional host pools, a problem in one region affe
 1. **Data residency questions.** Customers in regulated sectors ask where AVD metadata is stored. You need a real answer, and the answer now depends on which model the host pool uses.
 2. **Blast radius.** A metadata store shared across a geography means a problem can reach host pools in regions you were not thinking about. A per-region store contains it. When you design a multi-region environment in [Project 13](../scenarios/project-13-multi-region-architecture.md), this is one of the inputs.
 
-Note what is *not* stored here: no user data, no profile data, no application data. This is configuration metadata about your AVD objects.
+Note what is *not* stored here: Learn says the service does not directly store user data or application data such as documents or databases, and profiles live on storage you run. What it does store is the names and identifiers you enter: host pool, application group and workspace names, virtual machine names and user principal names. Two further points matter in a residency review ([Data locations](https://learn.microsoft.com/en-us/azure/virtual-desktop/data-locations), read 17 October 2026): Azure Resource Manager paths to service objects are treated as organizational information and are stored outside the chosen geography, and diagnostic data goes to the location closest to the user as well as to the host pool's location. Aggregated service-generated data is sent to the US geography.
 
 ---
 
@@ -151,7 +151,7 @@ You do not build redundancy for the control plane. It is worth knowing how Micro
 
 Per Microsoft's service architecture documentation, the Microsoft-managed components are located in around 40 Azure regions to be closer to users and provide a resilient service, with resiliency implemented globally, geographically and within a region. Azure Traffic Manager directs traffic for the web service, and Azure Front Door directs traffic for the gateway service. Microsoft also notes that when a gateway instance is affected, all other sessions handled by other instances of the gateway service are unaffected.
 
-And for regional failure: when a region experiences an outage, control plane components fail over automatically and continue to function - you don't need to set up control plane redundancy.
+Learn adds that each component has at least six distinct instances or clusters per region that operate independently, so one instance failing does not take the service down. For regional failure, the Azure Architecture Center's [multiregion BCDR guidance](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr) says control plane components fail over automatically and continue to function, and that you don't need to set up control plane redundancy.
 
 **The honest architect position.** You cannot engineer around a service you do not operate. What you *can* do:
 
@@ -167,12 +167,14 @@ Never claim in an interview that you can make the control plane highly available
 
 This table is the practical payoff of the whole chapter. Learn it.
 
+> **What is sourced and what is reasoning.** Microsoft does not publish a failure table like this one. Learn documents two behaviours: a metadata database failover briefly fails new connections and does not affect existing ones, and a failed gateway instance drops the TCP connections it was relaying, after which users reconnect to their existing session ([Service resilience](https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience#service-resilience)). Everything else in the table is judgement reasoned from what each component does, including what survives a full outage of a component, and the "first thing to check" column. Treat the rows as a troubleshooting aid, not as documented service behaviour.
+
 | Component fails | What the user sees | What still works | First thing to check |
 |---|---|---|---|
 | Web service | Cannot sign in to the client, or the feed is empty | Existing sessions continue | Azure Status / Service Health; then check the user's licence and assignment |
 | Broker service | Feed loads with icons, but launching fails | Existing sessions continue | Service Health; then session host availability and agent status |
 | Resource directory | Feed is wrong, missing, or stale | Existing sessions continue | Service Health; then whether the objects actually exist in ARM |
-| Gateway service | New connections fail; some existing sessions drop | Sessions already on RDP Shortpath may survive | Service Health; then client-side network path to AVD URLs |
+| Gateway service | Sessions relayed through a failed instance drop (documented). A wider gateway problem would also fail new connections (judgement) | Other gateway instances. Whether sessions already on RDP Shortpath survive is not documented, so treat that as untested | Service Health; then client-side network path to AVD URLs |
 | Diagnostics service | Nothing user-visible | Everything | Monitoring gaps only - do not chase this during an outage |
 | **Your session hosts** | "No resources available", or connect-then-drop | Feed still loads normally | Host power state, drain mode, agent health, available sessions |
 | **Your identity platform** | Sign-in fails, or logon hangs at "Please wait" | Feed may still load | Domain controller reachability, DNS, Entra Connect sync health |
@@ -305,7 +307,7 @@ Update-AzWvdSessionHost -ResourceGroupName rg-avd-service-lab-eus2-01 `
 
 **Investigation.**
 
-On an affected host: *Event Viewer > Windows Logs > Application > WVD-Agent*, filtered for event ID 3701. That event names the blocked FQDNs directly.
+On an affected host, first read its health checks: in the portal, *Host pools > Session hosts > the host name*. Learn documents a blocked required URL as a failed URL health check, which puts a host in Needs Assistance, and says that status is non-fatal ([Session host statuses and health checks](https://learn.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-statuses-checks)). Learn does not say which status you see when the broker endpoint itself is blocked, so treat the "unavailable" symptom in this composite as illustrative. Then run the Azure Virtual Desktop Agent URL Tool ([Check access to required FQDNs](https://learn.microsoft.com/en-us/azure/virtual-desktop/check-access-validate-required-fqdn-endpoint)). To list the agent's region-specific FQDNs, look at *Event Viewer > Windows Logs > Application > WVD-Agent* for event ID 3701. Learn uses that event to find the FQDNs to allow on a registered host, not as an error that names blocked URLs ([Required FQDNs and endpoints](https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint)).
 
 ```bash
 az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
@@ -313,17 +315,17 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
   --scripts "Get-WinEvent -LogName Application -MaxEvents 200 | Where-Object {\$_.Id -eq 3701} | Select-Object -First 5 TimeCreated, Message | Format-List"
 ```
 
-**Evidence.** Event 3701 lists specific FQDNs the agent cannot reach, matching URLs newly blocked by the firewall rule.
+**Evidence.** The URL health check fails, the Agent URL Tool lists specific FQDNs as inaccessible, and those FQDNs match the agent FQDNs in event 3701 and the firewall rule that changed.
 
 **Root cause.** A tightened egress rule removed access to required AVD endpoints. Microsoft does not support deployments where these are blocked. See [Chapter 4](ch04-connection-flow-end-to-end.md#3-what-session-hosts-actually-need-outbound).
 
-**Fix.** Unblock the FQDNs named in event 3701, per region. Use the AVD service tag and FQDN tag rather than an IP list, because AVD does not publish static IP ranges.
+**Fix.** Unblock the FQDNs the Agent URL Tool reports, per region. Use the AVD service tag and FQDN tag rather than an IP list, because AVD does not publish static IP ranges.
 
 **Validation.** Hosts return to available within minutes. Confirm with a real connection, not just status.
 
 **Prevention.** Give the network team the service tag and FQDN tag names in writing. Add AVD connectivity to the firewall change checklist. Run the AVD Agent URL Tool after any egress change.
 
-**Interview lesson.** Naming event 3701 as the first check demonstrates hands on troubleshooting rather than theory.
+**Interview lesson.** Naming the host health checks and the Agent URL Tool, and knowing what event 3701 actually lists, demonstrates hands on troubleshooting rather than theory.
 
 **Architect's lesson.** Reverse connect trades inbound exposure for an outbound dependency. That dependency must be documented and owned, or a routine network change becomes a desktop outage.
 
@@ -363,7 +365,7 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 **What must not be changed blindly?** Removing hosts from a host pool. Changing host pool RDP properties. Editing firewall egress rules without knowing which FQDNs AVD needs. Mass logoff during business hours.
 
-**When do I escalate to Microsoft?** When Service Health shows an active incident affecting AVD, or when hosts are healthy, outbound connectivity is proven, event 3701 is clean, and brokering still fails. Collect first: host pool name and region, session host names and agent versions, timestamps in UTC, the client correlation ID and the relevant diagnostic rows.
+**When do I escalate to Microsoft?** When Service Health shows an active incident affecting AVD, or when hosts are healthy, outbound connectivity is proven (health checks pass and the Agent URL Tool reports nothing blocked), and brokering still fails. Collect first: host pool name and region, session host names and agent versions, timestamps in UTC, the client correlation ID and the relevant diagnostic rows.
 
 ---
 

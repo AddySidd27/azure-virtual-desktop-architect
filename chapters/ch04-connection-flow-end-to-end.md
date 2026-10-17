@@ -248,7 +248,7 @@ There is also a supported tool: the Azure Virtual Desktop Agent URL Tool validat
 
 **URL tool caveats (U11, verified 16 October 2026 against [Check access to required FQDNs and endpoints](https://learn.microsoft.com/azure/virtual-desktop/check-access-validate-required-fqdn-endpoint)).** `WVDAgentUrlTool.exe` needs .NET Framework 4.6.2 and RDAgent 1.0.2944.400 or later, and it does not verify wildcard entries. A pass therefore does not prove the wildcard service-traffic rules are in place. Event 3701 and the tool are complementary.
 
-Learn both. Event 3701 turns a multi-day firewall argument into a ten-minute fix, because it tells you exactly which FQDN was blocked instead of leaving you to guess.
+Learn both. Event 3701 gives you the agent's region-specific FQDN list to compare with your firewall rules, and the URL tool tests which of them the host can actually reach, so together they can turn a multi-day firewall argument into a short check. Learn does not say that event 3701 lists only the blocked FQDNs, so use the URL tool to find which ones are blocked.
 
 ---
 
@@ -305,7 +305,7 @@ Answer "no" first, confidently, then add the Shortpath nuance yourself. Voluntee
 - Session hosts need a specific set of outbound FQDNs. Blocking them is unsupported. Use service tags and FQDN tags, not IP lists - AVD does not publish static IP ranges.
 - Shortpath is attempted for managed networks (UDP 3390 listener, or ICE/STUN) and public networks (STUN/TURN, UDP 3478) simultaneously, and the first connection established is used. TCP reverse connect is the fallback.
 - Blocking outbound UDP silently removes Shortpath. Sessions still work, so nobody reports it as a fault.
-- Event ID 3701 in the WVD-Agent log names the exact blocked FQDN.
+- Event ID 3701 in the WVD-Agent log lists the agent's region-specific FQDNs. The URL tool shows which of them are unreachable.
 
 ---
 
@@ -381,7 +381,7 @@ From a session host, confirm outbound UDP is possible on 3478 to the AVD STUN an
 
 **Investigation.** Event ID 3701 in *Event Viewer > Windows Logs > Application > WVD-Agent* on affected hosts. Then the AVD Agent URL Tool to validate each required endpoint from the host.
 
-**Evidence.** Event 3701 names endpoints the agent cannot reach. The URL tool fails on the same set.
+**Evidence.** The URL tool reports endpoints the host cannot reach, and they appear in the agent FQDN list under event 3701.
 
 **Root cause.** TLS inspection was applied to AVD service traffic, breaking the trust chain the agent expects.
 

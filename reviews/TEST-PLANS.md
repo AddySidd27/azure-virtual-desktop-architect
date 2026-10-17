@@ -11,7 +11,7 @@ Common environment for every plan: an Azure subscription you own for lab use, th
 | Item | Detail |
 |---|---|
 | Objective | Find out whether `nsg-storage` filters traffic to the Lab 5 private endpoint with the Lab 3 subnet defaults, and whether enabling private endpoint network policies changes that |
-| Learn says (retrieved 17 October 2026) | Network policies are disabled by default on a subnet and NSG rules are bypassed for private endpoint traffic until they are enabled ([Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy)). The Azure CLI accepts only `true` or `false` for `--disable-private-endpoint-network-policies` and cannot enable NSG or route table support selectively. ARM values are `Disabled`, `NetworkSecurityGroupEnabled`, `RouteTableEnabled`, `Enabled` |
+| Learn says (retrieved 17 October 2026) | Network policies are disabled by default on a subnet and NSG rules are bypassed for private endpoint traffic until they are enabled ([Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy)). The Azure CLI documentation in the earlier read accepted only `true` or `false` for `--disable-private-endpoint-network-policies`; the 17 October reassessment page records that Learn now documents `--private-endpoint-network-policies` with four values. Re-read the current CLI reference before running step 5 and use whichever the installed CLI supports. ARM values are `Disabled`, `NetworkSecurityGroupEnabled`, `RouteTableEnabled`, `Enabled` |
 | Prerequisites | Labs 3 to 5 applied. DC and one Windows VM in the VNet. Lab 5 private endpoint resolving to its private IP |
 | Permissions | Network Contributor on the network resource group |
 | Tools | Azure CLI. `Test-NetConnection` on a Windows VM (standard Windows cmdlet, not sourced from Learn) |
@@ -28,7 +28,7 @@ Common environment for every plan: an Azure subscription you own for lab use, th
 |---|---|
 | Objective | Find out whether `terraform plan` or `apply` on Lab 3 reverts the VNet DNS servers set by Lab 4 Step 5 |
 | Known | The Lab 3 module has no `dns_servers` argument (`grep` over `terraform/lab03-network`). Lab 4 sets DNS with `az network vnet update --dns-servers 10.10.1.4` |
-| Unknown | Whether the AzureRM provider treats an unset `dns_servers` as "leave alone" or "reset to empty". Not verified against the provider documentation in this review |
+| Unknown | Whether the AzureRM provider treats an unset `dns_servers` as "leave alone" or "reset to empty". Provider v5.10.0 source (17 October 2026, second pass) has `dns_servers` as Optional+Computed and writes it only on `HasChange`, which suggests "leave alone". Inference from code, not an observed plan. Terraform could not be installed here, so no plan was run |
 | Prerequisites | Terraform installed with registry access. Lab 3 applied, Lab 4 Step 5 done |
 | Permissions | Reader on the network resource group is enough for `plan`. Contributor for `apply` |
 | Steps | 1. `az network vnet show -g rg-avd-network-lab-eus2-01 -n vnet-avd-lab-eus2-01 --query dhcpOptions.dnsServers`. 2. In `terraform/lab03-network` run `terraform plan`. 3. Read the plan for a change on `azurerm_virtual_network.avd` touching `dns_servers`. 4. Do not apply if the plan shows a reset |

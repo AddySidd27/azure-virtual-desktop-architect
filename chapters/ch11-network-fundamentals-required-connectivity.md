@@ -343,7 +343,7 @@ A specific set of FQDNs over 443, plus KMS on 1688, certificate checks on 80, an
 "There is a required list and an optional list, and both matter. The required list is non-negotiable, because Microsoft does not support a deployment where those are blocked, and that is the sentence that usually settles the conversation with a security team. The optional list depends on your design, so if you use Event Hubs for diagnostics or deploy OneDrive, those endpoints become required for you. The important architectural point is that AVD publishes no static IP ranges, so the supported approach is service tags in NSGs and Azure Firewall, and the AVD FQDN tag in Azure Firewall. Some required endpoints have no service tag at all, which is where NSGs stop being sufficient and you need FQDN filtering. And you must use wildcards for service traffic, although agent traffic can be narrowed to specific FQDNs once the hosts have registered."
 
 **Follow-up you should expect**
-"How do you prove it works?" The AVD Agent URL Tool from the session host, and event ID 3701 in the WVD-Agent log when something is blocked. Not a firewall rule review.
+"How do you prove it works?" The AVD Agent URL Tool from the session host, and event ID 3701 in the WVD-Agent log to list the agent's region-specific FQDNs for comparison with the rules. Not a firewall rule review.
 
 ### Q30. Would you use Private Link for AVD?
 
@@ -359,7 +359,7 @@ There is an assessment conversation worth having here. A security team asking fo
 ### Q31. A session host will not register. Walk me through it.
 
 **Strong answer**
-"Event ID 3701 in the WVD-Agent log first, because it names the exact FQDNs the agent cannot reach, and those are region specific. Then the AVD Agent URL Tool to validate every endpoint from that host. If both are clean, I would check DNS resolution from the host and whether anything recently changed on the proxy or firewall, particularly TLS inspection, because intercepting AVD service traffic breaks certificate validation and looks intermittent. If it is a Private Link environment, I would check whether the agent loader service was restarted after the last network change. Only when all of that is clean would I open a case, and I would have the URL tool output, event 3701, DNS results and the agent version ready, because support asks for exactly that."
+"The AVD Agent URL Tool first, to test every endpoint from that host, then event ID 3701 in the WVD-Agent log, which lists the agent's FQDNs and those are region specific. If both are clean, I would check DNS resolution from the host and whether anything recently changed on the proxy or firewall, particularly TLS inspection, because intercepting AVD service traffic breaks certificate validation and looks intermittent. If it is a Private Link environment, I would check whether the agent loader service was restarted after the last network change. Only when all of that is clean would I open a case, and I would have the URL tool output, event 3701, DNS results and the agent version ready, because support asks for exactly that."
 
 ---
 
@@ -395,7 +395,7 @@ There is an assessment conversation worth having here. A security team asking fo
 
 **What engineers commonly get wrong.** They promise the network team an IP allow list. AVD does not publish one, and the conversation goes nowhere until that is stated plainly with the Microsoft support position attached.
 
-**What I would check first in production.** Event 3701 on an affected host, then the Agent URL Tool. Both tell you exactly which endpoint is blocked, which beats reading firewall rules.
+**What I would check first in production.** The Agent URL Tool on an affected host, then event 3701. The tool shows which endpoint is unreachable and the event gives the agent's FQDN list to compare with the rules, which beats reading firewall rules.
 
 **What I would ask the customer.** Whether TLS inspection is applied to Azure traffic, and whether the optional endpoints their design uses are allowed. Optional does not mean unnecessary.
 

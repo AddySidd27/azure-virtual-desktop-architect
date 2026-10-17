@@ -51,3 +51,9 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: CAF landing zone reference marked deprecated with removal date; accelerator note added.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Second source pass, 17 October 2026
+
+Topology triggers, Virtual WAN shared-services limit, CAF deprecation (removal 30 October 2026), five reserved addresses and the hub /24 minimum confirmed. Added hub sizing recommendations and a peering-versus-Private-Link billing caveat. U33 unchanged.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

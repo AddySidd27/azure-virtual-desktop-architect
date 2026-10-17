@@ -44,3 +44,9 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Regional host pool CURRENCY FLAG rewritten (GA per What's new, two regions per Data locations, article stale).
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Second source pass, 17 October 2026
+
+Traffic Manager and Front Door wording, instance count attribution, what-is-not-stored note and Scenario 2 corrected. The failure table is labelled as judgement because Learn does not publish a per-component failure table. Event 3701 is described as listing agent FQDNs, not as listing blocked ones.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

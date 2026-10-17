@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part III:** Network Architecture
-> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026, with the topology, Virtual WAN, hub address space, reserved-address and peering pricing statements re-read on 17 October 2026 (see [Review register](../REVIEW-REGISTER.md) and [Chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md)). Single reviewer, no independent pass
 
 ---
 
@@ -108,7 +108,7 @@ The two operational differences worth knowing, because they will come up:
 
 **Hub and spoke has no transitive routing by default.** Spoke to spoke traffic needs user defined routes and firewall rules. If your profile storage sits in a different spoke from your session hosts, that is a routing conversation.
 
-**Shared services cannot live inside the Virtual WAN hub.** Learn's Virtual WAN topology page is explicit: deploy required shared services, like DNS servers, in a dedicated spoke virtual network, because customer-deployed shared resources can't be deployed inside the Virtual WAN hub itself (verified 16 October 2026). By contrast, the traditional hub and spoke page lists Active Directory domain controllers and DNS servers as optional shared services that can sit in the central hub. The Architecture Center hub-spoke guidance adds that application workloads belong in spokes. So with Virtual WAN, domain controllers go in a spoke, and that changes where your identity subnet lives. Also note that a Virtual WAN hub needs an address range of at least /24.
+**Shared services cannot live inside the Virtual WAN hub.** Learn's Virtual WAN topology page is explicit: deploy required shared services, like DNS servers, in a dedicated spoke virtual network, because customer-deployed shared resources can't be deployed inside the Virtual WAN hub itself (verified 16 October 2026). By contrast, the traditional hub and spoke page lists Active Directory domain controllers and DNS servers as optional shared services that can sit in the central hub. The Architecture Center hub-spoke guidance adds that application workloads belong in spokes. So with Virtual WAN, domain controllers go in a spoke, and that changes where your identity subnet lives. Also note that a Virtual WAN hub needs an address range of at least /24 ([Virtual hub settings](https://learn.microsoft.com/azure/virtual-wan/hub-settings#virtual-hub-address-space), re-read 17 October 2026). Learn recommends /23 or larger because the range cannot be changed after creation, and says a hub that runs Azure Firewall needs at least /22.
 
 **Official reference:** https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/define-an-azure-network-topology
 
@@ -179,6 +179,8 @@ Topology has a real bill attached, and it is usually paid by the platform team r
 **The AVD specific point.** If FSLogix profile storage sits in a different virtual network from the session hosts, every profile read and write crosses a peering and is billed. At 3,000 users that is not a rounding error. Keep profile storage in the same virtual network as the session hosts, or accept and model the cost.
 
 This is one of the few places where a network design decision shows up directly in the AVD bill, so it is worth raising in design review.
+
+`Caveat, 17 October 2026.` Learn's peering overview says you pay for ingress and egress on a peering connection, and the Azure Virtual Network FAQ says data transfer across peering is charged. Learn's Virtual WAN pricing pages add that traffic destined for private endpoints is excluded from peering charges and billed as Private Link data processed instead. This review did not read the Private Link pricing page, so whether a profile share reached through a private endpoint in a peered network is billed as peering or as Private Link is unverified. Model both from the current price pages before quoting a number.
 
 ---
 

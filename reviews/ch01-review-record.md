@@ -125,3 +125,9 @@ Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSE
 ## Editorial pass, 17 October 2026
 
 Inline source links added under the "How AVD got here" table and the classic retirement paragraph (What's new, host pool management approaches, App Attach, Regional host pools, AVD Hybrid, managed identity). The table contents were not re-verified on 17 October; they carry the 16 October retrieval date. The "three real decisions" scenarios are now labelled as illustrative composites. U3 and U4 are unchanged.
+
+## Second source pass, 17 October 2026
+
+Control plane list, outage behaviour, licensing limits (per-user pricing not for Windows Server, not supported for Citrix or Omnissa), contractor licence note, Hybrid row, Windows 365 Flex wording, Store app dates and Q1 answers corrected against full Learn pages. Baseline line updated.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

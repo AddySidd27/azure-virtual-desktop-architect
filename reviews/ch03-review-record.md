@@ -59,3 +59,9 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Regional host pool CURRENCY FLAG rewritten.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Second source pass, 17 October 2026
+
+Location rule rewritten (app group location should match host pool, workspace must match app groups), workspace cardinality and tenant rule corrected, delegated-access sentence aligned, Q6, takeaways and Scenario 3 aligned.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

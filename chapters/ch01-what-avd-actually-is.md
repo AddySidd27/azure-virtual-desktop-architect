@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026, with the service architecture, data location, licensing, client lifecycle and Windows 365 sections re-read in full on 17 October 2026 (see [Review register](../REVIEW-REGISTER.md) and [Chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md)). Single reviewer, no independent pass
 
 ---
 
@@ -82,7 +82,7 @@ Azure Virtual Desktop is a **desktop and application virtualisation service that
 
 Two parts, and it matters that you separate them:
 
-**Part one - the service Microsoft runs.** This is the AVD control plane. It handles finding the right virtual machine for a user, brokering the connection, gatewaying the traffic, and holding the configuration objects that describe your environment. You do not deploy it, patch it, scale it, or make it highly available. It is a platform service. You consume it.
+**Part one - the service Microsoft runs.** This is the AVD control plane. It handles finding the right virtual machine for a user, brokering the connection, gatewaying the traffic, and holding the configuration objects that describe your environment. You do not deploy it, patch it, scale it, or make it highly available. It is a platform service. You consume it. Microsoft Learn lists its parts as the web service, broker service, gateway service, resource directory, and the geographical or regional database that holds the connection information ([Service architecture and resilience](https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience)).
 
 **Part two - the infrastructure you run.** The virtual machines that users log into, the network they sit on, the storage that holds user profiles, the Windows operating system, the applications, the antivirus, the patching, the images, the identity. All of that is yours. It is billed to your subscription and it fails when you get it wrong.
 
@@ -102,7 +102,7 @@ Here is the split visually.
 
 The important consequence: **your session hosts never need an inbound connection from the internet.** The session host makes an outbound connection to the AVD service, and the user's session is delivered over that established path. This is called reverse connect, and Chapter 4 pulls it apart properly.
 
-In practical terms this means a correctly designed AVD environment does not expose TCP (Transmission Control Protocol) 3389 to the public internet, and does not need a public IP address on any session host. That single property removes an entire category of attack that on-premises RDS deployments have suffered from for years.
+In practical terms this means a correctly designed AVD environment does not expose TCP (Transmission Control Protocol) 3389 to the public internet, and does not need a public IP address on any session host. Learn's [prerequisites](https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites#network) make the same recommendation: do not open inbound 3389, use just-in-time access if you must open it for troubleshooting, and do not give session hosts public IP addresses. That single property removes an entire category of attack that on-premises RDS deployments have suffered from for years.
 
 ### What AVD is *not*
 
@@ -122,7 +122,7 @@ You need this history for two reasons: interviewers ask, and half the material y
 
 **Remote Desktop Services (RDS).** The on-premises ancestor. You built and ran everything: Connection Broker, Session Host, Web Access, Gateway, Licensing. Multiple servers, all yours to patch and make highly available. Still supported, still widely deployed, still a perfectly reasonable answer for some workloads.
 
-**Windows Virtual Desktop (WVD), 2019.** Microsoft took the broker, gateway, web access and diagnostics components and ran them as an Azure service. The headline feature was Windows 10 Enterprise multi-session - a Windows client OS that allows several users to have interactive sessions on the same VM at the same time. Microsoft Learn describes it as exclusive to Azure Virtual Desktop, which today runs in Azure and on Azure Local; Azure Virtual Desktop Hybrid does not support it. Management at this stage was through PowerShell and a separate tenant concept, not through Azure Resource Manager.
+**Windows Virtual Desktop (WVD), 2019.** Microsoft took the broker, gateway and web components and ran them as an Azure service. The headline feature was Windows 10 Enterprise multi-session - a Windows client OS that allows several users to have interactive sessions on the same VM at the same time. Microsoft Learn describes it as exclusive to Azure Virtual Desktop, which today runs in Azure and on Azure Local; Azure Virtual Desktop Hybrid does not support it. Management at this stage was through PowerShell and a separate tenant concept, not through Azure Resource Manager.
 
 **Azure Virtual Desktop, 2021.** The rename came with the change that actually mattered: the service moved onto Azure Resource Manager. Host pools, application groups and workspaces became real Azure resources. That gave the service Azure RBAC (role-based access control), tags, policy, activity logs, ARM templates, Terraform and Bicep support, and normal portal management. This is the version you deploy today.
 
@@ -137,10 +137,10 @@ You need this history for two reasons: interviewers ask, and half the material y
 | **Dynamic autoscaling** | Listed as available in What's new (June 2026) for pooled host pools with session host configuration. That entry gives no GA or preview label, and the autoscale scenarios page still marks Dynamic autoscaling as (preview). CONFLICT on Learn, see `reviews/UNRESOLVED-ISSUES.md` U3 | Autoscale can create and delete session hosts as well as manage power state |
 | **Ephemeral OS disks for session hosts** | CONFLICT on Learn (U4). What's new (June 2026) lists them as available and the dedicated page supports them for pooled host pools with session host configuration on Azure only (Standard SSD, still with some preview wording). The Prerequisites page still lists ephemeral OS disks as unsupported. Judgement: that line most likely refers to the standard management approach, but Learn does not say so | Use only for stateless workloads, and confirm current support before designing around them |
 | **RDP Multipath (redundant TCP)** | Generally available per What's new (July 2026); rollout began in May 2026 | Connection resilience on unreliable networks |
-| **Azure Virtual Desktop Hybrid** (session hosts on Azure Arc) | Public preview in May 2026. What's new lists general availability under September 2026 without a day. Windows Server and Windows 10/11 Enterprise single-session only; multi-session, autoscale, Start VM on Connect and session host configuration are not supported | Session hosts on your own hypervisor or bare metal, managed from Azure |
+| **Azure Virtual Desktop Hybrid** (session hosts on Azure Arc) | Public preview in May 2026. What's new lists general availability under September 2026 without a day. Windows Server and Windows 10/11 Enterprise single-session only; multi-session, power management, autoscale, Start VM on Connect and session host configuration are not supported. Licensing is a user entitlement plus an Azure Virtual Desktop Hybrid service user license (Hybrid overview, 17 October 2026) | Session hosts on your own hypervisor or bare metal, managed from Azure |
 | **Managed identity for host pools** | Generally available per What's new (September 2026). Learn says host pools with a session host configuration will require a managed identity in a future service update; no date is given | Plan identity and role assignments for host pool operations |
 | **Regional host pools** | Generally available per What's new (September 2026). The Regional Host Pools article still carries preview wording, which is stale against What's new. The Data locations page limits the regional scope to Central US and East US 2. Deployment scope cannot be changed after creation. Errors and checkpoints for regional session hosts are not reported to Log Analytics | Decide the deployment scope before you create the host pool |
-| **Windows App replaced the old Windows client** | Learn says support for the Remote Desktop client for Windows (MSI) ends on 27 March 2026 and tells users to migrate to Windows App | Client rollout and support conversations changed |
+| **Windows App replaced the old Windows client** | Learn gives 27 March 2026 as the date the Remote Desktop client for Windows (MSI) stops being supported and tells users to migrate to Windows App. That date has passed, although the page is still written in the future tense. Learn says the Microsoft Store version was available to download until 27 May 2025 and reached end of support in September 2025 | Client rollout and support conversations changed |
 
 Sources for the table: [What's new in Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new), [Host pool management approaches](https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches), [App Attach overview](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview), [Regional host pools](https://learn.microsoft.com/en-us/azure/virtual-desktop/regional-host-pools), [Azure Virtual Desktop Hybrid overview](https://learn.microsoft.com/en-us/azure/virtual-desktop/hybrid-overview) and [Configure managed identity](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-managed-identity).
 
@@ -205,12 +205,13 @@ This changes the answer.
 
 This is the one people miss.
 
-The licence you need depends on whether you are using a Windows client or Windows Server operating system for your session hosts, and whether it is for internal or external commercial purposes. For your own staff and for contractors serving your internal purposes, you buy eligible licences.
+The licence you need depends on whether you are using a Windows client or Windows Server operating system for your session hosts, and whether it is for internal or external commercial purposes. For your own staff and for contractors serving your internal purposes, you buy eligible licences. Per-user access pricing does not apply to contractors. A licence a contractor holds in their own company's tenant generally does not give them rights in yours, so Learn recommends buying the same kind of licence you buy for employees and assigning it to the contractor's identity in your Microsoft Entra tenant ([Licensing Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/licensing#licensing-recommendations-for-working-with-external-identities)).
 
 For genuinely external users - for example a software vendor selling remote access to its own application to its customers - there is a separate model. Per-user access pricing lets you pay for AVD access rights for external commercial purposes, and you must enrol in it to build a compliant deployment for external users. You pay through your enrolled Azure subscription on top of your virtual machine, storage and other Azure charges, and each billing cycle you only pay for users who actually connected at least once that month.
 
-Two details worth memorising because they come up as follow-up questions:
+Three details worth memorising because they come up as follow-up questions:
 
+- Per-user access pricing is not available for Windows Server session hosts, so a Windows Server design for external users has no per-user option under the licensing page. The [enrolment page](https://learn.microsoft.com/en-us/azure/virtual-desktop/enroll-per-user-access-pricing) also says it does not currently support Citrix DaaS or Omnissa Horizon Cloud.
 - If you have internal users with eligible licences, Microsoft recommends giving them access through a separate subscription that is not enrolled in per-user access pricing, to avoid effectively paying twice.
 - A per-user access licence is not a replacement for a Windows licence. It grants AVD access rights only, and does not include Microsoft Office, Microsoft Defender XDR, or Universal Print.
 
@@ -241,9 +242,9 @@ Weak answers list features. Strong answers start with the operating model.
 |---|---|---|---|---|
 | Who manages the broker | Microsoft | Microsoft | Citrix | You |
 | Who manages the desktop VM | You | Microsoft (largely) | You | You |
-| Multi-session (shared VM) | Yes | No - one concurrent session per Cloud PC (Windows 365 Flex lets several users share a Cloud PC, but not at the same time) | Yes | Yes |
+| Multi-session (shared VM) | Yes | No - one concurrent session per Cloud PC. Windows 365 Flex Shared mode lets a group share one Cloud PC, one user at a time. Flex Dedicated mode gives each user their own Cloud PC, up to three per licence, with one active session per licence | Yes | Yes |
 | Cost model | Consumption (Azure billing) | Fixed price per user per month | Azure consumption **plus** Citrix licences | CapEx plus operations |
-| Scale down when idle | Yes, this is a core strength | No for Enterprise: one Cloud PC per user on a fixed monthly licence. Flex in Dedicated mode powers a Cloud PC off after sign-off | Yes | No |
+| Scale down when idle | Yes, this is a core strength | No for Enterprise: one Cloud PC per user on a fixed monthly licence. Flex in Dedicated mode powers a Cloud PC off after sign-off (Learn says it stays on for two hours first) | Yes | No |
 | Sizing flexibility | Very high | Chosen from a set of Cloud PC sizes `[VERIFY BEFORE IMPLEMENTATION]` | Very high | High but capped by hardware |
 | Operational skill required | Medium to high | Low | High | High |
 | Best fit | Variable demand, mixed personas, cost-sensitive at scale | Predictable 1:1 users, small teams, low IT overhead | Complex estates, specific protocol or management needs, existing Citrix skills | Regulatory or latency blockers |
@@ -325,14 +326,14 @@ Before the next chapter, internalise these four positions. They are the ones you
 It is Microsoft's desktop and application virtualisation service in Azure. Microsoft runs the brokering and gateway layer, and you run the Windows virtual machines that users actually log into.
 
 **Strong senior architect answer**
-"AVD is a shared-responsibility virtualisation platform. Microsoft operates the control plane - the broker, the gateway, the diagnostics service and the ARM objects that describe the environment - and I don't deploy or maintain any of it. What I own is everything underneath: the session hosts, the image, the network, profile storage, identity and security. The design consequence I care about most is reverse connect. My session hosts open an outbound connection to the service, so I never publish RDP to the internet and I don't need public IPs on hosts. That, plus Windows multi-session and autoscaling, is usually the core of the business case."
+"AVD is a shared-responsibility virtualisation platform. Microsoft operates the control plane - the web service, the broker, the gateway and the metadata databases behind them, plus the ARM objects that describe the environment - and I don't deploy or maintain any of it. What I own is everything underneath: the session hosts, the image, the network, profile storage, identity and security. The design consequence I care about most is reverse connect. My session hosts open an outbound connection to the service, so I never publish RDP to the internet and I don't need public IPs on hosts. That, plus Windows multi-session and autoscaling, is usually the core of the business case."
 
 **Real-world example**
 "On a 3,200-user manufacturing design, the pooled task-worker hosts scale down outside shift hours. That's only possible because profiles are external to the VM and the VM itself is disposable."
 
 **Follow-up you should expect**
 "So what happens if the AVD control plane has an outage?"
-Answer honestly: existing sessions may survive, but new connections depend on the service. Say that you cannot engineer around a control plane you do not run, so you plan for it in the availability conversation and set expectations with the business rather than promising something you cannot deliver. [Project 13](../scenarios/project-13-multi-region-architecture.md) covers this properly.
+Answer from what Learn documents, and say where it stops. A database failover briefly fails new connections but does not affect existing ones. If a gateway instance fails, the TCP connections relayed through it drop, and users who reconnect are returned to their existing session ([Service architecture and resilience](https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience#service-resilience)). Learn does not describe a total service outage, so do not invent one. Say that you cannot engineer around a control plane you do not run, so you plan for it in the availability conversation and set expectations with the business rather than promising something you cannot deliver. [Project 13](../scenarios/project-13-multi-region-architecture.md) covers this properly.
 
 **How to say it out loud**
 Lead with the responsibility split. Do not open with a feature list - it sounds like you memorised a product page.
@@ -360,7 +361,7 @@ For internal users on Windows 10/11 multi-session or single-session, an eligible
 **Where the follow-up goes**
 Two directions, and you should raise both before you are asked:
 - If session hosts run Windows Server, the access right comes from an RDS CAL with active Software Assurance or an RDS User Subscription License - that is a different path.
-- If the users are genuinely external commercial users, per-user access pricing applies and the subscription must be enrolled for it. Keep internal users on a separate, non-enrolled subscription so you are not paying twice.
+- If the users are genuinely external commercial users, per-user access pricing applies (Windows client session hosts only) and the subscription must be enrolled for it. Keep internal users on a separate, non-enrolled subscription so you are not paying twice.
 
 **How to say it out loud**
 "Three questions: what licence do the users hold, what OS are the session hosts running, and are these internal or external users? The answers decide it." Framing it as three questions signals that you have handled it in the real world.

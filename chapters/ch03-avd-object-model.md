@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md)); sources re-read in full on 17 October 2026 (see [Chapter source recheck](../reviews/CHAPTER-SOURCE-RECHECK.md))
 
 ---
 
@@ -36,7 +36,7 @@
 
 The AVD object model looks trivial. Four object types, a few relationships. Most people learn it in ten minutes from a portal wizard and move on.
 
-Then a real environment grows. Someone needs a second desktop published from the same hosts. Someone else needs a group of contractors to see three apps and nothing else. A region gets added. And suddenly the team discovers a set of rules they never learned - an application group can only live in one workspace, you can only have one desktop application group per host pool, and everything has to be in the same location.
+Then a real environment grows. Someone needs a second desktop published from the same hosts. Someone else needs a group of contractors to see three apps and nothing else. A region gets added. And suddenly the team discovers a set of rules they never learned - an application group can only live in one workspace, you can only have one desktop application group per host pool, and the locations of the objects have to line up.
 
 Those constraints are not obstacles. They are the shape of the design. Once you know them, the right structure is usually obvious. Once you have deployed the wrong structure to 3,000 users, changing it is a project.
 
@@ -135,7 +135,7 @@ The diagram deliberately keeps desktop and RemoteApp delivery on separate host p
 4. The user launches a resource. The broker looks up which **host pool** that application group belongs to.
 5. The broker selects a **session host** in that host pool and brokers the connection.
 
-The assignment is on the application group. That is the single most important line in this chapter.
+The assignment is on the application group. That is the single most important line in this chapter. In Learn's delegated access model, you publish to a user or group by giving them the Desktop Virtualization User role with the application group as the scope ([Delegated access](https://learn.microsoft.com/en-us/azure/virtual-desktop/delegated-access-virtual-desktop)). The [FAQ](https://learn.microsoft.com/en-us/azure/virtual-desktop/faq) says the person making that assignment needs the User Access Administrator role on the application group.
 
 ### Architect's view
 
@@ -163,12 +163,13 @@ These are the constraints that decide your design. Learn them properly, because 
 | Host pool type | Once you create a host pool, you can't change its type (pooled or personal). You can move registered VMs to a host pool of the other type. |
 | Management approach | Standard or session host configuration is set at creation and can't be changed. A host pool created without a session host configuration can't get one later. |
 | Deployment scope | Geographical or Regional is set at creation and can't be changed. A workspace can only have application groups of the same deployment scope registered to it. |
+| Tenant | Users must be in the same Microsoft Entra tenant as their assigned workspace, host pool and application group. Session host VMs can be joined to a different Active Directory, as long as it is the user's AD or trusts it ([FAQ](https://learn.microsoft.com/en-us/azure/virtual-desktop/faq)). |
 
 ### The location rule
 
 This one catches people out during multi-region designs.
 
-All service resources have a location. A host pool's location determines which geography the service metadata for the host pool is stored in. To make sure data isn't transferred between multiple locations, the application group's location should be the same as the host pool's, and workspaces must be in the same location as their application groups (Microsoft Learn FAQ, "What are location restrictions?").
+All service resources have a location. A host pool's location determines which geography the service metadata for the host pool is stored in. To make sure data isn't transferred between multiple locations, the application group's location should be the same as the host pool's, and workspaces must be in the same location as their application groups ([Microsoft Learn FAQ, "What are location restrictions?"](https://learn.microsoft.com/en-us/azure/virtual-desktop/faq)). Note the difference in wording: Learn says the application group's location *should* match its host pool's, and that the service *requires* workspaces to be associated only with application groups created in the same location. Treat the first as a design rule and the second as a hard constraint.
 
 **Practical consequence:** you cannot have one global workspace containing application groups from every region. In a multi-region design you will have a workspace per region. Users in more than one region subscribe to more than one workspace. Plan for that in your communications and client rollout, because "why do I have two workspaces?" is a helpdesk question you can avoid by explaining it up front.
 
@@ -266,7 +267,7 @@ That last line is worth remembering. It is the difference between an architect a
 The host pool is the compute. The application group publishes either a desktop or a set of apps from that host pool. The workspace groups application groups together so the user can subscribe to them. Users are assigned to application groups.
 
 **Strong senior architect answer**
-"Three layers with clean separation. Host pool is compute - VM configuration, load balancing, session limits. Application group is publishing - one per host pool for desktops, and you can have several RemoteApp groups on the same pool. Workspace is presentation - it's what the user subscribes to in the client. Access control sits on the application group, through Entra ID groups, never on the host pool. The constraints that shape the design are that an app group belongs to exactly one host pool and exactly one workspace, only one desktop app group per host pool, and everything has to share a location - which is why multi-region means a workspace per region rather than one global one."
+"Three layers with clean separation. Host pool is compute - VM configuration, load balancing, session limits. Application group is publishing - one per host pool for desktops, and you can have several RemoteApp groups on the same pool. Workspace is presentation - it's what the user subscribes to in the client. Access control sits on the application group, through Entra ID groups, never on the host pool. The constraints that shape the design are that an app group belongs to exactly one host pool and can be registered to at most one workspace, only one desktop app group per host pool, and locations have to line up: the app group's location should match its host pool's, and the workspace must match its app groups'. That is why multi-region means a workspace per region rather than one global one."
 
 **Follow-up you should expect**
 "What happens if a user is assigned to both a desktop and a RemoteApp group on the same host pool?" - that is section 4. Two concurrent sessions, doubled profile and resource footprint, and the preferred application group type setting exists to prevent it.
@@ -296,8 +297,8 @@ Add the timing dimension. Group membership changes are not always instant end to
 ## 9. Key Takeaways
 
 - Host pool = compute. Application group = publishing. Workspace = subscription. Assignment = on the application group.
-- One application group belongs to one host pool and one workspace. One desktop application group per host pool. Multiple RemoteApp groups allowed.
-- Application groups cannot exist without a host pool, and host pool, application group and workspace must share a location.
+- One application group belongs to one host pool and can be registered to at most one workspace. One desktop application group per host pool. Multiple RemoteApp groups allowed.
+- Application groups cannot exist without a host pool. An application group's location should match its host pool's, and a workspace must be in the same location as its application groups.
 - Preferred application group type prevents a user getting two sessions on the same host pool.
 - Host pool type cannot be changed after creation. Choose deliberately.
 - Design host pools around sizing and security requirements, not org structure.
@@ -405,7 +406,7 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **Business impact.** Second region rollout blocked mid build. Rework rather than outage, and a change to the user communication plan.
 
-**Initial hypothesis.** The location rule. Host pool, application group and workspace must share a location.
+**Initial hypothesis.** The location rule. A workspace must be in the same location as its application groups, and an application group's location should match its host pool's.
 
 **Investigation.** Compare the location property on the workspace and the new application group.
 
@@ -449,7 +450,7 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **What I would decide as the architect.** Assignment through groups only. Preferred application group type set at creation. Workspace per region because the location rule allows nothing else. And host pools built around sizing and isolation rather than departments.
 
-**What I would say in an interview.** The three layer split, then the constraints that shape the design: one application group per host pool, one workspace per application group, one desktop application group per pool, and everything in the same location.
+**What I would say in an interview.** The three layer split, then the constraints that shape the design: one host pool per application group, at most one workspace per application group, one desktop application group per pool, and locations that line up.
 
 ---
 

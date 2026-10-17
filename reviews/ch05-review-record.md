@@ -50,3 +50,9 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: ESU flag rewritten (automatic entitlement, EnableESUSubscriptionCheck scope); Azure Local activation and OS support paragraph rewritten; ephemeral OS disk flag points to U4.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Second source pass, 17 October 2026
+
+Session-host-only licence scope, Intune enrolment prerequisites (device credentials, agent 1.0.2944.1400 or later, pooled ARM-deployed host pool, no cloned enrolled images, FSLogix RoamIdentity disabled) and per-user pricing limits added. Azure verification page re-read at its azure-stack path and still supports the chapter's statements. Baseline line updated.
+
+Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
