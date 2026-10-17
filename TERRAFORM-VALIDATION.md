@@ -142,7 +142,19 @@ Commit `b1ef26d95f4a969c72878ba74b9e9c6b269c856e` (second Learn source pass, Cha
 | Repository check | 39009293198 | success |
 | Markdown link check | 39009294575 | success |
 
-Scope is unchanged and still structural. Commits made after `b1ef26d` (including the one that records this table) have not had a CI run.
+Scope is unchanged and still structural. Commits made after `b1ef26d` have their own entries below.
+
+### Re-run on `d638745`, 17 October 2026
+
+Commit `d6387458403df4c81f90bd2405c134cd3940b036` (records the `b1ef26d` CI results; documentation only). Pushed to the existing branch with approval and the same three workflows dispatched manually. Each run reports this exact SHA:
+
+| Workflow | Run | Result |
+|---|---|---|
+| Terraform structural check | 39009750006 | success |
+| Repository check | 39009751327 | success |
+| Markdown link check | 39009752483 | success |
+
+Scope is unchanged and still structural. Commits made after `d638745` (including the one that records this table) have not had a CI run.
 
 ### Terraform tooling in the authoring environment, 17 October 2026
 
