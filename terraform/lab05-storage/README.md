@@ -19,4 +19,4 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-See [labs/lab-05-storage.md](../../labs/lab-05-storage.md) for the full walkthrough, validation steps, and the manual AD-join step this Terraform cannot perform for you (`Join-AzStorageAccountForAuth` requires a domain-joined session, not the Terraform provider).
+See [labs/lab-05-storage.md](../../labs/lab-05-storage.md) for the full walkthrough, validation steps, and the manual AD-join step this Terraform cannot perform for you (`Join-AzStorageAccount` (AzFilesHybrid) requires a domain-joined session, not the Terraform provider).

@@ -43,3 +43,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 20 | "Lab 3 builds four subnets" | Verified | `terraform/lab03-network/network.tf`: identity, hosts (/23), storage, mgmt, plus an optional Bastion subnet |
 
 Outcome: Verified with caveats (claims 2, 9, 15 to 19; S5 to S8 excerpt-only; S1 deprecated).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U33 closed with caveat.
+
+Changes: CAF landing zone reference marked deprecated with removal date; accelerator note added.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

@@ -134,24 +134,24 @@ az role assignment list \
 
 ## Step 4 - Join the storage account to the domain for AD authentication
 
-```bash
-az vm run-command invoke -g rg-avd-identity-lab-cus-01 -n vm-avdlab-dc02 \
-  --command-id RunPowerShellScript \
-  --scripts "
-    Install-Module -Name Az.Storage -Force -AllowClobber -Scope AllUsers
-    Connect-AzAccount -Identity
-    Import-Module Az.Storage
-    Join-AzStorageAccountForAuth \
-      -ResourceGroupName 'rg-avd-storage-lab-cus-01' \
-      -StorageAccountName '<storage_account_name>' \
-      -DomainAccountType 'ComputerAccount' \
-      -OrganizationalUnitDistinguishedName 'CN=Computers,DC=avdlab,DC=local'
-  "
+Use the same method as [Lab 5 Step 4](lab-05-storage.md): the `Join-AzStorageAccount` cmdlet from the **AzFilesHybrid** module (not part of Az.Storage), run in elevated Windows PowerShell 5.1 on a machine joined to `avdlab.local`, by an account that can create a computer account in the domain and holds Contributor (or Owner) on the storage account ([Enable AD DS authentication for Azure file shares](https://learn.microsoft.com/azure/storage/files/storage-files-identity-ad-ds-enable), retrieved 16 October 2026). The earlier name `Join-AzStorageAccountForAuth` is obsolete; Learn's current pages use `Join-AzStorageAccount`.
+
+```powershell
+# On vm-avdlab-dc02 (or dc01), elevated Windows PowerShell 5.1, after extracting AzFilesHybrid
+.\CopyToPSPath.ps1
+Import-Module -Name AzFilesHybrid
+Connect-AzAccount            # an account with Owner/Contributor on the centralus storage account
+Select-AzSubscription -SubscriptionId '<subscription_id>'
+Join-AzStorageAccount `
+  -ResourceGroupName 'rg-avd-storage-lab-cus-01' `
+  -StorageAccountName '<storage_account_name>' `
+  -DomainAccountType 'ComputerAccount' `
+  -OrganizationalUnitDistinguishedName 'CN=Computers,DC=avdlab,DC=local'
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]`: same requirement Lab 5 flags - `vm-avdlab-dc02` needs a system-assigned managed identity with Contributor on this storage account for `Connect-AzAccount -Identity` to work non-interactively.
+`[UNTESTED]` This is run interactively, not through `az vm run-command`, because AzFilesHybrid is downloaded from GitHub and the earlier non-interactive managed-identity pattern was not verified against Learn. Verify as Lab 5 does: `(Get-AzStorageAccount -ResourceGroupName <rg> -Name <account>).AzureFilesIdentityBasedAuth.DirectoryServiceOptions` should be `AD`.
 
-**Why `vm-avdlab-dc02`, not `vm-avdlab-dc01`.** This step must run from a domain-joined machine in the same forest, but it does not need to be a specific domain controller - `avdlab.local` is one forest with two domain controllers now, and either can create the computer account this command produces. Using the local, `centralus` domain controller avoids an unnecessary cross-region round trip for an operation the local DC is equally able to perform.
+**Why `vm-avdlab-dc02`, not `vm-avdlab-dc01`.** This step must run from a domain-joined machine in the same forest, but it does not need to be a specific domain controller. `avdlab.local` is one forest with two domain controllers now, and either can create the computer account this command produces. Using the local `centralus` domain controller avoids a cross-region round trip.
 
 **Expected output:** command completes without error.
 
@@ -222,7 +222,7 @@ Leave this until after Lab 15 confirms FSLogix Cloud Cache mounts correctly usin
 
 ## Common errors
 
-Identical failure modes to Lab 5, at the `centralus` addresses: access denied joining the domain (check `vm-avdlab-dc02`'s managed identity permissions, not `vm-avdlab-dc01`'s), and PowerShell Gallery module installation blocked by NSG egress rules.
+Identical failure modes to Lab 5, at the `centralus` addresses: access denied joining the domain (check the permissions of the account you passed to `Connect-AzAccount` on the `centralus` storage account), and the AzFilesHybrid download blocked by NSG egress rules.
 
 ## Troubleshooting
 
@@ -230,7 +230,7 @@ Identical failure modes to Lab 5, at the `centralus` addresses: access denied jo
 |---|---|---|
 | Private endpoint stuck in `Pending` | Auto-approval didn't trigger | Manually approve: `az network private-endpoint-connection approve` |
 | DNS resolves to a public IP, not private | VNet link missing or private DNS zone not correctly scoped | Confirm `azurerm_private_dns_zone_virtual_network_link.files` applied and targets the `centralus` VNet, not `eastus2`'s |
-| `Join-AzStorageAccountForAuth` succeeds on `eastus2` DC but not `centralus` DC | The managed identity role assignment was only granted once, against the wrong storage account, or against `vm-avdlab-dc01` instead of `vm-avdlab-dc02` | Confirm `vm-avdlab-dc02` specifically has Contributor on the `centralus` storage account - the two DCs' permissions are independent |
+| `Join-AzStorageAccount` succeeds for the `eastus2` account but not the `centralus` account | The signed-in account has Contributor on only one storage account | Confirm the account you pass to `Connect-AzAccount` has Contributor or Owner on the `centralus` storage account specifically |
 
 ## Cleanup versus keep
 

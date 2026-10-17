@@ -37,3 +37,11 @@ Local diagram `ch09-conditional-access-app-targeting.svg` text inspected: two ap
 | 17 | SSO troubleshooting page | Unverified | S4 not fetched. |
 
 Outcome: Verified with caveats (claims 2, 13, 14, 17).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U19 closed.
+
+Changes: audit-01 appendix entry for a4a365df struck through and cross-referenced.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

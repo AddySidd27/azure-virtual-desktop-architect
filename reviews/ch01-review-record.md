@@ -113,3 +113,11 @@ No independent reviewer was available. One process did both passes. Neither pass
 | `appendices/adr-shc-vs-standard-host-pools.md` and Labs 11 to 20 | They describe Regional Host Pools and session host configuration as Preview or unavailable as of 6 September 2026. S5 now lists regional host pools and several session host configuration features as generally available or available. Terraform and API status was not checked here. |
 | `SOURCE-VERIFICATION.md` | Has no rows for Windows 365, AVD Hybrid, AVD on Azure Local, managed identity, regional host pools or the FAQ. Add them when the register is next updated. |
 | Other 24 chapters | Not reviewed. |
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U1 closed with caveat, U2 closed with caveat, U3 open (Learn conflict), U4 open (Learn conflict).
+
+Changes: Ch1 status table rows for Session host configuration, Dynamic autoscaling, Ephemeral OS disks and Regional host pools rewritten with the Learn evidence.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

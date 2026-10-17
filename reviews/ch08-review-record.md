@@ -43,3 +43,11 @@ Not fetched: set-up-mfa (Chapter 9), troubleshoot-sso-conditional-access, Entra 
 | 23 | Diagram `ch08-identity-architecture` | Gap recorded | Draws CA at first sign-in only. Caption note added; SVG/drawio not redrawn (U17). Mermaid sequence updated. |
 
 Outcome: Verified with caveats (claims 12, 14, 17, 20, 23).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U10 closed with caveat, U17 closed, U18 open, U20 closed.
+
+Changes: Mermaid sequence, chapter text, SVG and drawio corrected so the gateway initiates SSO via Windows Cloud Login; SVG viewed and mermaid rendered.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

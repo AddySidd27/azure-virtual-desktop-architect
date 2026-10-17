@@ -319,7 +319,7 @@ az role assignment create \
   --scope "/subscriptions/<subscription-id>"
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]` Confirm the current service principal identifier and the required scope in the Microsoft documentation. The application used by the AVD service has changed name historically and the scope can be subscription, resource group or host pool.
+`[VERIFY BEFORE IMPLEMENTATION]` Confirm the current service principal identifier and the required scope in the Microsoft documentation. The application used by the AVD service has changed name historically and the scope can be any scope that contains the host pool and its session host VMs, for example the subscription or the resource group holding them (Start VM on Connect page, retrieved 16 October 2026). A role on the host pool object alone does not contain the VMs.
 
 **Root cause.** The role assignment for the AVD service principal was missing. Without it, the service cannot start, stop or deallocate session hosts, so the feature is configured and inert.
 

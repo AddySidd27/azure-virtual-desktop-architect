@@ -6,6 +6,7 @@ sequenceDiagram
     participant U as Windows App
     participant E as Entra ID
     participant S as AVD service
+    participant G as AVD gateway
     participant H as Session host
     participant K as Domain controller
 
@@ -19,10 +20,11 @@ sequenceDiagram
     S-->>U: Assigned desktops and apps
 
     Note over U,H: Stage 2 · session host authentication
-    U->>E: Request RDP token (Windows Cloud Login)
+    U->>G: Connect, presenting the service token
+    G->>E: Start session host SSO (Windows Cloud Login)
     E->>E: Conditional Access re-evaluated when targeted
-    E-->>U: RDP token (SSO)
-    U->>H: Windows sign-in
+    E-->>G: Token for the session host
+    G->>H: Pass token, host accepts it
     H->>K: Kerberos ticket (hybrid, or Kerberos server object)
 
     Note over H,K: Stage 3 · in-session authentication

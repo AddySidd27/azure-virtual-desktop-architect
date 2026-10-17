@@ -62,6 +62,7 @@ sequenceDiagram
     participant U as Windows App
     participant E as Entra ID
     participant S as AVD service
+    participant G as AVD gateway
     participant H as Session host
     participant K as Domain controller
 
@@ -75,10 +76,11 @@ sequenceDiagram
     S-->>U: Assigned desktops and apps
 
     Note over U,H: Stage 2 · session host authentication
-    U->>E: Request RDP token (Windows Cloud Login)
+    U->>G: Connect, presenting the service token
+    G->>E: Start session host SSO (Windows Cloud Login)
     E->>E: Conditional Access re-evaluated when targeted
-    E-->>U: RDP token (SSO)
-    U->>H: Windows sign-in
+    E-->>G: Token for the session host
+    G->>H: Pass token, host accepts it
     H->>K: Kerberos ticket (hybrid, or Kerberos server object)
 
     Note over H,K: Stage 3 · in-session authentication
@@ -95,7 +97,7 @@ Authentication and authorization are separated deliberately. Stage 1 proves who 
 
 1. **Stage 1, service authentication.** The user signs in to Microsoft Entra ID. Conditional Access is evaluated here, including MFA, device state and location. The token is issued against the Azure Virtual Desktop application.
 2. **Authorization.** The service checks which application groups the identity is assigned to and returns the feed. See [Chapter 3](ch03-avd-object-model.md).
-3. **Stage 2, session host authentication.** The user signs in to Windows on the session host. With single sign-on enabled, an RDP access token is issued through the Windows Cloud Login application and no second prompt appears. Without it, the user is prompted again.
+3. **Stage 2, session host authentication.** The user signs in to Windows on the session host. With single sign-on enabled, the gateway starts SSO through the Windows Cloud Login application, which issues the token for the session host, and no second prompt appears. Without it, the user is prompted again.
 4. **Kerberos.** Windows sign in uses Kerberos or NTLM. Kerberos needs a ticket from a domain controller over TCP 88, which requires line of sight or a KDC proxy.
 5. **Stage 3, in-session authentication.** Applications and SMB shares inside the session authenticate separately, typically with integrated Windows authentication.
 
@@ -286,7 +288,7 @@ WVDConnections
 | order by Connections desc
 ```
 
-The earlier `State == "Connected"` filter was removed because Learn's table reference does not enumerate State values (Unverified). The query was not executed. `[VERIFY BEFORE IMPLEMENTATION]` Confirm the `WVDConnections` table exists in your workspace (diagnostic settings must be enabled).
+The earlier `State == "Connected"` filter was removed because Learn's table reference does not enumerate State values. Learn's [Use Log Analytics for the diagnostics feature](https://learn.microsoft.com/azure/virtual-desktop/diagnostics-log-analytics) shows the connection states Started, Connected and Completed in its own queries (checked 16 October 2026, U10), so a `State` filter is documented there, but the table reference itself still does not list the values. The query was not executed. `[VERIFY BEFORE IMPLEMENTATION]` Confirm the `WVDConnections` table exists in your workspace (diagnostic settings must be enabled).
 
 **Evidence.**
 - If `CustomRdpProperty` on the affected host pool does not contain `enablerdsaadauth:i:1`, that is the answer. The tenant setting is fine, the host pool was missed.

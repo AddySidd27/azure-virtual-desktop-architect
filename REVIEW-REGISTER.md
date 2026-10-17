@@ -80,3 +80,8 @@ Chapter 1 was reviewed by one assistant doing both passes in sequence, so neithe
 | Host pool type claim repeated in Chapters 3 and 15, not reviewed | [Chapter 1 record](reviews/ch01-review-record.md) |
 | Regional Host Pools and session host configuration status in the ADR and Labs 11 to 20 may be out of date | [Chapter 1 record](reviews/ch01-review-record.md) |
 | `SOURCE-VERIFICATION.md` lacks rows for Windows 365, AVD Hybrid, Azure Local, managed identity, regional host pools and the FAQ | [Chapter 1 record](reviews/ch01-review-record.md) |
+
+## Close-out pass, 2026-10-16
+
+Chapters 1 to 12 were re-reviewed against 34 tracked issues. 21 are closed (U29 to U32 and U34 in text or code only, none executed), 13 remain open: U3, U4, U9 (Learn conflicts), U8, U12, U15, U18 (evidence unavailable or undocumented), U23 to U28 (not tested). Terraform fmt, init, validate and plan were NOT RUN. Chapters 1 to 12 are **not** marked complete. See [UNRESOLVED-ISSUES](reviews/UNRESOLVED-ISSUES.md) and [ASSET-VERIFICATION](reviews/ASSET-VERIFICATION.md).
+

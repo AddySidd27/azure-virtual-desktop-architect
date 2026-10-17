@@ -139,7 +139,7 @@ Required hosts = 270 ÷ 5.6 = **49 hosts**
 
 ### The permission everyone forgets
 
-Autoscale is a service principal acting on your subscription, and it needs rights. The Desktop Virtualization Power On Off Contributor role is assigned to the Azure Virtual Desktop autoscale service principal at the host pool, resource group, or subscription scope. Without this role, autoscale can't start, stop, or deallocate session hosts.
+Autoscale is a service principal acting on your subscription, and it needs rights. The Desktop Virtualization Power On Off Contributor role is assigned to the Azure Virtual Desktop service principal (or the host pool's managed identity) at **subscription scope**. Learn (Create and assign a scaling plan, Prerequisites, retrieved 16 October 2026) says a lower scope prevents autoscale from working properly. Corrected 16 October 2026: an earlier version of this scenario allowed host pool or resource group scope. Without this role, autoscale can't start, stop, or deallocate session hosts.
 
 A scaling plan with no role assignment looks perfectly configured and does nothing. It is the first thing to check when a plan appears to be ignored.
 

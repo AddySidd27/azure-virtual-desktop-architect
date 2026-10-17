@@ -9,7 +9,7 @@
 
 ## Objective
 
-Deploy a domain controller into the identity subnet, promote it, point the VNet at it for DNS, and prove that name resolution works. This gives you the hybrid join model used from Lab 8 onwards.
+Deploy a domain controller into the identity subnet, promote it, point the VNet at it for DNS, and prove that name resolution works. This gives you the AD DS join model used from Lab 8 onwards (the hosts are AD DS joined, not Microsoft Entra hybrid joined).
 
 You build the DC even though [Chapter 7](../chapters/ch07-identity-architecture-foundations.md) argues that many designs no longer need one. There are two reasons. Most enterprise environments you will work in have this model, and you cannot properly understand what Entra Kerberos removes until you have seen what it replaces.
 
@@ -17,7 +17,7 @@ You build the DC even though [Chapter 7](../chapters/ch07-identity-architecture-
 
 ## ⚠️ Cost warning. Read this before you start.
 
-This is the first lab that costs real money.
+This is the first lab with running compute cost (Lab 3 is $0.00 base; see its cost summary).
 
 | Resource | Size | Running cost | Deallocated cost |
 |---|---|---|---|
@@ -285,15 +285,28 @@ az vm run-command invoke \
 
 ---
 
-## Step 7 - A note on Entra Connect
+## Step 7 - Identity synchronisation: the selected design and its limits
 
-A real hybrid environment syncs these accounts to Entra ID, because [Chapter 7 section 1](../chapters/ch07-identity-architecture-foundations.md#1-start-with-the-rule-that-applies-to-everyone) established that users must be discoverable in Entra ID.
+**Selected design for Labs 4 to 8: AD DS joined session hosts with synchronised hybrid identities.** [Chapter 7](../chapters/ch07-identity-architecture-foundations.md#1-start-with-the-rule-that-applies-to-everyone) established that users of AD DS joined session hosts must exist in both AD DS and Microsoft Entra ID. Lab 4 builds only the AD DS half. This step is the other half, and it is **required before Lab 8 Step 5 (sign in through Windows App) can succeed**. Labs 4 to 8 up to that point (domain join, Azure Files join, FSLogix configuration, host registration) do not need it.
 
-This lab does not install Entra Connect, for a practical reason. Syncing a `.local` domain to a real tenant creates accounts you then have to clean up, and it can conflict with an existing tenant. If you have a dedicated test tenant, install Entra Cloud Sync and sync the `OU=Users,OU=AVD` container only.
+**Prerequisites for this step** (Learn: [Prerequisites for Microsoft Entra Cloud Sync](https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/how-to-prerequisites) and [Prepare a nonroutable domain for directory synchronization](https://learn.microsoft.com/microsoft-365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization), retrieved 16 October 2026):
 
-For the rest of the labs, session hosts join `avdlab.local` and users are assigned from Entra ID directly. The [Chapter 8](../chapters/ch08-authentication-flows-in-detail.md) walkthrough explains how the two identities line up in a production hybrid design.
+| Need | Why |
+|---|---|
+| A dedicated **test Entra tenant** with a **verified custom domain** | A `.local` UPN cannot be verified. Without a verified suffix the account syncs to an `.onmicrosoft.com` UPN |
+| An alternative UPN suffix for that domain added in AD (Active Directory Domains and Trusts) and `avdtest01..03` UPNs changed to it | This is Learn's documented fix for `.local` forests |
+| A Hybrid Identity Administrator account in the tenant (not a guest) | Required to configure Cloud Sync |
+| Domain Admin or Enterprise Admin credentials in `avdlab.local` | Needed to create the agent's gMSA |
+| Provisioning agent on a domain-joined server (installing on the DC is supported) with outbound access | Cloud Sync uses an outbound-only agent |
+| Schema attribute `msDS-ExternalDirectoryObjectId` | Windows Server 2016 or later has it |
 
-`[VERIFY BEFORE IMPLEMENTATION]` Entra Connect and Entra Cloud Sync have different supported topologies and version requirements. Check the current guidance before deploying either into a real tenant.
+Then sync only `OU=Users,OU=AVD` with Entra Cloud Sync and confirm the three users appear in the tenant. Put a synced group in the Lab 5/7 `avd-lab-users` role assignments so share-level RBAC (Lab 5) and the application group assignment (Lab 7) match real Entra identities.
+
+**Limitations of this design.** It needs a tenant and domain you control and can write to. It is `[UNTESTED]`: no sync, agent install or sign-in was run for this repository. Cloud Sync has its own supported-topology limits, and Microsoft Entra Connect Sync is the alternative if you need a feature Cloud Sync lacks. Check both against current Learn before use.
+
+**If you cannot sync (no test tenant).** Labs 4 to 8 still complete up to the Lab 8 sign-in step. For an end-to-end sign-in, use the Entra-only path in [Project 05](../scenarios/project-05-entra-only-cloud-native.md), which covers Entra joined hosts (profile storage with Microsoft Entra Kerberos is covered in Chapter 20; cloud-only identities are supported for FSLogix on Azure Files in the public cloud, per Learn's [profile container with Microsoft Entra ID](https://learn.microsoft.com/azure/virtual-desktop/create-profile-container-azure-ad)). That path replaces Labs 4 and 5's AD DS steps rather than extending them.
+
+Tracked as U30 and U32.
 
 ---
 

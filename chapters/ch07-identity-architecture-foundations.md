@@ -280,7 +280,7 @@ It shows you treat session hosts as rebuildable rather than precious, it puts ap
 - Introduction to Microsoft Entra Kerberos - https://learn.microsoft.com/en-us/entra/identity/authentication/kerberos
 - Store FSLogix profile containers on Azure Files using Microsoft Entra ID - https://learn.microsoft.com/en-us/fslogix/how-to-configure-profile-container-entra-id-hybrid
 - Enable Microsoft Entra Kerberos authentication for hybrid identities on Azure Files - https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-hybrid-identities-enable
-- Identity and access management recommendations for AVD (not fetched in this review) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-identity-and-access-management
+- Identity and access management recommendations for AVD (not fetched in this review; the CAF AVD scenario set is deprecated with removal announced for 30 October 2026) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-identity-and-access-management
 - Prerequisites for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites
 
 ---

@@ -96,7 +96,15 @@ Treat the split as a feature. A helpdesk needs to log users off and put a host i
 
 **The role that surprises people.** Desktop Virtualization User is the role that publishing an application group to a user or group creates, scoped to that application group. The portal assignment blade does this for you. If someone holds it at a strange scope, that is worth investigating.
 
-**Service roles.** The last three rows are for the AVD resource provider, not for admins. They are normally granted by following the feature's own setup page (autoscale, Start VM on Connect, session host configuration), at the scope that page states. [VERIFY BEFORE IMPLEMENTATION] Check the current scope guidance for each feature.
+**Service roles.** The last three rows are for the AVD resource provider, not for admins. Each is assigned to the Azure Virtual Desktop service principal (app ID `9cdead84-a844-4324-93f2-b2e6bb768d07`) or to the host pool's managed identity. Whoever makes the assignment needs `Microsoft.Authorization/roleAssignments/write` (Owner or User Access Administrator). Scope differs by feature (Microsoft Learn, retrieved 16 October 2026):
+
+| Feature | Role | Scope Learn states | Learn page and section |
+|---|---|---|---|
+| Autoscale, Power management | Power On Off Contributor | **Subscription.** A lower scope "prevents autoscale from working properly" | [Create and assign a scaling plan](https://learn.microsoft.com/azure/virtual-desktop/autoscale-create-assign-scaling-plan), Prerequisites |
+| Autoscale, Dynamic | Power On Off Contributor and Virtual Machine Contributor | Subscription | Same page, Prerequisites |
+| Start VM on Connect | Power On Contributor | Any scope that contains the host pool and its session host VMs. Subscription is recommended, lower scopes work | [Start VM on Connect](https://learn.microsoft.com/azure/virtual-desktop/start-virtual-machine-connect), Prerequisites |
+
+The account that turns on Start VM on Connect needs Desktop Virtualization Host Pool Contributor. Start VM on Connect is configured on an existing host pool, not at creation, and a pooled host pool starts at most one VM per five minutes. Session host configuration roles are covered in [Chapter 16](ch16-automated-host-pools-session-host-configuration.md). [VERIFY BEFORE IMPLEMENTATION] The session host configuration role scope was not re-read in this review.
 
 ---
 

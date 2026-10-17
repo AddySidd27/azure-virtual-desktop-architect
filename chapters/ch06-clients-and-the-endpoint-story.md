@@ -58,7 +58,7 @@ The dates, from the Remote Desktop client overview page on Microsoft Learn (retr
 
 From 27 March 2026 the MSI client and the Remote Desktop web client are no longer supported for customers using public cloud environments. MSI support was extended to 28 September 2026 for Azure Government, Azure operated by 21Vianet and AVD Classic. No end of support date is announced for the web client in Azure Government or Azure operated by 21Vianet. The Store app reached end of support in September 2025 and is no longer available for download.
 
-`CURRENCY FLAG - the 28 September 2026 date had already passed when this was reviewed. The Learn page still showed it unchanged on 16 October 2026, so what applies to those clouds now is UNVERIFIED. Confirm before advising an Azure Government, 21Vianet or AVD Classic customer.`
+`CURRENCY FLAG - the 28 September 2026 date had already passed when this was reviewed. The Learn page still showed it unchanged on 16 October 2026, so what applies to those clouds now is UNVERIFIED (re-checked 16 October 2026, [Remote Desktop client overview](https://learn.microsoft.com/previous-versions/remote-desktop-client/overview) still unchanged; issue U8 stays open; no announced date exists for the web client in Government or 21Vianet). Confirm before advising an Azure Government, 21Vianet or AVD Classic customer.`
 
 Two details that catch people out.
 
@@ -74,7 +74,7 @@ Windows App is one client that connects to several Microsoft remote services. Le
 
 The reason for the change is worth understanding. Before Windows App, a user with a Cloud PC, an AVD desktop and a Dev Box needed to think about which app to open. Now it is one app and one list of resources.
 
-Windows App runs on Windows, macOS, iOS and iPadOS, Android and Chrome OS, in a browser, and on Meta Quest (the overview page lists it as a platform; the get-started page labels Quest preview, so treat Quest as unconfirmed). On Windows it needs Windows 11, Windows 10 1809 or later, or Windows Server 2019 or later, and Windows 10 devices out of mainstream support need to be enrolled in ESU. Browsers must be Edge 131+, Chrome 130+, Safari 18+ or Firefox 128+; mobile browsers are not supported.
+Windows App runs on Windows, macOS, iOS and iPadOS, Android and Chrome OS, in a browser, and on Meta Quest (the overview page lists it as a platform; the get-started page labels Quest preview, so treat Quest as unconfirmed; re-checked 16 October 2026, conflict persists, U9 stays open). On Windows it needs Windows 11, Windows 10 1809 or later, or Windows Server 2019 or later, and Windows 10 devices out of mainstream support need to be enrolled in ESU. Browsers must be Edge 131+, Chrome 130+, Safari 18+ or Firefox 128+; mobile browsers are not supported.
 
 Feature coverage is not identical across platforms, and Learn publishes a per platform comparison. Examples from that page: USB and serial port redirection are Windows only; multiple monitors are Windows and macOS only; scanners are Windows only; screen capture protection and Teams media optimization are not available in the browser. `[VERIFY BEFORE IMPLEMENTATION]` Re-read the comparison page before committing to a design.
 
@@ -92,7 +92,7 @@ Four places where this stops being a desktop support topic and becomes a design 
 
 **Conditional Access.** Device based policies need a device you can evaluate. Token protection, for example, is listed for Windows App on Windows 2.0.379.0 or later only. Browser access from an unmanaged laptop is a different risk conversation to an installed client on an Intune managed device. See [Chapter 9](ch09-conditional-access-mfa-zero-trust.md).
 
-**Update control.** Learn's get-started page points Windows users to the Microsoft Store for Windows App. How to deploy and pin versions through Intune was not verified in this review, so confirm which delivery method gives you version control before you commit. `[VERIFY BEFORE IMPLEMENTATION]`
+**Update control.** Learn's get-started page points Windows users to the Microsoft Store for Windows App. How to deploy and pin versions through Intune was not verified in this review, so confirm which delivery method gives you version control before you commit. Re-checked 16 October 2026: no Learn page states a pinning method for Windows App; only the generic standalone `.msix` download (What's new in Windows App) and generic Intune line-of-business MSIX guidance were found, so U12 stays open. `[VERIFY BEFORE IMPLEMENTATION]`
 
 ---
 

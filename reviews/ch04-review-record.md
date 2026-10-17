@@ -34,3 +34,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 14 | Lab 3 UDP rule | Follow-up | Phase 4: Lab 3 rule should include 51.5.0.0/16:3478 and port range. |
 
 Outcome: Verified with caveats (claims 12-14).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U10 closed with caveat, U11 closed.
+
+Changes: URL tool caveats added (.NET 4.6.2, RDAgent 1.0.2944.400, no wildcard check); Multipath flag updated with GA, macOS beta and Azure Government statuses.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

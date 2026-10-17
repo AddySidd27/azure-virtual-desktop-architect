@@ -397,7 +397,7 @@ Add the operational layer. A subnet utilisation alert at 70 percent gives you wa
 - Traditional Azure networking topology - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/traditional-azure-networking-topology
 - Virtual WAN network topology in an Azure landing zone - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/virtual-wan-network-topology
 - Hub and spoke network topology in Azure - https://learn.microsoft.com/en-us/azure/architecture/networking/architecture/hub-spoke
-- Azure Virtual Desktop landing zone accelerator - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone `[VERIFY BEFORE IMPLEMENTATION]` this CAF scenario page was not fetched and its sibling page is deprecated
+- Azure Virtual Desktop landing zone accelerator - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone (deprecated by Microsoft, removal announced for 30 October 2026, read 16 October 2026; the AVD accelerator on GitHub is unaffected). The page content on multi-region expansion (separate non-overlapping VNets, global peering, regional FSLogix storage, one region per user) matches this chapter. `[VERIFY BEFORE IMPLEMENTATION]` use Azure Architecture Center AVD guidance once the page is removed
 
 ---
 

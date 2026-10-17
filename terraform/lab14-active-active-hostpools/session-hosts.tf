@@ -38,6 +38,7 @@ resource "azurerm_windows_virtual_machine" "host" {
   size                  = var.vm_size
   admin_username        = var.admin_username
   admin_password        = var.admin_password
+  license_type          = "Windows_Client" # multi-session licence is only auto-applied for portal/ARM-created hosts (Lab 8)
   network_interface_ids = [azurerm_network_interface.host[count.index].id]
 
   os_disk {
@@ -51,7 +52,7 @@ resource "azurerm_windows_virtual_machine" "host" {
   source_image_reference {
     publisher = "MicrosoftWindowsDesktop"
     offer     = "windows-11"
-    sku       = "win11-23h2-avd"
+    sku       = "win11-25h2-avd"
     version   = "latest"
   }
 

@@ -42,3 +42,11 @@ Not fetched: Entra Domain Services docs, CAF identity recommendations, Lab 4.
 | 21 | Lab 4 cost | Removed from chapter | Points to Lab 4. |
 
 Outcome: Verified with caveats (claims 6, 8, 17, 20). Chapter 5 forward reference updated.
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U13 closed with caveat, U14 closed, U15 open, U16 closed.
+
+Changes: Lab 4 Step 7 now documents the selected identity-sync design (U30, U32); Lab 4 objective corrected to AD DS join.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

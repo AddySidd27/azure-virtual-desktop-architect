@@ -172,7 +172,7 @@ All service resources have a location. A host pool's location determines which g
 
 **Practical consequence:** you cannot have one global workspace containing application groups from every region. In a multi-region design you will have a workspace per region. Users in more than one region subscribe to more than one workspace. Plan for that in your communications and client rollout, because "why do I have two workspaces?" is a helpdesk question you can avoid by explaining it up front.
 
-`CURRENCY FLAG - reviewed 16 October 2026. Regional host pools change where metadata is stored; Learn is in CONFLICT on their status (What's new says generally available, September 2026; the data locations page still lists only Central US and East US 2). See Chapter 2 and the Review register. Re-verify the current model before writing a data residency statement for a customer. [VERIFY BEFORE IMPLEMENTATION]`
+`CURRENCY FLAG - reviewed 16 October 2026. Regional host pools change where metadata is stored. What's new says generally available (September 2026) and Data locations limits the regional scope to Central US and East US 2; the regional article still has preview wording. See Chapter 2 and the Review register. [VERIFY BEFORE IMPLEMENTATION] re-check regions before writing a data residency statement for a customer.`
 
 ---
 
@@ -468,7 +468,7 @@ You know the AVD object model, the cardinality and location rules, the preferred
 The full Lab 2 validation checklist, especially the drift test. Then sketch Northwind's object model from memory and compare it against section 6.
 
 **What comes next**
-Chapter 4 walks the complete connection flow end to end - feed discovery, brokering, reverse connect, RDP Shortpath and RDP Multipath - with a step-by-step trace of what happens between clicking an icon and seeing a desktop. **Lab 3 (VNet, subnets, NSGs and DNS) also begins there, and is the first lab with recurring network cost.**
+Chapter 4 walks the complete connection flow end to end - feed discovery, brokering, reverse connect, RDP Shortpath and RDP Multipath - with a step-by-step trace of what happens between clicking an icon and seeing a desktop. **Lab 3 (VNet, subnets, NSGs and DNS) also begins there, and builds the network the later labs depend on. Its base cost is $0.00 (Lab 3 cost summary); Lab 4 is the first lab with running compute cost.**
 
 **Interview preparation carried forward**
 Q6 and Q7 are both high-frequency questions. Q7 in particular is a common practical screen, because the answer reveals immediately whether you understand that assignment lives on the application group.

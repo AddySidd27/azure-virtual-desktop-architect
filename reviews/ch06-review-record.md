@@ -35,3 +35,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 16 | Meta Quest support | Conflict | S2 lists it as a platform; S4 labels it preview. Left as unconfirmed. |
 
 Outcome: Verified with caveats (claims 2, 12, 13, 16).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U8 open, U9 open, U12 open.
+
+Changes: Re-checked 2026-10-16: Learn unchanged for U8 and U9, no pinning guidance found for U12; chapter text states each.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

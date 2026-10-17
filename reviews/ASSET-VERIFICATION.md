@@ -33,3 +33,24 @@ Process note: one reviewer/process (Claude, in-session) performed every pass, so
 | Ch10 | Verified with caveats ([record](ch10-review-record.md)) | No dedicated diagram | Lab 2 role references (Storage Blob Data Contributor) are data-plane and correct for the lab | `lab07-avd-core/rbac.tf` assigns Desktop Virtualization User at application group scope, consistent with Ch10; `lab10-operations/scaling-plan.tf` lacks the autoscale Power On Off Contributor assignment (Ch15 scope, recorded in U28) | HCL parse only | Ch3, Ch10 and Lab 7 agree on assignment scope | U28 |
 | Ch11 | Verified with caveats ([record](ch11-review-record.md)) | `ch11-egress-enforcement-points` mermaid rendered with mmdc, no change needed | Lab 3 NSG rules identical to the Lab 11 hosts NSG apart from comments | `terraform/lab11-multiregion-network` read, consistent with Lab 3 | HCL parse only | CAF AVD topology reference marked deprecated (U33) | U33 |
 | Ch12 | Verified with caveats ([record](ch12-review-record.md)) | `ch12-topology-decision` mermaid and the chapter's inline copy updated to the Learn triggers and rendered with mmdc | Lab 3 and Lab 11 compared; Ch12 section 5 now states Lab 11 is hub-less global peering and bypasses any hub inspection | `lab11-multiregion-network` address plan checked against the Ch12 sizing rules | HCL parse only | Scenario 2 arithmetic corrected; GatewaySubnet minimum corrected | U33 |
+
+## Close-out pass, 2026-10-16 (final local state)
+
+| Check | Type | Result |
+|---|---|---|
+| `python3 tools/validate_repository.py` | Static | 0 FAIL |
+| Internal link and anchor check | Static | 0 broken |
+| HCL parse (python-hcl2), `terraform/**/*.tf` | Syntax parse only, not Terraform validation | 232 files, 0 failures |
+| XML well-formedness of every `diagrams/**/*.svg` and `.drawio` | Static | 0 failures |
+| `mmdc` render of all 18 `diagrams/*.mermaid` and the Ch8 inline block | Render | 0 failures; Ch8 inline block identical to the standalone source |
+| Ch8 SVG visual inspection after edit | Visual | Rendered in headless Chromium and viewed; flows 6 and 7 read correctly, no overflow |
+| Repo grep, `win11-23h2-avd` in `.tf` | Static | 1 hit, a comment in Lab 8 listing the SKUs Learn offers; no resource uses it |
+| Repo grep, `Join-AzStorageAccountForAuth` | Static | Only in places that cite it as obsolete or as a corrected record |
+| Repo grep, autoscale role scope | Static | Project 07 corrected to subscription scope; Project 08 corrected to a scope containing the VMs |
+| `terraform fmt`, `init`, `validate`, `plan` | **NOT RUN** | Terraform and OpenTofu cannot be installed here (U25) |
+| Azure CLI, PowerShell, KQL, Cloud Sync, lab execution | **NOT RUN** | No Azure access; all such commands are marked `[UNTESTED]` |
+
+Terraform files changed in this pass: `session-hosts.tf` in `lab14-active-active-hostpools`, `lab19-dr-failover` and `capstone-northwind/avd-platform/host-pools` (SKU `win11-25h2-avd`, `license_type = "Windows_Client"`). No provider, lock file or role assignment was changed.
+
+Chapter rows above remain as written; the close-out dispositions per chapter are in each `reviews/chNN-review-record.md`.
+

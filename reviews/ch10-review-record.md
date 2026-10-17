@@ -29,3 +29,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 11 | Terraform role assignment blocks | Unverified | Not run (no Terraform locally); comment added |
 
 Outcome: Verified with caveats (claims 6, 7, 9, 10, 11; S2/S3 excerpt-only).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U15 open, U21 closed with caveat.
+
+Changes: Service-role scope table added (autoscale subscription scope, Start VM on Connect any containing scope).
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

@@ -42,3 +42,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 Outcome: Verified with caveats (claims 5, 8, 9, 12, 13, 17). Also fixed heading numbering (duplicate 8/9) and removed duplicate lessons.
 
 Follow-ups: Ch24/appendix Intune support matrix should cite S4 limits; Ch17 should own sizing numbers.
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U4 open, U5 closed with caveat, U6 closed with caveat, U7 closed with caveat.
+
+Changes: ESU flag rewritten (automatic entitlement, EnableESUSubscriptionCheck scope); Azure Local activation and OS support paragraph rewritten; ephemeral OS disk flag points to U4.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

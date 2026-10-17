@@ -102,7 +102,7 @@ All five committed SVGs were re-checked after fixes and now pass the bounds and 
 
 | Terraform resource | Lab | Diagram | Validation method | Cleanup dependency | Manual step |
 |---|---|---|---|---|---|
-| `azurerm_storage_account.fslogix` | 5 | hero-05, hero-10 | `terraform-config-inspect` (structural), name cross-checked against both diagrams | None until Lab 8/9 hosts are deployed | `Join-AzStorageAccountForAuth` (Lab 5 Step 4) |
+| `azurerm_storage_account.fslogix` | 5 | hero-05, hero-10 | `terraform-config-inspect` (structural), name cross-checked against both diagrams | None until Lab 8/9 hosts are deployed | `Join-AzStorageAccount` (Lab 5 Step 4; originally recorded as `Join-AzStorageAccountForAuth`, corrected 16 October 2026) |
 | `azurerm_virtual_desktop_host_pool.lab` | 7 | hero-10 | Structural; name `hp-avd-lab-eus2-01` matches diagram exactly | Consumed by Labs 8, 9, 10 | None |
 | `azurerm_windows_virtual_machine.host` | 8 | hero-10 | Structural; name `vm-avdlab-h1` matches | Depends on Labs 3, 4, 5, 7 | FSLogix registry config (Lab 6 output, applied via `az vm run-command`) |
 | `azurerm_virtual_desktop_host_pool.remoteapp` | 9 | hero-10 (shown amber, as an exception) | Structural; name `hp-avd-remoteapp-lab-eus2-01` matches | Independent of Lab 7's pool by design | None |
@@ -176,7 +176,7 @@ No change from Phase 2's position, restated because the brief asks for it explic
 
 ## 18. Manual Azure validation still required
 
-Before this repository's labs can be called tested rather than reviewed: run all 8 Terraform modules against a real subscription in order (Lab 2 through Lab 10), confirm each `terraform apply` succeeds, walk every lab's manual steps (domain join verification, `Join-AzStorageAccountForAuth`, FSLogix registry application, session host registration, scaling plan behaviour) against real Azure resources, and time the true end-to-end path from Lab 1 to a working, monitored, scaled AVD sign-in.
+Before this repository's labs can be called tested rather than reviewed: run all 8 Terraform modules against a real subscription in order (Lab 2 through Lab 10), confirm each `terraform apply` succeeds, walk every lab's manual steps (domain join verification, `Join-AzStorageAccount`, FSLogix registry application, session host registration, scaling plan behaviour) against real Azure resources, and time the true end-to-end path from Lab 1 to a working, monitored, scaled AVD sign-in.
 
 ## 19. Remaining work
 

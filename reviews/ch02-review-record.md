@@ -36,3 +36,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 
 ## Follow-ups
 - Diagram `diagrams/architecture/ch02-avd-control-plane.svg` text not re-checked against corrected step 4 wording beyond a grep for "persistent" (no match).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U1 closed with caveat.
+
+Changes: Regional host pool CURRENCY FLAG rewritten (GA per What's new, two regions per Data locations, article stale).
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

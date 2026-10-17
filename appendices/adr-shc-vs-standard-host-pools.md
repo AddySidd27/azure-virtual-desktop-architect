@@ -9,7 +9,7 @@
 
 ## Context
 
-The Labs 11-20 plan, as originally approved, called for Lab 14 to build Automated Host Pools using Session Host Configuration (SHC), and Lab 17 to use Dynamic Autoscaling on top of them, on the basis that both reached general availability on the Azure side in June 2026. That research was correct about the Azure-side feature status. It did not verify tooling support, and building Lab 14 surfaced a real gap: the tooling needed to actually build and manage SHC-based host pools is not production-ready, even though the underlying Azure feature is GA.
+The Labs 11-20 plan, as originally approved, called for Lab 14 to build Automated Host Pools using Session Host Configuration (SHC), and Lab 17 to use Dynamic Autoscaling on top of them, on the basis that both reached general availability on the Azure side in June 2026. **Correction, 16 October 2026:** Learn's What's new lists Automated host pools and Dynamic autoscaling as "now available" in June 2026 with no GA label, and the autoscale scenarios page still marks Dynamic autoscaling as (preview) (issue U3). "GA" in this ADR therefore means "listed as available". The decision below rests on tooling gaps, not on the GA label, so it stands. The original research did not verify tooling support, and building Lab 14 surfaced a real gap: the tooling needed to actually build and manage SHC-based host pools is not production-ready, even though Learn lists the underlying Azure feature as available.
 
 ## What was verified, directly, before this decision
 
@@ -40,3 +40,14 @@ Automated Host Pools and Session Host Configuration are covered in a clearly lab
 ## Consequences
 
 Lab 14 and Lab 17 both take longer to reach an equivalent operational outcome than Automated Host Pools would in principle offer, since VM image updates go through the golden-image, drain-and-replace pattern (Chapter 23) rather than an in-place Session Host Update. This is accepted because the alternative was building required lab content on tooling this book cannot currently verify as production-safe. Every place SHC or Dynamic Autoscaling is mentioned going forward is clearly marked optional, sourced to current Microsoft Learn documentation, and carries an explicit instruction to re-check status before relying on it.
+
+
+## Update, 16 October 2026 (Chapter 1-12 close-out)
+
+Re-checked against Microsoft Learn, retrieved 16 October 2026. The decision is unchanged. What changed is the surrounding evidence:
+
+- **Status wording.** See the correction in Context. Dynamic autoscaling status stays a documented conflict (U3).
+- **Limits found.** Session host configuration is pooled only, is chosen at host pool creation and cannot be added later, is not supported on Azure Local, and the Prerequisites page says West US 3 is not supported. Ephemeral OS disks are supported only for pooled pools with session host configuration, on Azure only. The Prerequisites page still lists ephemeral OS disks as unsupported (U4).
+- **Role scope.** Dynamic autoscaling needs Power On Off Contributor plus Desktop Virtualization Virtual Machine Contributor, at subscription scope. Power Management autoscale needs Power On Off Contributor at subscription scope. Learn says host pools with a session host configuration will require a managed identity in a future update.
+- **Regional host pools.** Generally available per What's new (September 2026), but the regional deployment scope is documented for Central US and East US 2 only, cannot be changed after creation, and Log Analytics does not receive errors and checkpoints for regional session hosts. Labs 14 to 20 use `centralus` and `eastus2` with standard geographic-scope host pools. The AzureRM provider's support for the deployment scope setting was not verified, so no lab selects it. A reader who wants the regional scope must choose it at creation.
+- **Tooling.** The Terraform, PowerShell and ARM findings above were not re-checked in this pass. Learn's autoscale page now shows Az.DesktopVirtualization 5.4.2-preview for Dynamic autoscaling, which is consistent with the preview tooling claim.

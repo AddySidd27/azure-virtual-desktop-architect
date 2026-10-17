@@ -36,8 +36,8 @@ terraform apply tfplan
 
 ## Why standard management, not Automated Host Pools
 
-Session Host Configuration reached general availability on the Azure side in
-June 2026, but the tooling to build one does not yet meet this book's bar for a
+Session Host Configuration is listed as available on the Azure side in
+Learn's What's new (June 2026, no GA label), but the tooling to build one does not yet meet this book's bar for a
 required lab dependency: no stable Terraform resource exists, the PowerShell
 cmdlets are explicitly marked preview by Microsoft, and the ARM API has never
 shipped a non-preview version. See

@@ -35,3 +35,11 @@ Technical pass date: 2026-10-16. Process: single reviewer/process (Claude, in-se
 | 17 | Lab 3 UDP rule | Doc fixed | Table now cites WindowsVirtualDesktop tag and the 1024 to 65535 direct-Shortpath gap. Terraform rule (tag + 3478) matches S1; not modified |
 
 Outcome: Verified with caveats (claims 9, 15, 16; S4 pages not fetched).
+
+## Close-out pass, 2026-10-16
+
+Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED-ISSUES.md](UNRESOLVED-ISSUES.md)): U22 closed with caveat, U33 closed with caveat.
+
+Changes: Private Link CURRENCY FLAG replaced with setup-page evidence and client-support note; CAF deprecation note retained.
+
+Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.

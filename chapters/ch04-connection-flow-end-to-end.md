@@ -216,7 +216,7 @@ Both are attempted at once. When the client initiates the connection, there are 
 
 ### RDP Multipath
 
-`CURRENCY FLAG - reviewed 16 October 2026. Learn's What's new lists RDP Multipath (redundant TCP paths) as generally available in July 2026, with rollout beginning in May. This chapter does not re-verify Multipath behaviour. [VERIFY BEFORE IMPLEMENTATION] - confirm current requirements and client version support on Microsoft Learn before designing around it.` Chapter 14 covers protocol optimisation in full.
+`CURRENCY FLAG - reviewed 16 October 2026. Learn's What's new lists RDP Multipath (redundant TCP paths) as generally available in July 2026, with rollout beginning in May. Redundant TCP paths are GA; UDP paths are a Windows App on macOS beta and GA in Azure Government; Modern Auto-Reconnect is powered by Multipath (What's new, retrieved 16 October 2026). This chapter does not re-verify Multipath behaviour beyond those statuses. [VERIFY BEFORE IMPLEMENTATION] - confirm current requirements and client version support on Microsoft Learn before designing around it.` Chapter 14 covers protocol optimisation in full.
 
 ### Architect's view
 
@@ -245,6 +245,8 @@ Shortpath is not a switch you flip for "better performance". It is a network des
 When a session host will not register, Microsoft's guidance is specific: on a session host, open Event Viewer, go to Windows Logs > Application > WVD-Agent and look for event ID 3701. Unblock the FQDNs that you find under event ID 3701. The FQDNs under event ID 3701 are region-specific, so repeat this for each Azure region you deploy session hosts in.
 
 There is also a supported tool: the Azure Virtual Desktop Agent URL Tool validates each FQDN and endpoint and shows whether your session hosts can access them.
+
+**URL tool caveats (U11, verified 16 October 2026 against [Check access to required FQDNs and endpoints](https://learn.microsoft.com/azure/virtual-desktop/check-access-validate-required-fqdn-endpoint)).** `WVDAgentUrlTool.exe` needs .NET Framework 4.6.2 and RDAgent 1.0.2944.400 or later, and it does not verify wildcard entries. A pass therefore does not prove the wildcard service-traffic rules are in place. Event 3701 and the tool are complementary.
 
 Learn both. Event 3701 turns a multi-day firewall argument into a ten-minute fix, because it tells you exactly which FQDN was blocked instead of leaving you to guess.
 

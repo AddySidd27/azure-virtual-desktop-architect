@@ -463,7 +463,7 @@ Enrol them with device credentials, match each policy's scope to the right group
 - Using Azure Virtual Desktop multi-session with Microsoft Intune - https://learn.microsoft.com/en-us/intune/solutions/azure-virtual-desktop-multi-session
 - Using Azure Virtual Desktop single-session with Microsoft Intune - https://learn.microsoft.com/en-us/intune/solutions/azure-virtual-desktop
 - Using Windows virtual machines with Microsoft Intune - https://learn.microsoft.com/en-us/intune/solutions/windows-virtual-machines
-- Security, governance and compliance for AVD - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-security-governance-and-compliance
+- Security, governance and compliance for AVD - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-security-governance-and-compliance (CAF AVD scenario set deprecated, removal announced for 30 October 2026)
 - Intune security baselines - https://learn.microsoft.com/en-us/intune/protect/security-baselines
 - Manage device security with endpoint security policies - https://learn.microsoft.com/en-us/intune/protect/endpoint-security-policy
 - Azure security baseline for Azure Virtual Desktop - https://learn.microsoft.com/en-us/security/benchmark/azure/baselines/azure-virtual-desktop-security-baseline

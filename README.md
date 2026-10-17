@@ -95,7 +95,7 @@ I keep the enterprise platform separate from the AVD workload:
 Official architecture references:
 
 - [Azure landing zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
-- [Enterprise-scale support for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone)
+- [Enterprise-scale support for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone) (deprecated by Microsoft, removal announced for 30 October 2026; the AVD accelerator on GitHub is unaffected)
 
 ## Learning and practice path
 

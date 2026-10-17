@@ -134,7 +134,7 @@ Geographical host pools (the classic model) store host pool metadata in a geogra
 
 The practical difference: with regional host pools, a problem in one region affects only the host pools in that region, which removes the cross-region dependency that the geographical model has. Otherwise, the two models work the same way - they differ only in database architecture, metadata location and resiliency characteristics.
 
-`CURRENCY FLAG - reviewed 16 October 2026. CONFLICT in Microsoft Learn: What's new lists regional host pools as generally available (September 2026), but the regional host pools article and the data locations page still describe a limited set of regions (Central US and East US 2) and the article still uses preview wording. Deployment scope is chosen at creation and cannot be changed later. The article also notes that errors and checkpoints are not reported into Log Analytics for regional session hosts. Confirm status, regions and monitoring gaps on Microsoft Learn before committing to a model in a design document. [VERIFY BEFORE IMPLEMENTATION]`
+`CURRENCY FLAG - reviewed 16 October 2026. What's new lists regional host pools as generally available (September 2026). The Regional host pools article still has preview wording (stale against What's new). The Data locations page lists the regional deployment scope in Central US and East US 2 only, with metadata replicated across availability zones and to the paired region. Deployment scope is chosen at creation and cannot be changed. Errors and checkpoints are not reported into Log Analytics for regional session hosts. Resolved with caveat (U1). [VERIFY BEFORE IMPLEMENTATION] confirm regions at build time.`
 
 **Why an architect cares.** Two reasons:
 

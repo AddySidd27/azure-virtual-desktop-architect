@@ -8,7 +8,7 @@ This register records the primary Microsoft source for each major topic. A sourc
 
 | Topic | Primary Microsoft source | Last checked |
 |---|---|---|
-| AVD capabilities and responsibility split | [What is Azure Virtual Desktop?](https://learn.microsoft.com/en-us/azure/virtual-desktop/overview) | 2026-09-06 |
+| AVD capabilities and responsibility split | [What is Azure Virtual Desktop?](https://learn.microsoft.com/en-us/azure/virtual-desktop/overview) | 2026-09-06; re-read 2026-10-16: page carries a deprecation notice, removal 30 October 2026 (U33) |
 | Identity, OS, licensing, network, and session-host prerequisites | [AVD prerequisites](https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites) | 2026-09-06 |
 | Microsoft-managed and customer-managed components | [Service architecture and resilience](https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience) | 2026-09-06 |
 | Required session-host endpoints | [Required FQDNs and endpoints](https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint) | 2026-09-06 |
@@ -46,3 +46,35 @@ This register records the primary Microsoft source for each major topic. A sourc
 - Recheck dated product status statements before publication.
 
 See [Validation Status](VALIDATION-STATUS.md) for implementation and test labels.
+
+## Close-out pass, 2026-10-16 (Chapters 1 to 12)
+
+All pages below were read on 2026-10-16 (Microsoft Learn). Process note: single reviewer. See `reviews/UNRESOLVED-ISSUES.md` for the issue each supports.
+
+| Topic | Source | Section used | Issue |
+|---|---|---|---|
+| Regional host pools GA, managed identity GA, Dynamic autoscaling, SHC, Multipath | [What's new](https://learn.microsoft.com/azure/virtual-desktop/whats-new) | June to September 2026 entries | U1, U2, U3 |
+| Regional deployment scope regions | [Data locations](https://learn.microsoft.com/azure/virtual-desktop/data-locations) | Regional deployment scope | U1 |
+| SHC limits, West US 3 | [Prerequisites](https://learn.microsoft.com/azure/virtual-desktop/prerequisites), [Host pool management approaches](https://learn.microsoft.com/azure/virtual-desktop/host-pool-management-approaches) | Regions, session host configuration | U2 |
+| Autoscale roles and scope, Dynamic autoscale | [Create and assign a scaling plan](https://learn.microsoft.com/azure/virtual-desktop/autoscale-create-assign-scaling-plan) | Prerequisites, Configure a time limit policy | U3, U21, U34 |
+| Start VM on Connect roles and scope | [Start VM on Connect](https://learn.microsoft.com/azure/virtual-desktop/start-virtual-machine-connect) | Prerequisites | U21, U28 |
+| Service principal and managed identity role assignment | [Assign roles to the AVD service principals](https://learn.microsoft.com/azure/virtual-desktop/service-principal-assign-roles) | Assign roles | U21 |
+| Ephemeral OS disks | [Ephemeral OS disks](https://learn.microsoft.com/azure/virtual-desktop/deploy/session-hosts/ephemeral-os-disks), Prerequisites page | Limitations | U4 |
+| Windows 10 ESU on AVD | [Understanding ESU](https://learn.microsoft.com/azure/virtual-desktop/understanding-extended-security-updates), [Enable ESU for virtual machines](https://learn.microsoft.com/windows/whats-new/enable-extended-security-updates-virtual) | AVD, VDI steps | U5 |
+| Azure verification for VMs | [Azure verification](https://learn.microsoft.com/azure/azure-local/manage/azure-verification) | Supported OS | U6 |
+| AVD on Azure Local | [Overview](https://learn.microsoft.com/azure/virtual-desktop/azure-local-overview) | Requirements | U7 |
+| Legacy client dates | [Remote Desktop client overview](https://learn.microsoft.com/previous-versions/remote-desktop-client/overview) | Support dates | U8 |
+| Windows App platforms | Windows App overview and get-started pages | Platforms | U9 |
+| Connection states | [Diagnostics with Log Analytics](https://learn.microsoft.com/azure/virtual-desktop/diagnostics-log-analytics), [WVDConnections](https://learn.microsoft.com/azure/azure-monitor/reference/tables/wvdconnections) | Queries, columns | U10 |
+| FQDN checks | [Required FQDNs](https://learn.microsoft.com/azure/virtual-desktop/required-fqdn-endpoint), [Check access](https://learn.microsoft.com/azure/virtual-desktop/check-access-validate-required-fqdn-endpoint) | Event 3701, URL tool | U11 |
+| Cloud-only profiles on Azure Files | [Profile container with Entra ID](https://learn.microsoft.com/azure/virtual-desktop/create-profile-container-azure-ad), [Entra-joined session hosts](https://learn.microsoft.com/azure/virtual-desktop/azure-ad-joined-session-hosts), storage hybrid-identities enable page | Prerequisites, permissions | U13, U14, U15 |
+| Entra Domain Services limits | Entra Domain Services FAQ and management VM tutorial | Admin rights, schema | U16 |
+| MFA flow and app IDs | [Enforce MFA](https://learn.microsoft.com/azure/virtual-desktop/set-up-mfa) | Target apps, authentication flow | U19, U20 |
+| KDC proxy | [Key distribution center proxy](https://learn.microsoft.com/azure/virtual-desktop/key-distribution-center-proxy) | Supported clients | U18 |
+| Private Link | [Set up Private Link](https://learn.microsoft.com/azure/virtual-desktop/private-link-setup) | Sub-resources, DNS, clients | U22 |
+| Cloud Sync and `.local` | [Cloud Sync prerequisites](https://learn.microsoft.com/entra/identity/hybrid/cloud-sync/how-to-prerequisites), [Nonroutable domain](https://learn.microsoft.com/microsoft-365/enterprise/prepare-a-non-routable-domain-for-directory-synchronization) | Requirements, UPN suffix | U30, U32 |
+| Session lock and time limits | [Session lock behavior](https://learn.microsoft.com/azure/virtual-desktop/configure-session-lock-behavior), [Policy CSP ADMX_TerminalServer](https://learn.microsoft.com/windows/client-management/mdm/policy-csp-admx-terminalserver) | Policy names and paths | U34 |
+| CAF deprecation | [Enterprise-scale landing zone](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone) | Deprecation notice | U33 |
+| Built-in roles | [RBAC for AVD](https://learn.microsoft.com/azure/virtual-desktop/rbac) | Power On roles | U21 |
+
+Not verified in this pass: Windows 365, AVD Hybrid (Arc) and managed identity beyond the What's new entries. Chapter 1 statements on them rest on What's new only.

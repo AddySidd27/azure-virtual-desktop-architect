@@ -99,7 +99,7 @@ The two application ID sets used in Chapters 8 and 9 were re-verified during thi
 
 - Azure Virtual Desktop, `9cdead84-a844-4324-93f2-b2e6bb768d07`
 - Windows Cloud Login, `270efc09-cd0d-444b-a71f-39af4910ec45`
-- Microsoft Remote Desktop, `a4a365df-50f1-4397-bc59-1a1564b8bb9c`
+- ~~Microsoft Remote Desktop, `a4a365df-50f1-4397-bc59-1a1564b8bb9c`~~ Not listed on the current Learn set-up-mfa page (retrieved 16 October 2026); removed from Ch9 (see `reviews/UNRESOLVED-ISSUES.md` U19)
 
 > **Correction, 16 October 2026.** The Microsoft Remote Desktop ID above is not listed on the current Learn page for enforcing MFA with Conditional Access, which names the Azure Virtual Desktop and Windows Cloud Login apps. Chapter 9 no longer lists it and treats it as Unverified (see `reviews/UNRESOLVED-ISSUES.md`, U19). This audit record is otherwise left as written.
 

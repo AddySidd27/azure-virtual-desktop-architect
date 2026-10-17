@@ -49,6 +49,10 @@ Labs 1-9 complete, at least the Desktop session host from Lab 8 running for the 
 
 ---
 
+## Step 0 - Autoscale role assignment (not created by this module)
+
+A scaling plan only changes host power state once the **Desktop Virtualization Power On Off Contributor** role is assigned to the Azure Virtual Desktop service principal (`9cdead84-a844-4324-93f2-b2e6bb768d07`) or the host pool's managed identity, **at subscription scope**. Learn says a lower scope prevents autoscale from working properly ([Create and assign a scaling plan](https://learn.microsoft.com/azure/virtual-desktop/autoscale-create-assign-scaling-plan), Prerequisites, retrieved 16 October 2026). `terraform/lab10-operations/scaling-plan.tf` does not create this assignment, and adding one is a subscription-level change that was not made without approval. You need Owner or User Access Administrator to create it, for example `az role assignment create --assignee 9cdead84-a844-4324-93f2-b2e6bb768d07 --role "Desktop Virtualization Power On Off Contributor" --scope /subscriptions/<sub-id>` `[UNTESTED]`. Without it, the Step 4 power-state check will not pass. Tracked as U28.
+
 ## Step 1 - Apply monitoring and the scaling plan
 
 ```bash

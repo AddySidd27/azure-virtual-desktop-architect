@@ -90,6 +90,8 @@ That last sentence is the compromise to offer a security team that objects to br
 
 `CURRENCY FLAG - verified August 2026. TURN relay coverage expanded during 2025, and RDP Shortpath over Private Link reached general availability in February 2026 with explicit opt in. [VERIFY BEFORE IMPLEMENTATION] confirm current regional coverage and Private Link support before designing around either.`
 
+`CURRENCY FLAG - 16 October 2026, RDP Multipath (What's new, https://learn.microsoft.com/azure/virtual-desktop/whats-new).` Redundant TCP transport paths are generally available. RDP Multipath with UDP paths is available as a Windows App on macOS beta (version 11.3.8) and is generally available in Azure Government. Modern Auto-Reconnect, which preserves session state across short network interruptions, is described as powered by Multipath ([fast reconnect](https://learn.microsoft.com/azure/virtual-desktop/fast-reconnect)). Client version requirements are listed in [Chapter 6](ch06-clients-and-the-endpoint-story.md) and on the [RDP Multipath](https://learn.microsoft.com/azure/virtual-desktop/rdp-multipath) page, which was not re-read in full for this note. Multipath is a resilience feature, not a bandwidth or latency feature, so it does not replace the bandwidth and QoS work in sections 2 and 3. [VERIFY BEFORE IMPLEMENTATION] confirm client versions before telling a customer that reconnects will be seamless.
+
 ---
 
 ## 2. QoS, and the Limitation That Matters
