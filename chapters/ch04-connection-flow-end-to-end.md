@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -53,24 +53,24 @@ title: AVD connection flow
 sequenceDiagram
     participant C as Client (Windows App)
     participant E as Microsoft Entra ID
-    participant W as Web service
-    participant B as Broker service
+    participant W as Feed service
     participant G as Gateway service
+    participant B as Broker service
     participant S as Session host
 
-    Note over S,G: Before any user connects
-    S->>G: Agent registers, persistent outbound TCP 443
+    Note over S,B: At session host startup
+    S->>B: Agent Loader opens a persistent TLS channel to the broker
 
     C->>E: 1. User signs in
     E-->>C: 2. Token issued (CA and MFA evaluated)
     C->>W: 3. Request feed with token
-    W-->>C: 4. Feed returns entitled desktops and apps
-    C->>B: 5. User launches a resource
-    B->>B: 6. Select session host
-    B->>S: 7. Orchestrate: prepare for connection
-    C->>G: 8. Client opens outbound TCP 443
-    G-->>S: 9. Reverse connect transport established
-    C->>S: 10. RDP capabilities exchanged
+    W-->>C: 4. Signed connection configuration (.rdp) per resource
+    C->>G: 5. User launches a resource: outbound TLS 443 to a gateway
+    G->>B: 6. Gateway asks the broker to orchestrate
+    B->>S: 7. Broker selects host, initializes via the persistent channel
+    S->>G: 8. Session host opens outbound TLS 443 to the same gateway
+    G-->>C: 9. Gateway relays: base reverse connect transport
+    C->>S: 10. RDP handshake, capabilities exchanged
     C-->>S: 11. RDP Shortpath (UDP) attempted in parallel
     S->>S: 12. Windows logon, profile mount, shell
     S-->>C: 13. Desktop appears
@@ -78,7 +78,7 @@ sequenceDiagram
 
 ### What the diagram shows
 
-The session host registers with the gateway **before any user is involved**. That persistent outbound connection is what makes everything else possible. When a user connects, the client and the session host each have their own outbound connection to Microsoft, and the gateway joins them together.
+When a session host starts, its Remote Desktop Agent Loader opens a persistent, TLS-protected communication channel to the broker. That channel is what lets the service reach the host without any inbound connection. When a user connects, the client reaches a gateway first, the broker uses the persistent channel to tell the chosen host, and the host then opens its own outbound connection to the same gateway. The gateway joins the two.
 
 Nothing in this sequence involves an inbound connection to your session host from the internet.
 
@@ -86,13 +86,13 @@ Nothing in this sequence involves an inbound connection to your session host fro
 
 **Steps 1-2 - Authentication.** The client authenticates the user against Microsoft Entra ID. Conditional Access and MFA are evaluated here. Note that this is authentication to the *service*, not to Windows - that happens later at step 12. Chapter 8 pulls the three separate authentications apart.
 
-**Steps 3-4 - Feed.** The client presents its token to the web service and receives the list of entitled resources. This reads from the resource directory (Chapter 2) and depends on the object model and assignments (Chapter 3). If the feed is empty, nothing below this line has been attempted yet.
+**Steps 3-4 - Feed.** The client presents its token to the feed subscription service, which validates it and returns the entitled resources as digitally signed connection configuration. The client stores one `.rdp` file per resource. The result depends on the object model and assignments (Chapters 2 and 3). If the feed is empty, nothing below this line has been attempted yet.
 
-**Steps 5-7 - Brokering.** The broker decides which session host serves the request. It considers host pool type, load balancing algorithm, max session limit, host availability as reported by the agent, and whether the user already has a disconnected session to reconnect to. Then it instructs that host, through its agent, to prepare.
+**Steps 5-7 - Gateway and brokering.** When the user launches a resource, the client uses the `.rdp` file to open a TLS connection to an AVD gateway instance through Azure Front Door in the public cloud. Learn says gateways are grouped by latency in 10 ms bands, and the lowest-latency gateway with the fewest existing connections is chosen (other clouds may use Azure Traffic Manager). The gateway validates the request and asks the broker to orchestrate. The broker identifies the session host, using host pool type, load balancing algorithm, max session limit, host availability and any existing session to reconnect to (Chapter 15), and initializes the connection through the persistent channel.
 
-**Steps 8-9 - Reverse connect.** Both sides already have, or now open, outbound TCP 443 connections to the gateway. The gateway relays between them. This is the default transport.
+**Steps 8-9 - Reverse connect.** The session host's Remote Desktop stack opens a TLS connection to the same gateway instance as the client. Once both are connected the gateway relays data between them, forming the base reverse connect transport through a nested tunnel. This is the default transport.
 
-**Steps 10-11 - Transport negotiation.** Per Microsoft, all connections begin by establishing a TCP-based reverse connect transport over the AVD gateway; the client and session host then establish the initial RDP transport and exchange capabilities, with the session host sending its list of IPv4 and IPv6 addresses to the client. While that is happening, there are simultaneous attempts to connect using RDP Shortpath for managed networks through port 3390 by default, and RDP Shortpath for public networks through the ICE/STUN protocol. If a UDP path succeeds, the session moves to it. If not, it stays on TCP through the gateway.
+**Steps 10-11 - Transport negotiation.** Per Microsoft, all connections begin by establishing a TCP-based reverse connect transport over the AVD gateway; the client and session host then establish the initial RDP transport and exchange capabilities, with the session host sending its list of IPv4 and IPv6 addresses to the client. While that is happening, there are simultaneous attempts to connect using RDP Shortpath for managed networks through port 3390 by default, and RDP Shortpath for public networks through the ICE/STUN protocol. Learn describes a first-found algorithm: whichever connection is established first is used. If a UDP path succeeds, the session moves to it and the TCP transport is dropped. If not, it stays on TCP through the gateway.
 
 **Step 12 - Windows logon.** Only now does Windows authenticate the user, apply policy, and mount the FSLogix profile. This is where most "slow logon" complaints actually live, and [Project 15](../scenarios/project-15-production-troubleshooting.md) decomposes it as part of the 10-layer isolation method.
 
@@ -114,7 +114,7 @@ The name confuses people. Nothing is reversed. It simply means the *session host
 
 Traditional RDS: the user's client opens a connection *to* the gateway you host, which needs a public endpoint and inbound firewall rules.
 
-AVD: the session host opens an outbound connection to Microsoft's gateway and keeps it open. When a user needs that host, Microsoft already has a path to it.
+AVD: the session host keeps a persistent outbound channel to the broker, and when a user connects it opens an outbound connection to the gateway the client is using. No inbound listener is involved.
 
 Microsoft's own network guidance states it plainly: the AVD control plane gateway uses a public endpoint and manages client connections, and as a result AVD clients create outbound connections to required AVD URLs.
 
@@ -136,7 +136,7 @@ That trade is almost always worth it, and being able to articulate both halves i
 
 ## 3. What Session Hosts Actually Need Outbound
 
-`CURRENCY FLAG - checked 6 September 2026. This list changes. Build firewall rules from the current Microsoft page, not from this snapshot.`
+`CURRENCY FLAG - re-checked against Microsoft Learn on 16 October 2026 (Azure public cloud tab). This list changes. Build firewall rules from the current Microsoft page, not from this snapshot. [VERIFY BEFORE IMPLEMENTATION]`
 
 Microsoft is unambiguous about the requirement: these are the FQDNs and endpoints your session host VMs need to access for AVD. All entries are outbound; you don't need to open inbound ports for Azure Virtual Desktop. And: Microsoft doesn't support Azure Virtual Desktop deployments where the FQDNs and endpoints listed in this article are blocked.
 
@@ -144,30 +144,38 @@ The required set for session hosts, as documented:
 
 | Address | Protocol | Port | Purpose | Service tag |
 |---|---|---|---|---|
-| `login.microsoftonline.com` | TCP | 443 | Authentication to Microsoft Online Services | - |
-| `*.wvd.microsoft.com` | TCP | 443 | Service traffic | `WindowsVirtualDesktop` |
-| `*.prod.warm.ingest.monitor.core.windows.net` | TCP | 443 | Agent traffic, diagnostic output | `AzureMonitor` |
-| `catalogartifact.azureedge.net` | TCP | 443 | Azure Marketplace | `AzureFrontDoor.Frontend` |
-| `gcs.prod.monitoring.core.windows.net` | TCP | 443 | Agent traffic | `AzureCloud` |
-| `azkms.core.windows.net` | TCP | 1688 | Windows activation | `Internet` |
-| `mrsglobalsteus2prod.blob.core.windows.net` | TCP | 443 | Agent and SxS stack updates | `AzureCloud` |
-| `wvdportalstorageblob.blob.core.windows.net` | TCP | 443 | Azure portal support | `AzureCloud` |
-| `*.service.windows.cloud.microsoft` | TCP | 443 | Service traffic | `WindowsVirtualDesktop` |
-| `*.windows.cloud.microsoft` | TCP | 443 | Service traffic | - |
-| `*.windows.static.microsoft` | TCP | 443 | Service traffic | - |
+| `login.microsoftonline.com` | TCP | 443 | Authentication to Microsoft Online Services | `AzureActiveDirectory` |
 | `51.5.0.0/16` | UDP | 3478 | Relayed RDP connectivity | `WindowsVirtualDesktop` |
-| `169.254.169.254` | TCP | 80 | Azure Instance Metadata Service | - |
-| `168.63.129.16` | TCP/UDP | 80, 32526, and 53 when Azure-provided DNS is used | Azure platform communication | - |
-| `oneocsp.microsoft.com` | TCP | 80 | Certificates | - |
-| `www.microsoft.com` | TCP | 80 | Certificates | - |
-| `*.aikcertaia.microsoft.com` | TCP | 80 | Certificates | - |
-| `azcsprodeusaikpublish.blob.core.windows.net` | TCP | 80 | Certificates | - |
-| `*.microsoftaik.azure.net` | TCP | 80 | Certificates | - |
-| `ctldl.windowsupdate.com` | TCP | 80 | Certificates | - |
+| `*.wvd.microsoft.com` | TCP | 443 | Service traffic including TCP based RDP connectivity | `WindowsVirtualDesktop` |
+| `catalogartifact.azureedge.net` | TCP | 443 | Azure Marketplace | `AzureFrontDoor.Frontend` |
+| `*.prod.warm.ingest.monitor.core.windows.net` | TCP | 443 | Agent traffic, diagnostic output | `AzureMonitor` |
+| `gcs.prod.monitoring.core.windows.net` | TCP | 443 | Agent traffic | `AzureMonitor` |
+| `azkms.core.windows.net` | TCP | 1688 | Windows activation | `Internet` |
+| `mrsglobalsteus2prod.blob.core.windows.net` | TCP | 443 | Agent and side-by-side (SxS) stack updates | `Storage` |
+| `wvdportalstorageblob.blob.core.windows.net` | TCP | 443 | Azure portal support | `AzureCloud` |
+| `oneocsp.microsoft.com` | TCP | 80 | Certificates | `AzureFrontDoor.FirstParty` |
+| `www.microsoft.com` | TCP | 80 | Certificates | N/A |
+| `*.aikcertaia.microsoft.com` | TCP | 80 | Certificates | N/A |
+| `azcsprodeusaikpublish.blob.core.windows.net` | TCP | 80 | Certificates | N/A |
+| `*.microsoftaik.azure.net` | TCP | 80 | Certificates | N/A |
+| `ctldl.windowsupdate.com` | TCP | 80 | Certificates | N/A |
+| `aka.ms` | TCP | 443 | Microsoft URL shortener, used during session host deployment on Azure Local | N/A |
+| `*.service.windows.cloud.microsoft` | TCP | 443 | Service traffic | `WindowsVirtualDesktop` |
+| `*.windows.cloud.microsoft` | TCP | 443 | Service traffic | N/A |
+| `*.windows.static.microsoft` | TCP | 443 | Service traffic | N/A |
+
+Two Azure fabric addresses are also required, and they behave differently from the FQDNs above. Learn says traffic to them must not be intercepted, proxied or redirected:
+
+| Address | Protocol | Port | Purpose |
+|---|---|---|---|
+| `169.254.169.254` | TCP | 80 | Azure Instance Metadata Service |
+| `168.63.129.16` | TCP/UDP | 80, 32526 (TCP), and 53 (TCP/UDP) only when Azure-provided DNS is used | Azure platform communication and health signals |
+
+Learn also lists optional endpoints for other services (for example Windows Update, OneDrive and Azure DNS), separate tables for Azure for US Government, and a separate list for end user devices, which need their own outbound access (including the same service traffic wildcards and `51.5.0.0/16` UDP 3478). Use wildcards for service traffic. For agent traffic you can avoid wildcards by reading event ID 3701 (section 5).
 
 Two things to notice.
 
-**This list is not everything.** It doesn't include FQDNs and endpoints for other services such as Microsoft Entra ID, Office 365, custom DNS providers, or time services. Entra endpoints are documented separately in the Office 365 URLs and IP address ranges list. If you are designing a locked-down egress policy, budget time for this - it is always bigger than people expect.
+**This list is not everything.** It doesn't include FQDNs and endpoints for other services such as Microsoft Entra ID, Office 365, custom DNS providers, or time services. Learn points to IDs 46, 56, 59 and 125 in the Office 365 URLs and IP address ranges list for the Entra endpoints. If you are designing a locked-down egress policy, budget time for this - it is always bigger than people expect.
 
 **Use service tags, not IP lists.** Service tags represent groups of IP address prefixes for a given Azure service. Microsoft manages the prefixes and updates the tag automatically, which reduces the complexity of frequent rule updates. Service tags can be used in NSG and Azure Firewall rules, and in user-defined routes. Azure Firewall also supports FQDN tags, and AVD has both a service tag and an FQDN tag entry available - Microsoft recommends using them. Critically: AVD doesn't publish a list of IP address ranges you can unblock instead of FQDNs, so a next-generation firewall needs a dynamic list of Azure IP addresses.
 
@@ -193,20 +201,22 @@ Note the significant exception: when the listener isn't enabled and an inbound p
 
 For users on home, hotel and café networks.
 
-There are two connection types with a public connection: a direct UDP connection between client and session host using STUN, or an indirect connection relayed through TURN. The requirements are:
+There are two connection types with a public connection, in order of preference: a direct UDP connection between client and session host using STUN, or a relayed connection through TURN. Learn's firewall tables for the Azure cloud give these requirements:
 
-- Outbound UDP from session hosts to the AVD STUN and TURN services on port 3478
-- UDP connections from RDP clients in the port range 49152-65535
+- Session host subnet: outbound UDP to `51.5.0.0/16` on port 3478 (STUN and TURN relay), and outbound UDP to any destination on ports 1024-65535 (default 49152-65535, with 65330 reserved by Azure) for direct STUN connections
+- Client network: UDP to `51.5.0.0/16` on port 3478, and UDP on the same port range for direct connections
+
+A TURN relay is chosen by the client's physical location; a client far from any relay region may fall back to TCP. TURN connections can drop briefly during relay maintenance, after which the client reconnects automatically. In Azure for US Government the TURN range is `20.140.236.0/22` and Learn describes the feature as public preview.
 
 And an important reassurance for security reviews: the setting that configures these connections is turned on by default and maintains the same level of encryption as TCP reverse connect.
 
 ### How it is chosen
 
-Both are attempted at once. When the client initiates the connection, there are simultaneous attempts using managed-network Shortpath through port 3390 and public-network Shortpath through ICE/STUN. The best available path wins. If none succeed, the session stays on TCP reverse connect and still works - just with less resilience to packet loss.
+Both are attempted at once. When the client initiates the connection, there are simultaneous attempts using managed-network Shortpath through port 3390 and public-network Shortpath through ICE/STUN. Learn describes a first-found algorithm: the connection established first is used. Because the public path involves NAT and STUN, Learn expects the managed path to win when both exist. If none succeed, the session stays on TCP reverse connect and still works - just with less resilience to packet loss.
 
 ### RDP Multipath
 
-`CURRENCY FLAG - RDP Multipath (redundant TCP paths) reached GA in July 2026. [VERIFY BEFORE IMPLEMENTATION] - confirm current requirements and client version support on Microsoft Learn before designing around it.` Chapter 14 covers protocol optimisation in full.
+`CURRENCY FLAG - reviewed 16 October 2026. Learn's What's new lists RDP Multipath (redundant TCP paths) as generally available in July 2026, with rollout beginning in May. This chapter does not re-verify Multipath behaviour. [VERIFY BEFORE IMPLEMENTATION] - confirm current requirements and client version support on Microsoft Learn before designing around it.` Chapter 14 covers protocol optimisation in full.
 
 ### Architect's view
 
@@ -245,7 +255,7 @@ Learn both. Event 3701 turns a multi-day firewall argument into a ten-minute fix
 - **Opening inbound RDP "just in case".** It is never needed for AVD and it reintroduces the risk the architecture was designed to remove.
 - **Building firewall rules from a blog post.** The FQDN list changes. Build from the live Microsoft page and re-verify at each release.
 - **Blocking all outbound UDP.** Shortpath disappears silently. Sessions still work, so nobody raises a ticket - they just complain that it feels slow.
-- **Assuming TLS inspection is harmless.** Intercepting AVD service traffic breaks certificate validation and produces confusing, intermittent failures. Bypass the AVD FQDNs.
+- **Assuming TLS inspection is harmless.** Learn recommends bypassing proxies for AVD traffic and says SSL inspection can stop the agent working because it interferes with trusted connections between the agent and the service. Proxies that require authentication are not supported by the session host components. Bypass the AVD FQDNs.
 - **Forgetting the region-specific FQDNs.** Event 3701 exists precisely because part of the list depends on the region you deploy in.
 - **Treating slow logon as a protocol problem.** Step 12 is Windows, profile and policy - not the transport.
 
@@ -259,7 +269,7 @@ Learn both. Event 3701 turns a multi-day firewall argument into a ten-minute fix
 "The user authenticates to Entra ID, the client gets its feed from the web service, and the user launches a resource. The broker picks a session host and tells its agent to prepare. Both client and host have outbound 443 connections to the gateway, and the gateway relays RDP between them - that's reverse connect. Then Shortpath is attempted over UDP, and finally Windows logon and the profile mount happen on the host."
 
 **2-minute answer**
-Walk the thirteen steps with the components named, and make two points explicitly. First, that the session host registers with the gateway *before* any user connects, which is why no inbound path is required. Second, that there are three separate authentications - to the service, to the host, and inside Windows - and people conflate them, which is why MFA troubleshooting goes wrong. Shortpath is attempted in parallel for managed and public networks, and if neither succeeds the session still works over TCP, just without the optimisation.
+Walk the thirteen steps with the components named, and make two points explicitly. First, that the session host keeps a persistent outbound channel to the broker and opens its own outbound connection to the gateway at connect time, which is why no inbound path is required. Second, that there are three separate authentications - to the service, to the host, and inside Windows - and people conflate them, which is why MFA troubleshooting goes wrong. Shortpath is attempted in parallel for managed and public networks, and if neither succeeds the session still works over TCP, just without the optimisation.
 
 **Deep-dive answer**
 Add the negotiation detail: connections always begin as TCP reverse connect over the gateway, capabilities are exchanged, the host sends its IP addresses to the client, and managed-network Shortpath on 3390 and public-network Shortpath via ICE/STUN are attempted simultaneously. Explain the dependency chain - Entra, DNS, the required FQDNs, agent health, profile storage - and that a failure in any one presents as "AVD is broken" to the user. Finish by mapping symptoms to steps, because that is what you actually do at 09:10 on a Monday.
@@ -269,10 +279,10 @@ Add the negotiation detail: connections always begin as TCP reverse connect over
 ### Q9. Do you need to open any inbound ports for AVD?
 
 **Simple answer**
-No. All required AVD traffic from session hosts is outbound. The session host connects out to the AVD gateway on 443 and the gateway relays the session.
+No. All required AVD traffic from session hosts is outbound. The session host connects out to the AVD gateway on 443 when a session is set up and the gateway relays the session.
 
 **The follow-up that separates candidates**
-"What about RDP Shortpath?" - this is where you show depth. Public-network Shortpath needs no inbound rule; it works with outbound UDP 3478 from the host and a client port range of 49152-65535. Managed-network Shortpath with the UDP listener *does* need the client to reach the session host on 3390 - but that is over ExpressRoute or VPN, not from the internet, and it is optional because managed networks can also use ICE/STUN without a listener.
+"What about RDP Shortpath?" - this is where you show depth. Public-network Shortpath needs no inbound rule on the session host; it uses outbound UDP 3478 to the relay range and, for direct STUN connections, a UDP port range that defaults to 49152-65535. Managed-network Shortpath with the UDP listener *does* need the client to reach the session host on 3390 - but that is over ExpressRoute or VPN, not from the internet, and it is optional because managed networks can also use ICE/STUN without a listener.
 
 **How to say it out loud**
 Answer "no" first, confidently, then add the Shortpath nuance yourself. Volunteering the exception is what makes it sound like experience rather than a memorised fact.
@@ -289,9 +299,9 @@ Answer "no" first, confidently, then add the Shortpath nuance yourself. Voluntee
 ## 8. Key Takeaways
 
 - The connection sequence is: authenticate → feed → launch → broker selects host → orchestrate → reverse connect via gateway → negotiate transport → Shortpath attempt → Windows logon → shell.
-- Session hosts register outbound before any user connects. No inbound ports are required for AVD.
+- Session hosts keep a persistent outbound channel to the broker and connect outbound to the gateway when a session is set up. No inbound ports are required for AVD.
 - Session hosts need a specific set of outbound FQDNs. Blocking them is unsupported. Use service tags and FQDN tags, not IP lists - AVD does not publish static IP ranges.
-- Shortpath is attempted for managed networks (UDP 3390 listener, or ICE/STUN) and public networks (STUN/TURN, UDP 3478) simultaneously. TCP reverse connect is the fallback.
+- Shortpath is attempted for managed networks (UDP 3390 listener, or ICE/STUN) and public networks (STUN/TURN, UDP 3478) simultaneously, and the first connection established is used. TCP reverse connect is the fallback.
 - Blocking outbound UDP silently removes Shortpath. Sessions still work, so nobody reports it as a fault.
 - Event ID 3701 in the WVD-Agent log names the exact blocked FQDN.
 
@@ -302,6 +312,9 @@ Answer "no" first, confidently, then add the Shortpath nuance yourself. Voluntee
 - RDP Shortpath - https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-shortpath
 - Configure RDP Shortpath - https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-rdp-shortpath
 - Required FQDNs and endpoints - https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint
+- Understanding Azure Virtual Desktop network connectivity - https://learn.microsoft.com/en-us/azure/virtual-desktop/network-connectivity
+- Proxy server guidelines - https://learn.microsoft.com/en-us/azure/virtual-desktop/proxy-server-support
+- WVDConnections table reference - https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/wvdconnections
 - Network topology and connectivity design guidance - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity
 - Service architecture and resilience - https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience
 
@@ -342,13 +355,11 @@ From a session host, confirm outbound UDP is possible on 3478 to the AVD STUN an
 
 **Root cause.** Outbound UDP was blocked as part of a general hardening rule. Shortpath silently stopped being used. Sessions kept working, so nothing was reported as broken.
 
-**Fix.** Restore outbound UDP 3478 for the session host subnet. See the rule in [Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md).
+**Fix.** Restore outbound UDP to `51.5.0.0/16` on 3478, and outbound UDP on the direct-connection port range, for the session host subnet. See the rule in [Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md).
 
 **Validation.** The client reports UDP transport after reconnecting. Confirm with users on at least two different home networks, not from the office.
 
-**Prevention.** Document UDP 3478 as a required rule with a comment explaining what breaks without it. Add transport type to the monitoring dashboard so a drop in UDP usage is visible.
-
-**Architect lesson.** The worst failures are the ones that do not fail. Silent degradation produces complaints without tickets.
+**Prevention.** Document UDP 3478 as a required rule with a comment explaining what breaks without it. Add transport type to the monitoring dashboard so a drop in UDP usage is visible. The `WVDConnections` table has a `TransportType` column (Shortpath, TURN or Websocket).
 
 **Interview lesson.** Describing a failure that generates no errors shows you think about detectability, not just causes.
 
@@ -370,13 +381,11 @@ From a session host, confirm outbound UDP is possible on 3478 to the AVD STUN an
 
 **Root cause.** TLS inspection was applied to AVD service traffic, breaking the trust chain the agent expects.
 
-**Fix.** Bypass TLS inspection for the AVD FQDNs and use the AVD FQDN tag on Azure Firewall.
+**Fix.** Bypass TLS inspection and proxies for the AVD FQDNs, and use the AVD service tag and FQDN tag on Azure Firewall.
 
 **Validation.** URL tool passes for every endpoint. Hosts return to available. Confirm with a real connection.
 
 **Prevention.** Record TLS inspection bypass for AVD in the network standard. Add the URL tool to the post change checklist for any proxy or firewall work.
-
-**Architect lesson.** Anything that inspects the outbound path is an architecture change, not a network tweak.
 
 **Interview lesson.** Connecting TLS inspection to certificate validation failure is a specific, credible detail.
 
@@ -397,12 +406,12 @@ From a session host, confirm outbound UDP is possible on 3478 to the AVD STUN an
 ```kusto
 WVDConnections
 | where TimeGenerated > ago(7d)
-| where State == "Completed"
-| summarize Disconnects = count() by bin(TimeGenerated, 1h), SessionHostName
-| order by Disconnects desc
+| where isnotempty(PredecessorConnectionId)
+| summarize AutoReconnects = dcount(CorrelationId) by bin(TimeGenerated, 1h), SessionHostName
+| order by AutoReconnects desc
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]` Confirm diagnostic table names in your workspace.
+`PredecessorConnectionId` is documented as the predecessor connection when the current connection is an auto-reconnect, so this counts reconnects as a proxy for drops. The column names are from the Learn table reference; the query itself was not run. `[VERIFY BEFORE IMPLEMENTATION]` Confirm the table exists in your workspace (diagnostic settings must be enabled).
 
 Then correlate against host CPU and memory over the same window, and check whether disconnects cluster on specific hosts.
 
@@ -415,8 +424,6 @@ Then correlate against host CPU and memory over the same window, and check wheth
 **Validation.** Disconnects stop, and CPU stays within target during the busiest shift for a full week.
 
 **Prevention.** Re-measure density after any significant application change. Alert on sustained high CPU per host rather than only on availability.
-
-**Architect lesson.** An application update can invalidate a sizing decision made six months earlier.
 
 **Interview lesson.** Separating a network cause from a density cause with evidence is exactly what the question is testing.
 
@@ -446,7 +453,7 @@ Then correlate against host CPU and memory over the same window, and check wheth
 
 **What I would decide as the architect.** Outbound UDP 3478 allowed, documented with a comment saying what breaks without it. Event 3701 and the Agent URL Tool in the runbook as the first two checks. No inbound rules to session hosts, ever.
 
-**What I would say in an interview.** Walk the flow in order, then make the point that the session host registers before any user connects. That is what removes the inbound path, and it is the strongest security argument in an AVD business case.
+**What I would say in an interview.** Walk the flow in order, then make the point that the session host only makes outbound connections, a persistent channel to the broker and a connection to the gateway at connect time. That is what removes the inbound path, and it is the strongest security argument in an AVD business case.
 
 ---
 

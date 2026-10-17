@@ -44,7 +44,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 | [Chapter 1 - What Azure Virtual Desktop Actually Is (and What It Is Not)](chapters/ch01-what-avd-actually-is.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Chapter 1 record](reviews/ch01-review-record.md) |
 | [Chapter 2 - The Control Plane, Management Plane and Data Plane](chapters/ch02-control-plane-management-plane-data-plane.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch2 record](reviews/ch02-review-record.md) |
 | [Chapter 3 - The AVD Object Model: Host Pools, Application Groups and Workspaces](chapters/ch03-avd-object-model.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch3 record](reviews/ch03-review-record.md) |
-| [Chapter 4 - The Connection Flow, End to End](chapters/ch04-connection-flow-end-to-end.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 4 - The Connection Flow, End to End](chapters/ch04-connection-flow-end-to-end.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch4 record](reviews/ch04-review-record.md) |
 | [Chapter 5 - Operating Systems, Multi-session and Licensing](chapters/ch05-operating-systems-multisession-licensing.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 6 - Clients and the Endpoint Story](chapters/ch06-clients-and-the-endpoint-story.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 7 - Identity Architecture Foundations](chapters/ch07-identity-architecture-foundations.md) | Not Reviewed | Not Reviewed | None |
