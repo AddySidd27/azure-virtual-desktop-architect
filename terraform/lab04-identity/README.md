@@ -10,7 +10,7 @@ which is covered step by step in the lab.
 
 | State | Cost |
 |---|---|
-| Running 24/7 | ~40 USD per month |
+| Running 24/7 | ~40 to 70 USD per month (approximate, not re-verified) |
 | Deallocated | ~10 USD per month, disk only |
 
 **Deallocate at the end of every session.** Stopping Windows from inside the VM does not
@@ -34,6 +34,9 @@ terraform apply tfplan
 
 ## Notes
 
+- After the VNet points at the domain controller, add DNS forwarding to Azure DNS (Lab 4 Step 5b)
+  so private endpoint names still resolve. That step is also done with the CLI and was not executed
+  in the October 2026 review.
 - The VNet DNS change is done with the CLI in the lab, not here. Terraform would try to
   set it in the same apply that creates the DC, before the DC can resolve anything.
 - `computer_name` is set separately from the Azure resource name because Windows computer

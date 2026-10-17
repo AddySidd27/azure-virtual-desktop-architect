@@ -1,7 +1,7 @@
 > **Part of:** [Azure Virtual Desktop - Architect to Hands-on Implementation](../README.md)
 > **Chapter:** [Chapter 4 - The Connection Flow, End to End](../chapters/ch04-connection-flow-end-to-end.md)
 > **Terraform:** [`terraform/lab03-network`](../terraform/lab03-network/)
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 # LAB 3 - Virtual Network, Subnets, NSGs and DNS
 
@@ -30,7 +30,7 @@ Four subnets in one virtual network. Session hosts reach Azure and the internet 
 | Subnets | **$0.00** |
 | Network security groups | **$0.00** |
 | **Base lab total** | **$0.00/month** |
-| *Optional* Azure Bastion (Basic) | **~$140/month plus data** |
+| *Optional* Azure Bastion (Basic) | **~$140/month plus data** (approximate; check the Azure pricing page, not verified in the October 2026 review) |
 | *Optional* NAT Gateway | **~$32/month plus data processing** |
 
 > ⚠️ **Cost warning - Azure Bastion.** Bastion is billed hourly whether or not you use it, and it cannot be stopped - only deleted. At roughly $140/month it is the most expensive thing in this book after session hosts. **Do not deploy it in this lab.** Lab 4 shows a cheaper access pattern. If you later decide you want Bastion, deploy it, use it, and delete it the same day.
@@ -85,7 +85,7 @@ Refer to [Chapter 4, section 3](../chapters/ch04-connection-flow-end-to-end.md#3
 | Service tag `AzureCloud` | TCP 443 | Agent and SxS stack updates, portal support |
 | Service tag `AzureFrontDoor.Frontend` | TCP 443 | Marketplace |
 | Service tag `AzureActiveDirectory` | TCP 443 | Authentication |
-| Service tag `WindowsVirtualDesktop` (`51.5.0.0/16` in the public cloud) | UDP 3478 | Relayed RDP connectivity (TURN). Direct Shortpath over public networks additionally needs outbound UDP 1024 to 65535 from the host subnet per Chapter 4; this lab's NSG does not add that rule, so sessions relay or fall back to TCP |
+| Service tag `WindowsVirtualDesktop` (`51.5.0.0/16` in the public cloud) | UDP 3478 | Relayed RDP connectivity (TURN). Direct (STUN) Shortpath over public networks additionally needs outbound UDP from the host subnet to any destination on ports 1024 to 65535 (default range 49152 to 65535) per the Learn Shortpath page; this lab's NSG does not add that rule, so sessions relay or fall back to TCP |
 | Internet | TCP 1688 | Windows activation (KMS) |
 | Internet | TCP 80 | Certificate checks. IMDS (169.254.169.254) uses TCP 80 and WireServer (168.63.129.16) uses TCP 80 and 32526 plus DNS 53 with Azure-provided DNS; these are handled at the fabric layer by default |
 
@@ -97,20 +97,20 @@ Refer to [Chapter 4, section 3](../chapters/ch04-connection-flow-end-to-end.md#3
 
 ## Step 3 - Write the Terraform
 
-Create `terraform/lab03-network/` alongside your Lab 2 configuration. Full files are in [`terraform/lab03-network`](../terraform/lab03-network/). The key pieces:
+Create `terraform/lab03-network/` alongside your Lab 2 configuration. Full files are in [`terraform/lab03-network`](../terraform/lab03-network/). The key pieces are shown below as an excerpt. In the repository module the resource group is read with a `data "azurerm_resource_group"` block (Lab 2 owns it), and the five TCP 443 service-tag rules are generated from one `for_each` map in `nsg-hosts.tf` rather than written out one by one. The UDP 3478 and inbound RDP deny rules match the module.
 
 ```hcl
 resource "azurerm_virtual_network" "avd" {
   name                = "vnet-avd-${local.suffix}"
   location            = var.location
-  resource_group_name = azurerm_resource_group.network.name
+  resource_group_name = data.azurerm_resource_group.network.name
   address_space       = ["10.10.0.0/16"]
   tags                = local.common_tags
 }
 
 resource "azurerm_subnet" "hosts" {
   name                 = "snet-hosts-${local.suffix}"
-  resource_group_name  = azurerm_resource_group.network.name
+  resource_group_name  = data.azurerm_resource_group.network.name
   virtual_network_name = azurerm_virtual_network.avd.name
   address_prefixes     = ["10.10.2.0/23"]
 }
@@ -129,7 +129,7 @@ resource "azurerm_network_security_rule" "hosts_out_avd_service" {
   destination_port_range      = "443"
   source_address_prefix       = "*"
   destination_address_prefix  = "WindowsVirtualDesktop"
-  resource_group_name         = azurerm_resource_group.network.name
+  resource_group_name         = data.azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.hosts.name
 }
 
@@ -143,7 +143,7 @@ resource "azurerm_network_security_rule" "hosts_rdp_udp" {
   destination_port_range      = "3478"
   source_address_prefix       = "*"
   destination_address_prefix  = "WindowsVirtualDesktop"
-  resource_group_name         = azurerm_resource_group.network.name
+  resource_group_name         = data.azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.hosts.name
 }
 
@@ -157,7 +157,7 @@ resource "azurerm_network_security_rule" "hosts_deny_inbound_rdp" {
   destination_port_range      = "3389"
   source_address_prefix       = "Internet"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.network.name
+  resource_group_name         = data.azurerm_resource_group.network.name
   network_security_group_name = azurerm_network_security_group.hosts.name
 }
 ```
@@ -195,7 +195,8 @@ DNS is the single most common cause of failed domain joins in Lab 4, so set it d
 2. Promote it and confirm the DNS role is running.
 3. Change the VNet DNS servers to that static IP.
 4. **Restart every VM in the VNet.** VMs cache DNS settings from DHCP and will not pick up the change otherwise.
-5. Only then join session hosts to the domain.
+5. Add DNS forwarding on the domain controller to Azure DNS ([Lab 4 Step 5b](lab-04-identity-integration.md)), so private endpoint names still resolve.
+6. Only then join session hosts to the domain.
 
 **The mistake to avoid:** changing VNet DNS before the DC is actually resolving. Every VM in the VNet then loses name resolution, including the DC itself if it was mid-configuration.
 

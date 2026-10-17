@@ -1,6 +1,6 @@
 > **Part of:** [Azure Virtual Desktop - Architect to Hands-on Implementation](../README.md)  
 > **Chapter:** [Chapter 3](../chapters/ch03-avd-object-model.md)  
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 # LAB 2 - Terraform Foundation, Resource Groups and Governance
 
@@ -8,7 +8,7 @@
 
 ## Objective
 
-Build the Terraform foundation everything else in this book sits on: remote state with locking, a consistent resource group layout, and enforced tagging. Get this right once and every later lab is a small addition rather than a rebuild.
+Build the Terraform foundation everything else in this book sits on: remote state with locking, a consistent resource group layout, and a common tag set applied to every resource group. The tags are applied by Terraform; nothing in this lab enforces them with Azure Policy. Get this right once and every later lab is a small addition rather than a rebuild.
 
 ## Cost summary
 
@@ -26,7 +26,7 @@ Build the Terraform foundation everything else in this book sits on: remote stat
 
 - Lab 1 complete, including the naming and tagging standards
 - Terraform installed, AzureRM provider pinned
-- Azure CLI authenticated to the correct subscription
+- Azure CLI authenticated to the correct subscription, and `ARM_SUBSCRIPTION_ID` exported as shown in Lab 1
 
 ---
 

@@ -261,7 +261,7 @@ Leave this until after Lab 6 confirms FSLogix mounts correctly using identity-ba
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Portal will not offer a premium file share option | Account kind is `StorageV2`, not `FileStorage` | Recreate the account with the correct kind; it cannot be converted |
-| DNS resolves to a public IP | Private DNS zone not linked to the VNet, or linked to the wrong VNet | Check `azurerm_private_dns_zone_virtual_network_link` |
+| DNS resolves to a public IP | Private DNS zone not linked to the VNet, linked to the wrong VNet, or the domain controller (the VNet's custom DNS server) has no forwarder to Azure DNS | Check `azurerm_private_dns_zone_virtual_network_link`, then confirm [Lab 4 Step 5b](lab-04-identity-integration.md) was completed |
 | `Join-AzStorageAccountForAuth` fails with access denied | DC's managed identity lacks Contributor on the storage account | Assign the role, retry |
 | Access Denied writing to the share after Step 6 | NTFS rule targeted the wrong group name, or `Set-Acl` silently failed | Re-run `Get-Acl` and inspect the returned rules before assuming the write succeeded |
 

@@ -58,7 +58,7 @@ variable "dc_private_ip" {
 }
 
 variable "dc_vm_size" {
-  description = "VM size for the lab domain controller. B2s is around 30 USD per month running. Do not size a production DC this way."
+  description = "VM size for the lab domain controller. B2s is roughly 30 to 60 USD per month running (approximate). Do not size a production DC this way."
   type        = string
   default     = "Standard_B2s"
 }

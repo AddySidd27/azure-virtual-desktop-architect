@@ -1,6 +1,6 @@
 > **Part of:** [Azure Virtual Desktop - Architect to Hands-on Implementation](../README.md)  
 > **Chapter:** [Chapter 2](../chapters/ch02-control-plane-management-plane-data-plane.md)  
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 # LAB 1 - Azure Prerequisites, Subscription, Quota and Tooling
 
@@ -63,7 +63,15 @@ az provider register --namespace Microsoft.Compute
 az provider register --namespace Microsoft.Network
 az provider register --namespace Microsoft.Storage
 az provider register --namespace Microsoft.Insights
+az provider register --namespace Microsoft.OperationalInsights
+az provider register --namespace Microsoft.KeyVault
+az provider register --namespace Microsoft.Consumption
+az provider register --namespace Microsoft.RecoveryServices
+az provider register --namespace Microsoft.Management
+az provider register --namespace Microsoft.PolicyInsights
 ```
+
+**Why the longer list.** HashiCorp's AzureRM 5.0 announcement (28 July 2026) states that no Resource Providers are registered by default any more, so Terraform will not register them for you. The extra namespaces cover the Terraform resource types used in Labs 2 to 19 of this repository (Log Analytics, Key Vault, budgets, Recovery Services vaults, management groups and Azure Policy). The list was derived by reading the repository's resource types and has not been tested against a clean subscription. `[VERIFY BEFORE IMPLEMENTATION]` If a later `terraform plan` or `apply` reports an unregistered provider, register the named namespace and rerun.
 
 Check progress:
 
@@ -120,9 +128,9 @@ Get-Module -Name Az.DesktopVirtualization -ListAvailable | Select-Object Name, V
 terraform -version
 ```
 
-Install from the official HashiCorp instructions if it is missing. This book uses Terraform with the AzureRM provider as the primary IaC tool from Lab 3 onwards.
+Install from the official HashiCorp instructions if it is missing. This book uses Terraform with the AzureRM provider as the primary IaC tool from Lab 2 onwards.
 
-**Provider version:** the AzureRM provider's current major version is **5.x** (5.0.1 was published 30 July 2026). Major version changes in this provider have historically included breaking changes to resource schemas, so **pin your version** and read the upgrade guide before moving between majors. `[VERIFY BEFORE IMPLEMENTATION]`
+**Provider version:** the AzureRM provider's current major version is **5.x**. HashiCorp announced 5.0 as generally available on 28 July 2026, and this repository's committed lock files pin 5.10.0. The 5.0 release removed some resources and stopped registering Resource Providers by default. Major version changes in this provider have historically included breaking changes to resource schemas, so **pin your version** and read the upgrade guide before moving between majors. `[VERIFY BEFORE IMPLEMENTATION]`
 
 Create a working folder and a provider pin file now:
 
@@ -149,6 +157,12 @@ provider "azurerm" {
 ```
 
 **What this does:** pins the providers so that a later provider release cannot silently change the behaviour of your code. This is not optional discipline - it is the difference between reproducible infrastructure and a surprise on a Friday afternoon.
+
+Set the subscription for the provider. AzureRM 4.0 and later expects a subscription ID, and HashiCorp support documents a "required subscription id" error when it is missing. `[VERIFY BEFORE IMPLEMENTATION]` The repository does not set it in code, so export it in the shell you run Terraform from:
+
+```bash
+export ARM_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+```
 
 Verify it initialises:
 
@@ -231,7 +245,7 @@ Do not move to Chapter 3 until every box is ticked.
 
 - [ ] `az account show` returns the correct subscription
 - [ ] `Microsoft.DesktopVirtualization` provider shows `Registered`
-- [ ] `Microsoft.Compute`, `Microsoft.Network`, `Microsoft.Storage`, `Microsoft.Insights` show `Registered`
+- [ ] `Microsoft.Compute`, `Microsoft.Network`, `Microsoft.Storage`, `Microsoft.Insights`, `Microsoft.OperationalInsights`, `Microsoft.KeyVault`, `Microsoft.Consumption`, `Microsoft.RecoveryServices`, `Microsoft.Management`, `Microsoft.PolicyInsights` show `Registered`
 - [ ] `az vm list-usage` shows at least 20 vCPUs of available quota in your chosen region
 - [ ] Azure CLI installed and `desktopvirtualization` extension added
 - [ ] `Az` and `Az.DesktopVirtualization` PowerShell modules installed, versions recorded

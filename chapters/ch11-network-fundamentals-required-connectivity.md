@@ -139,7 +139,7 @@ Microsoft's guidance: Azure Virtual Desktop session hosts have the same name res
 So three things:
 
 1. **Session hosts need working name resolution.** If they are domain joined, that means your domain controllers, as built in [Lab 4](../labs/lab-04-identity-integration.md). If they are Entra joined, Azure-provided DNS or your own resolvers.
-2. **Private DNS zones where you use private endpoints.** Lab 5 applies this pattern to FSLogix profile storage.
+2. **Private DNS zones where you use private endpoints.** Lab 5 applies this pattern to FSLogix profile storage. If the VNet uses custom DNS servers such as domain controllers, Microsoft Learn says private DNS zones linked to the VNet are not consulted automatically: a VM-based DNS server needs a conditional forwarder to Azure DNS (`168.63.129.16`) for the private zone. [Lab 4 Step 5b](../labs/lab-04-identity-integration.md) adds this and was not executed in this review.
 3. **Nothing AVD-specific is required.** There is no special AVD DNS zone unless you deploy Private Link.
 
 [VERIFY BEFORE IMPLEMENTATION] The DNS quotations in this section and the Entra join statement below were not re-fetched in the 16 October 2026 review. Source pages not confirmed.

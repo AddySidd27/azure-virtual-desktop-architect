@@ -34,7 +34,7 @@
         <mxCell id="diag" value="Diagnostics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="580" y="230" width="150" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="zAZ" value="CUSTOMER AZURE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=1.8;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
+        <mxCell id="zAZ" value="CUSTOMER MANAGED (AZURE AND TENANT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=1.8;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
           <mxGeometry x="820" y="100" width="560" height="220" as="geometry"/>
         </mxCell>
         <mxCell id="sh" value="Session hosts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
@@ -49,16 +49,19 @@
         <mxCell id="law" value="Log Analytics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;" vertex="1" parent="1">
           <mxGeometry x="1020" y="240" width="130" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="wa" target="web">
+        <mxCell id="e1" value="feed" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="wa" target="web">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="web" target="brk">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e3" value="reverse connect" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="brk" target="gw">
+        <mxCell id="e3" value="orchestration" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="brk" target="gw">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="gw" target="sh">
+        <mxCell id="e4" value="outbound from host: reverse connect" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="sh" target="gw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" value="session" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="wa" target="gw">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="e5" value="profiles" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#243A5E;strokeWidth=2;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="sh" target="files">

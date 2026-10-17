@@ -88,7 +88,7 @@ Two parts, and it matters that you separate them:
 
 Here is the split visually.
 
-> **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Created for this book using the draw.io MCP connector against official Azure icons. Not a Microsoft diagram.
+> **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Created for this book with self-contained shapes, not the official Azure icon set. Not a Microsoft diagram. Redrawn 16 October 2026 so the arrows show the client reaching the gateway and the session host opening the outbound connection.
 > Editable source: [`ch01-shared-responsibility.drawio`](../diagrams/architecture/ch01-shared-responsibility.drawio)
 
 ![Azure Virtual Desktop shared responsibility](../diagrams/architecture/ch01-shared-responsibility.svg)

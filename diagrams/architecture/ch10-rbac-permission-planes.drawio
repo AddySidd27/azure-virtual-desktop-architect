@@ -118,7 +118,7 @@
         <mxCell id="znote" value="WHAT THIS TABLE DOES NOT SHOW" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF6EC;strokeColor=#B77300;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#B77300;" vertex="1" parent="1">
           <mxGeometry x="40" y="400" width="1320" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="notetext" value="Scope. Every grant above is typically scoped to a resource group or a specific application group, not the subscription. A checkmark here means &quot;this role,&quot; not &quot;this role at any scope.&quot; See Chapter 10 for the scoping decision per role." style="text;fontSize=11;fontColor=#243A5E;align=left;" vertex="1" parent="1">
+        <mxCell id="notetext" value="Scope. Every grant above is typically scoped to a resource group or a specific application group, not the subscription. A checkmark here means &quot;this role,&quot; not &quot;this role at any scope.&quot; Tier 1 also holds Reader and Tier 2 inherits Tier 1 (Chapter 10, section 3). VM User Login: standard host pools only (Chapter 7)." style="text;fontSize=11;fontColor=#243A5E;align=left;" vertex="1" parent="1">
           <mxGeometry x="60" y="435" width="1280" height="45" as="geometry"/>
         </mxCell>
         <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">

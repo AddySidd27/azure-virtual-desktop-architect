@@ -1,7 +1,7 @@
 > **Part of:** [Azure Virtual Desktop - Architect to Hands-on Implementation](../README.md)
 > **Chapter:** [Chapter 7 - Identity Architecture Foundations](../chapters/ch07-identity-architecture-foundations.md)
 > **Terraform:** [`terraform/lab04-identity`](../terraform/lab04-identity/)
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 # LAB 4 - Identity Integration
 
@@ -21,13 +21,13 @@ This is the first lab that costs real money.
 
 | Resource | Size | Running cost | Deallocated cost |
 |---|---|---|---|
-| Domain controller VM | Standard_B2s (2 vCPU, 4 GB) | ~$30 per month | $0 for compute |
+| Domain controller VM | Standard_B2s (2 vCPU, 4 GB) | ~$30 to $60 per month (approximate; the Windows licence is included in the VM price, so Windows costs more than a Linux figure) | $0 for compute |
 | OS managed disk | 127 GB Standard SSD (E10) | ~$10 per month | ~$10 per month, disks bill whether or not the VM runs |
 | Network interface, static private IP | | $0 | $0 |
-| **Total if left running 24/7** | | **~$40 per month** | |
+| **Total if left running 24/7** | | **~$40 to $70 per month** | |
 | **Total if deallocated between sessions** | | | **~$10 per month** |
 
-A Standard_D2s_v5 instead of B2s would be around $70 per month running. B2s is enough for a lab domain controller with a handful of objects. Do not size a production DC this way.
+All prices in this lab are approximate and were not re-verified in the October 2026 review; check the Azure pricing calculator. A Standard_D2s_v5 would cost noticeably more per month running. B2s is enough for a lab domain controller with a handful of objects. Do not size a production DC this way.
 
 **The rule for the rest of this book: deallocate compute when you finish a session.** Stopping a VM from inside Windows does not stop billing. You must deallocate it from Azure.
 
@@ -179,6 +179,8 @@ az vm run-command invoke \
 
 **What this does:** creates a new AD forest, installs and configures the DNS role, sets the Directory Services Restore Mode password, and reboots.
 
+**Passwords in this lab.** The `ReplaceWith...` strings are placeholders for throwaway lab credentials. Do not reuse a real password: script text sent through `az vm run-command` lands in your shell history and may be visible to anyone who can read the VM's run command resources or activity. `[VERIFY BEFORE IMPLEMENTATION]` Use a secret store for anything beyond a disposable lab.
+
 **A note on the domain name.** `.local` is used here because this is a disconnected lab. For production, use a subdomain of a domain you own, such as `ad.contoso.com`. Do not use `.local` in production, and do not use the same name as your public domain.
 
 **Expected behaviour:** the command may return an error or time out because the VM reboots while it is running. That is normal. Wait three to five minutes, then verify.
@@ -235,6 +237,24 @@ az vm restart \
 
 ---
 
+## Step 5b - Forward Azure names from the domain controller to Azure DNS
+
+Added in the 16 October 2026 review. Once the VNet uses the domain controller as its DNS server, Azure private DNS zones linked to the VNet are no longer consulted automatically. Microsoft Learn says that if your custom DNS server is a VM, you must configure a conditional forwarder that points to Azure DNS (`168.63.129.16`) for the private zone. Lab 5 depends on this, because the storage account name must resolve to the private endpoint address from every host and from the domain controller itself.
+
+```bash
+az vm run-command invoke \
+  --resource-group rg-avd-identity-lab-eus2-01 \
+  --name vm-avdlab-dc01 \
+  --command-id RunPowerShellScript \
+  --scripts "Add-DnsServerConditionalForwarderZone -Name 'file.core.windows.net' -MasterServers 168.63.129.16; Add-DnsServerForwarder -IPAddress 168.63.129.16; Get-DnsServerZone -Name 'file.core.windows.net' | Select-Object ZoneName, ZoneType; Get-DnsServerForwarder | Select-Object IPAddress"
+```
+
+**What this does:** creates a conditional forwarder for the Azure Files namespace (the pattern in Microsoft's Azure Files DNS forwarding guidance) and a general forwarder so public Azure and internet names resolve through Azure DNS rather than only through root hints. The command was not executed in the review. `[VERIFY BEFORE IMPLEMENTATION]` Check the verification output and run `Resolve-DnsName` against a public name before moving on.
+
+**Common error:** a forwarder already exists. Read the list with `Get-DnsServerForwarder` first.
+
+---
+
 ## Step 6 - Create test users and groups
 
 These are used from Lab 16 onwards for assignment testing (Labs 11-20 build a second, centralus-based identity and a non-overlapping group assignment pattern across both regions - see the [Labs 11-20 plan](../appendices/labs-11-20-plan.md)).
@@ -285,6 +305,7 @@ For the rest of the labs, session hosts join `avdlab.local` and users are assign
 - [ ] ADWS, DNS and NTDS services all Running
 - [ ] VNet DNS servers set to `10.10.1.4`
 - [ ] DC restarted after the DNS change
+- [ ] Conditional forwarder for `file.core.windows.net` and the Azure DNS forwarder present on the DC (Step 5b)
 - [ ] OU structure created: `OU=AVD`, with `Users` and `SessionHosts` beneath it
 - [ ] Three test users created and in the `AVD-Task-Users` group
 - [ ] All resources tagged with the seven standard tags

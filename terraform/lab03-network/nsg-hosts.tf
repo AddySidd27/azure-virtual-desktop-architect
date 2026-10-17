@@ -77,7 +77,8 @@ resource "azurerm_network_security_rule" "hosts_kms" {
   network_security_group_name = azurerm_network_security_group.hosts.name
 }
 
-# Certificate checks, IMDS and platform health monitoring use TCP 80
+# Certificate checks use TCP 80 (see the required FQDN list). IMDS and WireServer are
+# handled at the Azure fabric layer and need no rule by default (Chapter 11).
 resource "azurerm_network_security_rule" "hosts_http" {
   name                        = "Allow-Certificates-And-Platform-HTTP"
   priority                    = 160

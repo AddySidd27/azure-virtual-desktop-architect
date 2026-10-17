@@ -11,9 +11,9 @@ flowchart TB
     Q2 -->|"Yes"| WS["Windows Server"]
     Q2 -->|"No"| MS
 
-    MS --> L1["No RDS CAL"]
+    MS --> L1["Per-user Windows or M365 licence, no RDS CAL"]
     SS --> L1
-    WS --> L2["RDS CAL required"]
+    WS --> L2["RDS CAL with SA or RDS user subscription licence"]
 
     classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
     classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d

@@ -28,7 +28,7 @@
         <mxCell id="zMS" value="MICROSOFT MANAGED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FC;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
           <mxGeometry x="800" y="100" width="220" height="140" as="geometry"/>
         </mxCell>
-        <mxCell id="feed" value="AVD Feed + Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;" vertex="1" parent="1">
+        <mxCell id="feed" value="Feed + Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7FAFD;strokeColor=#0078D4;fontSize=11;fontColor=#243A5E;" vertex="1" parent="1">
           <mxGeometry x="820" y="150" width="180" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="zAZ" value="CUSTOMER AZURE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">

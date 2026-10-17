@@ -37,6 +37,10 @@ Every completed pass needs all of these in its evidence record. If one is missin
 - When a chapter changes materially after a review, add a new row to the evidence record and set the status back to In Progress until the changed text is re-checked.
 - Learn pages change. Dated statements (GA dates, retirement dates, versions) carry a `CURRENCY FLAG` in the chapter, and the evidence record gives the retrieval date.
 
+## Asset verification (diagrams, labs, Terraform)
+
+Diagram, lab, scenario and Terraform checks for Chapters 1 to 12 are recorded per chapter in [reviews/ASSET-VERIFICATION.md](reviews/ASSET-VERIFICATION.md), with the tests actually executed. Open issues are in [reviews/UNRESOLVED-ISSUES.md](reviews/UNRESOLVED-ISSUES.md).
+
 ## Register
 
 | Chapter | Technical verification | Readability and architecture | Evidence |

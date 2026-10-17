@@ -91,13 +91,13 @@ Azure Resource Manager sits apart because it is how you administer the environme
 1. The user authenticates and requests their feed from the **web service** over HTTPS 443. The resource directory identifies which database holds the user's data, and the feed is built from the host pool, application group and workspace metadata held there.
 2. The user launches a desktop or app. The request goes to the **broker service**, which reads host pool configuration from the metadata store.
 3. The broker selects a session host and instructs it through the AVD agent already running on it.
-4. The heavy arrows are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
+4. Flows 2 to 4 in the numbered list are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
 5. Inside the customer boundary, the session host authenticates the user against identity, mounts the FSLogix profile over SMB 445, and sends telemetry to the diagnostics service.
 6. Diagnostic settings forward data into your Log Analytics workspace, which is where AVD Insights reads from.
 
 ### Architect's interpretation
 
-The dotted line at the bottom is the design point. There is no inbound path to a session host. No public IP, no open 3389. That property comes from the outbound-only connection in step 4, and it is the strongest single security argument in an AVD business case.
+Flow 4 in the numbered list is the design point. There is no inbound path to a session host. No public IP, no open 3389. That property comes from the outbound-only connection in step 4, and it is the strongest single security argument in an AVD business case.
 
 The second thing to read from this diagram is the split of effort. Microsoft's half needs no engineering from you. Your half needs image management, identity, storage, network and monitoring. That is where your design work goes.
 

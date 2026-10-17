@@ -101,6 +101,8 @@ The two application ID sets used in Chapters 8 and 9 were re-verified during thi
 - Windows Cloud Login, `270efc09-cd0d-444b-a71f-39af4910ec45`
 - Microsoft Remote Desktop, `a4a365df-50f1-4397-bc59-1a1564b8bb9c`
 
+> **Correction, 16 October 2026.** The Microsoft Remote Desktop ID above is not listed on the current Learn page for enforcing MFA with Conditional Access, which names the Azure Virtual Desktop and Windows Cloud Login apps. Chapter 9 no longer lists it and treats it as Unverified (see `reviews/UNRESOLVED-ISSUES.md`, U19). This audit record is otherwise left as written.
+
 The sign-in frequency behaviour differences per application, the restriction that Every time is supported only on Windows Cloud Login, the silent failure of background feed refresh and diagnostics upload after the reauthentication period expires, and the requirement to disable legacy per-user MFA were all confirmed against the current Microsoft pages.
 
 Anything that could not be confirmed carries `[VERIFY BEFORE IMPLEMENTATION]`.

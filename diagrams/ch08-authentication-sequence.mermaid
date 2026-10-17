@@ -11,7 +11,7 @@ sequenceDiagram
 
     Note over U,E: Stage 1 · service authentication
     U->>E: Sign in
-    E->>E: Conditional Access, MFA
+    E->>E: Conditional Access, MFA (AVD app)
     E-->>U: Token
 
     Note over U,S: Authorization
@@ -19,10 +19,11 @@ sequenceDiagram
     S-->>U: Assigned desktops and apps
 
     Note over U,H: Stage 2 · session host authentication
-    U->>E: Request RDP token
+    U->>E: Request RDP token (Windows Cloud Login)
+    E->>E: Conditional Access re-evaluated when targeted
     E-->>U: RDP token (SSO)
     U->>H: Windows sign-in
-    H->>K: Kerberos ticket
+    H->>K: Kerberos ticket (hybrid, or Kerberos server object)
 
     Note over H,K: Stage 3 · in-session authentication
     H->>K: Integrated auth to shares and apps

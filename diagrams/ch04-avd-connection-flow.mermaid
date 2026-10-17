@@ -4,24 +4,24 @@ title: AVD connection flow
 sequenceDiagram
     participant C as Client (Windows App)
     participant E as Microsoft Entra ID
-    participant W as Web service
-    participant B as Broker service
+    participant W as Feed service
     participant G as Gateway service
+    participant B as Broker service
     participant S as Session host
 
-    Note over S,G: Before any user connects
-    S->>G: Agent registers, persistent outbound TCP 443
+    Note over S,B: At session host startup
+    S->>B: Agent Loader opens a persistent TLS channel to the broker
 
     C->>E: 1. User signs in
     E-->>C: 2. Token issued (CA and MFA evaluated)
     C->>W: 3. Request feed with token
-    W-->>C: 4. Feed returns entitled desktops and apps
-    C->>B: 5. User launches a resource
-    B->>B: 6. Select session host
-    B->>S: 7. Orchestrate: prepare for connection
-    C->>G: 8. Client opens outbound TCP 443
-    G-->>S: 9. Reverse connect transport established
-    C->>S: 10. RDP capabilities exchanged
+    W-->>C: 4. Signed connection configuration (.rdp) per resource
+    C->>G: 5. User launches a resource: outbound TLS 443 to a gateway
+    G->>B: 6. Gateway asks the broker to orchestrate
+    B->>S: 7. Broker selects host, initializes via the persistent channel
+    S->>G: 8. Session host opens outbound TLS 443 to the same gateway
+    G-->>C: 9. Gateway relays: base reverse connect transport
+    C->>S: 10. RDP handshake, capabilities exchanged
     C-->>S: 11. RDP Shortpath (UDP) attempted in parallel
     S->>S: 12. Windows logon, profile mount, shell
     S-->>C: 13. Desktop appears
