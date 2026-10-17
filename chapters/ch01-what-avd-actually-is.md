@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -88,8 +88,6 @@ Two parts, and it matters that you separate them:
 
 Here is the split visually.
 
-> **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Based on the architecture documented by Microsoft. Not a Microsoft image.
-
 > **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Created for this book using the draw.io MCP connector against official Azure icons. Not a Microsoft diagram.
 > Editable source: [`ch01-shared-responsibility.drawio`](../diagrams/architecture/ch01-shared-responsibility.drawio)
 
@@ -124,25 +122,27 @@ You need this history for two reasons: interviewers ask, and half the material y
 
 **Remote Desktop Services (RDS).** The on-premises ancestor. You built and ran everything: Connection Broker, Session Host, Web Access, Gateway, Licensing. Multiple servers, all yours to patch and make highly available. Still supported, still widely deployed, still a perfectly reasonable answer for some workloads.
 
-**Windows Virtual Desktop (WVD), 2019.** Microsoft took the broker, gateway, web access and diagnostics components and ran them as an Azure service. The headline feature was Windows 10 Enterprise multi-session - a Windows client OS that allows several users to have interactive sessions on the same VM at the same time, available only in Azure. Management at this stage was through PowerShell and a separate tenant concept, not through Azure Resource Manager.
+**Windows Virtual Desktop (WVD), 2019.** Microsoft took the broker, gateway, web access and diagnostics components and ran them as an Azure service. The headline feature was Windows 10 Enterprise multi-session - a Windows client OS that allows several users to have interactive sessions on the same VM at the same time. Microsoft Learn describes it as exclusive to Azure Virtual Desktop, which today runs in Azure and on Azure Local; Azure Virtual Desktop Hybrid does not support it. Management at this stage was through PowerShell and a separate tenant concept, not through Azure Resource Manager.
 
 **Azure Virtual Desktop, 2021.** The rename came with the change that actually mattered: the service moved onto Azure Resource Manager. Host pools, application groups and workspaces became real Azure resources. That gave the service Azure RBAC, tags, policy, activity logs, ARM templates, Terraform and Bicep support, and normal portal management. This is the version you deploy today.
 
-**The old model is going away.** AVD (classic) - the pre-ARM version - has been closed to new tenants for some time and Microsoft has stated support ends in September 2026. If you find yourself in an environment still running it, migration is not optional and the clock is short. `CURRENCY FLAG - verified August 2026`
+**The old model has passed its retirement date.** AVD (classic) - the pre-ARM version - has been blocked from creating new tenants since September 2023 (Microsoft Learn, What's new). Microsoft's published retirement date was 30 September 2026, and Learn says connections to classic resources will be blocked after that date. That date has now passed, but Learn's pages still showed the pre-retirement banner when checked on 16 October 2026, so confirm the real state of any classic environment instead of assuming it. If you find yourself in an environment still running it, migration is not optional and it is overdue. Microsoft documents both an automatic and a manual migration path to ARM-based host pools. `CURRENCY FLAG - Microsoft Learn pages retrieved 16 October 2026. Recheck What's new before relying on this paragraph.`
 
 **2024-2026: the platform matured into an operations product.** A short list of what changed, because it directly affects how you design today:
 
-| Change | Status as of Aug 2026 | Why an architect cares |
+| Change | Status per Microsoft Learn (retrieved 16 October 2026) | Why an architect cares |
 |---|---|---|
-| **App Attach** replaced MSIX App Attach | Original MSIX-only feature retired 1 June 2025 | Application delivery design is different now, and supports MSIX, Appx and App-V packages |
-| **Session host configuration management** | Available for pooled host pools | The AVD service can create, update, and scale hosts from a stored configuration |
-| **Dynamic autoscaling** | Available for pooled pools with session host configuration | Autoscale can create and delete session hosts as well as manage power state |
-| **Ephemeral OS disks for session hosts** | Available for pooled host pools with session host configuration | Use only for stateless workloads and design around the documented lifecycle limits |
-| **RDP Multipath (redundant TCP)** | GA July 2026 | Connection resilience on unreliable networks |
-| **Session hosts via Azure Arc** | Announced May 2026 | Session hosts on other hypervisors or bare metal, managed alongside Azure ones |
-| **Windows App replaced the old Windows client** | MSRDC retired March 2026 | Client rollout and support conversations changed |
+| **App Attach** replaced MSIX App Attach | MSIX App Attach was deprecated on 1 June 2025 (What's new, March 2025 entry). App Attach supports MSIX, Appx and App-V packages | Application delivery design is different now |
+| **Session host configuration management** | Pooled host pools only. It is chosen when the host pool is created and cannot be added later. Not supported on AVD Hybrid | The AVD service can create, update, and scale hosts from a stored configuration |
+| **Dynamic autoscaling** | Listed as available in What's new (June 2026) for pooled host pools with session host configuration. That entry gives no GA or preview label | Autoscale can create and delete session hosts as well as manage power state |
+| **Ephemeral OS disks for session hosts** | CONFLICT on Learn. What's new (June 2026) lists them as available, but the dedicated page still describes preview limits (pooled with session host configuration only, no deallocation) and the AVD FAQ still says they are not supported | Use only for stateless workloads, and confirm current support before designing around them |
+| **RDP Multipath (redundant TCP)** | Generally available per What's new (July 2026); rollout began in May 2026 | Connection resilience on unreliable networks |
+| **Azure Virtual Desktop Hybrid** (session hosts on Azure Arc) | Public preview in May 2026. What's new lists general availability under September 2026 without a day. Windows Server and Windows 10/11 Enterprise single-session only; multi-session, autoscale, Start VM on Connect and session host configuration are not supported | Session hosts on your own hypervisor or bare metal, managed from Azure |
+| **Managed identity for host pools** | Generally available per What's new (September 2026). Learn says host pools with a session host configuration will require a managed identity in a future service update; no date is given | Plan identity and role assignments for host pool operations |
+| **Regional host pools** | CONFLICT on Learn. What's new lists general availability (September 2026), but the Regional Host Pools article still describes preview behaviour and two regions. Deployment scope cannot be changed after creation | Decide the deployment scope before you create the host pool |
+| **Windows App replaced the old Windows client** | Learn says support for the Remote Desktop client for Windows (MSI) ends on 27 March 2026 and tells users to migrate to Windows App | Client rollout and support conversations changed |
 
-`CURRENCY FLAG - checked 6 September 2026. Recheck Azure Virtual Desktop prerequisites, host pool management approaches, and What's new before using this table in a design.`
+`CURRENCY FLAG - Microsoft Learn pages retrieved 16 October 2026 (evidence: reviews/ch01-review-record.md). Where Learn gives no GA date, none is stated here. Recheck What's new before using this table in a design.`
 
 The lesson for an architect is not the feature list. It is that **AVD moves quickly, and any AVD design older than about twelve months should be reviewed rather than trusted.**
 
@@ -190,14 +190,14 @@ Licensing is where a lot of otherwise strong candidates lose an interview. It is
 
 AVD access rights are **not** purchased as an AVD product for your own employees. They come from a licence the user already holds. If employees already hold eligible Microsoft 365 or Windows licences, they can access Azure Virtual Desktop with no additional service charge, and no separate VDA licence is needed.
 
-Typical qualifying licences include Microsoft 365 E3/E5/F3/Business Premium, and Windows Enterprise E3/E5 or per-user VDA. Always check the current eligible-licence table on the Microsoft pricing page for the specific SKU in front of you rather than working from memory - the list changes.
+Typical qualifying licences include Microsoft 365 E3/E5/F3/A3/A5/Business Premium (and Student Use Benefit), Windows Enterprise E3/E5, Windows Education A3/A5, and Windows VDA per user. Always check the current eligible-licence table on the Licensing Azure Virtual Desktop page for the specific SKU in front of you rather than working from memory - the list changes.
 
 ### Question 2 - What operating system are the session hosts running?
 
 This changes the answer.
 
 - **Windows 10/11 Enterprise multi-session or single-session:** covered by the eligible per-user licence above. No RDS CAL involved.
-- **Windows Server session hosts:** an RDS CAL is required. This is a genuinely different licensing path and is a common gap in designs that use Windows Server for cost or application-compatibility reasons.
+- **Windows Server session hosts:** access rights come from an RDS Client Access License with active Software Assurance (per-user or per-device) or an RDS User Subscription License. This is a genuinely different licensing path and is a common gap in designs that use Windows Server for cost or application-compatibility reasons.
 
 ### Question 3 - Are the users internal or external?
 
@@ -239,12 +239,14 @@ Weak answers list features. Strong answers start with the operating model.
 |---|---|---|---|---|
 | Who manages the broker | Microsoft | Microsoft | Citrix | You |
 | Who manages the desktop VM | You | Microsoft (largely) | You | You |
-| Multi-session (shared VM) | Yes | No - one VM per user | Yes | Yes |
+| Multi-session (shared VM) | Yes | No - one concurrent session per Cloud PC (Windows 365 Flex lets several users share a Cloud PC, but not at the same time) | Yes | Yes |
 | Cost model | Consumption (Azure billing) | Fixed price per user per month | Azure consumption **plus** Citrix licences | CapEx plus operations |
-| Scale down when idle | Yes, this is a core strength | No - the Cloud PC is always allocated | Yes | No |
-| Sizing flexibility | Very high | Fixed SKUs | Very high | High but capped by hardware |
+| Scale down when idle | Yes, this is a core strength | No for Enterprise: one Cloud PC per user on a fixed monthly licence. Flex in Dedicated mode powers a Cloud PC off after sign-off | Yes | No |
+| Sizing flexibility | Very high | Chosen from a set of Cloud PC sizes `[VERIFY BEFORE IMPLEMENTATION]` | Very high | High but capped by hardware |
 | Operational skill required | Medium to high | Low | High | High |
 | Best fit | Variable demand, mixed personas, cost-sensitive at scale | Predictable 1:1 users, small teams, low IT overhead | Complex estates, specific protocol or management needs, existing Citrix skills | Regulatory or latency blockers |
+
+**Where this table comes from.** The AVD and Windows 365 columns were checked against Microsoft Learn on 16 October 2026 (What is Azure Virtual Desktop?; What is Windows 365?; What is Windows 365 Flex?). The Citrix DaaS and on-premises columns, and the rows for operational skill and best fit, are architect judgement, not Microsoft guidance. Cost comparisons in this chapter are illustrative estimates, not price quotes.
 
 ### How to reason about it, not just recite it
 
@@ -355,7 +357,7 @@ For internal users on Windows 10/11 multi-session or single-session, an eligible
 
 **Where the follow-up goes**
 Two directions, and you should raise both before you are asked:
-- If session hosts run Windows Server, an RDS CAL is required - that is a different path.
+- If session hosts run Windows Server, the access right comes from an RDS CAL with active Software Assurance or an RDS User Subscription License - that is a different path.
 - If the users are genuinely external commercial users, per-user access pricing applies and the subscription must be enrolled for it. Keep internal users on a separate, non-enrolled subscription so you are not paying twice.
 
 **How to say it out loud**
@@ -393,7 +395,18 @@ No Azure resources. No cost. Twenty minutes with a notepad.
 - Enroll in per-user access pricing - https://learn.microsoft.com/en-us/azure/virtual-desktop/enroll-per-user-access-pricing
 - Azure Virtual Desktop pricing - https://azure.microsoft.com/en-us/pricing/details/virtual-desktop/
 - What's new in Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new
-- App Attach setup - https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-setup
+- App Attach in Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview
+- Service architecture and resilience - https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience
+- Host pool management approaches - https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches
+- Azure Virtual Desktop FAQ - https://learn.microsoft.com/en-us/azure/virtual-desktop/faq
+- Azure Virtual Desktop Hybrid overview - https://learn.microsoft.com/en-us/azure/virtual-desktop/hybrid-overview
+- Azure Virtual Desktop on Azure Local - https://learn.microsoft.com/en-us/azure/virtual-desktop/azure-local-overview
+- Configure managed identity in Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-managed-identity
+- Regional host pools - https://learn.microsoft.com/en-us/azure/virtual-desktop/regional-host-pools
+- Ephemeral OS disks on Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/deploy/session-hosts/ephemeral-os-disks
+- What is Windows 365? - https://learn.microsoft.com/en-us/windows-365/overview
+- What is Windows 365 Flex? - https://learn.microsoft.com/en-us/windows-365/enterprise/introduction-windows-365-flex
+- Access a Cloud PC (client support dates) - https://learn.microsoft.com/en-us/windows-365/end-user-access-cloud-pc
 
 ---
 
@@ -469,7 +482,7 @@ Three real decisions. Each one is a conversation you will have.
 
 **What can I safely decide early?** Personas, which are a business conversation and rarely change. Region selection based on user location. Whether identity is healthy.
 
-**What must not be decided casually?** Host pool type, which cannot be changed after creation. Session host OS, which changes licensing. Address space, which cannot overlap. Join model, which shapes everything downstream.
+**What must not be decided casually?** Host pool type, which cannot be changed after creation (the same is true of the management approach and the deployment scope). Session host OS, which changes licensing. Address space, which cannot overlap. Join model, which shapes everything downstream.
 
 **When do I escalate to Microsoft?** Not at this stage. Pre-sales architecture questions go to your Microsoft account team or partner, not support. Support is for a broken service, and there is nothing deployed yet.
 
@@ -490,6 +503,8 @@ Three real decisions. Each one is a conversation you will have.
 ---
 
 ## How This Changes With Scale
+
+*The user-count thresholds below are architect judgement, not Microsoft guidance or measured data.*
 
 **Around 100 users.** The business case is fragile. Operational effort does not scale down, so a small estate pays most of the same overhead as a large one. Windows 365 is often the better answer, and comparing honestly is part of the job.
 

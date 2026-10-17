@@ -205,6 +205,7 @@ This is a learning and portfolio reference, not a production deployment package.
 - [Final architecture and operations review](FINAL-REVIEW.md)
 - [Terraform validation record](TERRAFORM-VALIDATION.md)
 - [Source verification](SOURCE-VERIFICATION.md)
+- [Review register](REVIEW-REGISTER.md)
 - [Northwind capstone](capstone/README.md)
 - [Hands-on labs](labs/)
 - [Architecture case studies](scenarios/README.md)

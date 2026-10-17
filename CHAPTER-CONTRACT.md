@@ -71,7 +71,7 @@ Write the chapter, then review it twice, separately.
 
 **Pass 2, readability.** Read it as a reader, not as the author. Split long sentences. Remove padding. Cut anything that repeats an earlier chapter. Check that the English stays simple, natural and human, and that nothing reads as machine generated.
 
-Both passes are recorded in the chapter self-review table at the end of the chapter.
+Both passes are recorded in [REVIEW-REGISTER.md](REVIEW-REGISTER.md), not in the chapter. For each pass the register gives the review date, the reviewer or process, the outcome and a link to the evidence. A pass that is not in the register has not been completed. If one reviewer or process did both passes, the register says so, and the passes are not described as independent.
 
 ---
 

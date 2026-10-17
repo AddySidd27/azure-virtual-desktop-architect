@@ -21,7 +21,7 @@ One status does not imply the next status. Valid Terraform can still fail becaus
 
 | Content | Current position |
 |---|---|
-| Chapters 1-25 | Documented; core service, identity, network, management, profile, Intune, image, and application topics checked against the sources in `SOURCE-VERIFICATION.md` |
+| Chapters 1-25 | Documented. Topic-level sources are listed in `SOURCE-VERIFICATION.md`. Claim-level review status is recorded per chapter in [REVIEW-REGISTER.md](REVIEW-REGISTER.md): Chapter 1 has a recorded technical pass (verified with caveats) and a recorded readability pass (with caveats); Chapters 2 to 25 are Not Reviewed |
 | Labs 1-20 | Documented; live validation must be confirmed per lab |
 | Lab Terraform | Implemented; format checked and provider validated: repository CI (`terraform fmt -check`, `terraform init -backend=false`, `terraform validate`) passed for all 34 modules at commit `2a7b03b` (16 October 2026); see `TERRAFORM-VALIDATION.md`; the Terraform and provider versions used by that CI are not recorded; not plan reviewed and not applied |
 | Northwind Parts A-H | Architecture documents complete as a fictional reference case study |
@@ -55,7 +55,7 @@ Hide subscription IDs, tenant IDs, usernames, public IP addresses, passwords, to
 
 ## Before publication
 
-- [ ] Complete the Microsoft source review.
+- [ ] Complete the Microsoft source review. Progress is tracked per chapter in [REVIEW-REGISTER.md](REVIEW-REGISTER.md).
 - [x] Validate every Terraform module, including nested capstone modules (`terraform init -backend=false` and `terraform validate`; repository CI at commit `2a7b03b`).
 - [ ] Resolve code-level `VERIFY BEFORE IMPLEMENTATION` items that block validation.
 - [ ] Add evidence only for procedures that were actually tested.

@@ -110,3 +110,9 @@ Anything that could not be confirmed carries `[VERIFY BEFORE IMPLEMENTATION]`.
 ## 6. Standing rule going forward
 
 Whenever a new standard is added to this repository, it applies retrospectively. The audit is repeated across completed chapters before the next chapter is written, and the result is recorded in this folder as the next numbered audit.
+
+---
+
+## 7. Later update (2026-10-16)
+
+The "Self-review tables recording both review passes: Pass" row in section 4 recorded what the audit found in August 2026. Those tables were self-assertions: they gave no sources, retrieval dates or reviewers, and commit `fc4fd0e` (2026-09-25) removed them from the chapters. The chapter contract now requires both passes to be recorded in [REVIEW-REGISTER.md](../REVIEW-REGISTER.md), and only completed, evidenced passes count. At the time of this update only Chapter 1 has one. This note does not change the original findings above.

@@ -83,6 +83,8 @@ Write the chapter. Then review it as a separate pass before publishing. Check ev
 
 Fix what the review finds before publishing.
 
+This checklist is a working tool. Ticking it in a draft is not a record. Record each completed pass in [REVIEW-REGISTER.md](REVIEW-REGISTER.md) with the date, reviewer or process, outcome and evidence.
+
 ## Priority order
 
 Simple English, then technical accuracy, then practical examples, then hands-on implementation, then real-world architecture, then troubleshooting, then interview preparation.

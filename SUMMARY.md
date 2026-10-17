@@ -5,6 +5,7 @@
 - [Introduction](README.md)
 - [Validation status](VALIDATION-STATUS.md)
 - [Source verification](SOURCE-VERIFICATION.md)
+- [Review register](REVIEW-REGISTER.md)
 - [Writing style guide](STYLE-GUIDE.md)
 - [Operations and troubleshooting standard](OPERATIONS-AND-TROUBLESHOOTING-STANDARD.md)
 - [Chapter contract](CHAPTER-CONTRACT.md)
