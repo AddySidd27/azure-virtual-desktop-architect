@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -45,7 +45,7 @@ It is also difficult to reverse. Changing session host OS means a new image, a n
 
 **Multi-session** means several users have their own interactive Windows session on the same VM at the same time.
 
-Microsoft's own framing is the clearest: Windows 10 Enterprise multi-session and Windows 11 Enterprise multi-session allow multiple concurrent interactive sessions - previously only Windows Server could do this. This gives users a familiar Windows experience for session hosts in a pooled host pool, and IT gets the cost advantages of multi-session while using existing per-user Windows licensing instead of RDS Client Access Licenses.
+Microsoft's own framing is the clearest: Windows 10 Enterprise multi-session and Windows 11 Enterprise multi-session allow multiple concurrent interactive sessions - previously only Windows Server could do this (Windows Enterprise multi-session FAQ). This gives users a familiar Windows experience for session hosts in a pooled host pool, and IT gets the cost advantages of multi-session while using existing per-user Windows licensing instead of RDS Client Access Licenses.
 
 That sentence contains the entire business case. Before multi-session Windows client existed, high-density VDI meant giving users a Windows Server desktop that looked and behaved differently from the Windows their organisation actually ran - and it meant buying RDS CALs.
 
@@ -53,16 +53,17 @@ That sentence contains the entire business case. Before multi-session Windows cl
 
 This is the single most important technical point in the chapter, and it explains a large share of the problems people hit later.
 
-Windows 11 Enterprise multi-session is not standard Windows 11 with a checkbox enabled. It is a separate edition, licensed and deployed differently, and Windows treats it as such. Microsoft states plainly that Windows Enterprise multi-session VMs are treated as a separate OS edition and some Windows Enterprise configurations won't be supported for this edition.
+Windows 11 Enterprise multi-session is not standard Windows 11 with a checkbox enabled. It is a separate edition, licensed and deployed differently, and Windows treats it as such. The Intune documentation states that Windows Enterprise multi-session VMs are treated as a separate OS edition and some Windows Enterprise configurations won't be supported for this edition. The Windows Enterprise multi-session FAQ calls it a virtual edition of Windows Enterprise, and notes that it reports `ProductType` as 3, the same value as Windows Server, which keeps it compatible with RDSH tooling but can make some installers refuse to run.
 
 The consequences show up everywhere:
 
-- Intune policies that work on physical laptops may report **Not applicable** ([Chapter 24](ch24-intune-and-avd-endpoint-management.md) and the [Intune support matrix](../appendices/intune-avd-support-matrix.md))
-- Windows Update ring policies do not apply
-- Some applications check the OS edition and refuse to install
-- Some vendor support statements do not cover it
+- Intune policies that work on physical laptops may report **Not applicable**. Learn says only the Settings catalog, certificate templates and a device-tunnel VPN template are supported, and unsupported templates show as Not applicable ([Chapter 24](ch24-intune-and-avd-endpoint-management.md) and the [Intune support matrix](../appendices/intune-avd-support-matrix.md))
+- Windows Update ring policies are not supported. Quality updates are managed through settings available in the Settings catalog
+- Some application installers check `ProductType` and refuse to install. Learn's advice is to ask the vendor for an updated version
+- Windows Autopilot, the enrollment status page and some remote actions (such as wipe) are not supported
+- Some vendor support statements may not cover it (check with each vendor; Learn does not make a general statement)
 
-It is also constrained to one place. Multi-session is supported in production only as part of Azure Virtual Desktop running in Azure. It is not a general-purpose server or workstation edition, and it is not something you deploy on-premises as a standalone VM. `[VERIFY BEFORE IMPLEMENTATION]` - support boundaries for multi-session in newer AVD deployment models (Azure Local, Arc-enabled hosts, AVD hybrid scenarios) have been changing during 2026. Confirm on Microsoft Learn before designing around them.
+It is also constrained to one place. The FAQ says customers are not allowed to run Windows Enterprise multi-session in production outside the Azure Virtual Desktop service, that doing so is against the licensing agreement, and that it will not activate against on-premises KMS. You cannot upgrade an existing Pro or Enterprise VM to multi-session; you redeploy. In-place OS upgrades (for example Windows 10 to 11) are not supported for session hosts in a pooled host pool. `[VERIFY BEFORE IMPLEMENTATION]` - this review did not verify support boundaries for multi-session on Azure Local, Arc-enabled or hybrid deployment models beyond the activation wording in section 4. Confirm on Microsoft Learn before designing around them.
 
 ---
 
@@ -85,9 +86,9 @@ flowchart TB
     Q2 -->|"Yes"| WS["Windows Server"]
     Q2 -->|"No"| MS
 
-    MS --> L1["No RDS CAL"]
+    MS --> L1["Per-user Windows or M365 licence, no RDS CAL"]
     SS --> L1
-    WS --> L2["RDS CAL required"]
+    WS --> L2["RDS CAL with SA or RDS user subscription licence"]
 
     classDef ok fill:#dbe7f3,stroke:#2b6cb0,color:#12304f
     classDef warn fill:#f5e6d3,stroke:#b7791f,color:#5c3d0d
@@ -105,7 +106,7 @@ Three viable paths, chosen by workload characteristics, not by preference. Each 
 
 1. **Does the user need a machine to themselves?** Local admin rights, persistent installed software, unpredictable resource consumption, or a GPU workload that does not share well - that is single-session on a personal host pool.
 2. **If not, can the workload share?** Task workers, knowledge workers, call centre staff. Multi-session on a pooled host pool, and this is where AVD's cost advantage lives.
-3. **Is there a hard requirement for Windows Server?** An application that only supports Server, a vendor support statement that requires it, or an existing estate the organisation is not ready to move. Choose it deliberately, and put the RDS CAL cost in the business case on day one.
+3. **Is there a hard requirement for Windows Server?** An application that only supports Server, a vendor support statement that requires it, or an existing estate the organisation is not ready to move. Choose it deliberately, and put the RDS CAL cost in the business case on day one. A Remote Desktop Services license server must also be reachable from the Server session hosts.
 
 ### Architect's view
 
@@ -114,6 +115,8 @@ Default to **Windows 11 Enterprise multi-session** for shared desktops and justi
 Choose **Windows Server** only for a stated requirement. "We've always used Server" is not a requirement. Server session hosts bring a different user experience, a different support matrix, and a licensing line item that is easy to forget when you are comparing costs against Windows 365 or a Citrix estate.
 
 **Official reference:** https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites
+
+Learn also lists what is not supported for session hosts: 32-bit operating systems, N, KN, LTSC and other editions not in the supported table, Ultra disks for the OS disk, ephemeral OS disks, Virtual Machine Scale Sets and Arm64-based Azure VMs. Supported Windows Server versions in the table are 2016, 2019, 2022 and 2025. `CURRENCY FLAG - the ephemeral OS disk row conflicts with other Learn pages that describe ephemeral OS disks for some scenarios; see the Chapter 1 review record. [VERIFY BEFORE IMPLEMENTATION]`
 
 ---
 
@@ -142,7 +145,7 @@ That is not evasion - it is the truth. Density is a measured outcome, not a spec
 4. Adjust the max session limit from measurement, not from a blog post.
 5. Re-measure after any significant application or image change.
 
-**Interview framing.** If asked "how many users per host?", never answer with a bare number. Say: *"It depends on the persona and the application mix, so I'd start from an assumption, pilot it, and set the session limit from measured data. For a task worker on a D8s-class host I'd start around 8-10 and expect to adjust. What I won't do is publish a number I haven't measured, because that's how you end up with a host pool that falls over at 9am."* That answer scores far better than a confident guess.
+**Interview framing.** If asked "how many users per host?", never answer with a bare number. Say: *"It depends on the persona and the application mix, so I'd start from an assumption, pilot it, and set the session limit from measured data. For a task worker on a D8s-class host I'd start around 8-10 as an assumption of mine, not a Microsoft figure, and expect to adjust. What I won't do is publish a number I haven't measured, because that's how you end up with a host pool that falls over at 9am."* That answer scores far better than a confident guess.
 
 ---
 
@@ -150,9 +153,11 @@ That is not evasion - it is the truth. Density is a measured outcome, not a spec
 
 Activation differs by where the session host runs, and it is a common source of confusion in hybrid designs.
 
-**Session hosts on Azure.** Marketplace images activate against Azure's KMS infrastructure. This is why `azkms.core.windows.net` on TCP 1688 appears in the required outbound list ([Chapter 4](ch04-connection-flow-end-to-end.md#3-what-session-hosts-actually-need-outbound)). Block it and you get activation failures that surface days later as licensing warnings on user desktops.
+**Session hosts on Azure.** Marketplace images activate against Azure's KMS infrastructure. This is why `azkms.core.windows.net` on TCP 1688 appears in the required outbound list ([Chapter 4](ch04-connection-flow-end-to-end.md#3-what-session-hosts-actually-need-outbound)). Learn's activation troubleshooting page lists region-specific KMS endpoints: `azkms.core.windows.net:1688` for Azure public cloud and `kms.core.usgovcloudapi.net:1688` for Azure US Government. Block the endpoint and activation fails (typically error 0xC004F074, "No Key Management Service (KMS) could be contacted").
 
-**Session hosts on Azure Local.** The rules are explicit: for session hosts on Azure Local you must license and activate the VMs before using them with AVD. For activating VMs that use Windows 10 Enterprise multi-session, Windows 11 Enterprise multi-session, and Windows Server 2022 Datacenter: Azure Edition, use Azure verification for VMs. For all other OS images - such as Windows 10 Enterprise, Windows 11 Enterprise, and other editions of Windows Server - continue to use existing activation methods.
+**Azure license benefit.** Separately from activation, the Windows license entitlement is applied to the VM. Creating session hosts in the Azure portal or the ARM template applies it automatically. To apply or check it manually, Learn shows `LicenseType = "Windows_Client"` on the VM for client OS (`Get-AzVM` shows `LicenseType`). Learn also records a known limitation: a Windows Server session host created by the host pool process can be assigned an incorrect license type and may need to be converted with the Azure Hybrid Benefit procedure.
+
+**Session hosts on Azure Local.** The rules are explicit: for session hosts on Azure Local you must license and activate the VMs before using them with AVD. For activating Windows 10 and Windows 11 Enterprise multi-session, and Windows Server 2022 Datacenter: Azure Edition, use Azure verification for VMs. For all other OS images - such as Windows 10 and Windows 11 Enterprise, and other editions of Windows Server - continue to use existing activation methods. (Prerequisites page; the Azure verification page itself was not fetched in this review, so whether newer Azure Edition releases are covered is Unverified.)
 
 **Architect's note.** Two activation paths in one estate is a real operational burden. If a customer runs both Azure and Azure Local session hosts, document which hosts use which method and who owns it, or it will be discovered during an audit rather than during design.
 
@@ -162,7 +167,7 @@ Activation differs by where the session host runs, and it is a common source of 
 
 Worth flagging here because the OS choice and the join model interact.
 
-For Entra-joined session hosts, Microsoft notes additional steps beyond just deploying the VM: for session hosts on Azure that are joined to Microsoft Entra ID, you also need to enable single sign-on or earlier authentication protocols, assign an RBAC role to users, and review your multifactor authentication policies so that users can sign in to the VMs.
+Learn's prerequisites page itself only says Entra-joined session hosts need Entra tenant membership and that account permissions to join devices are required; the additional sign-in steps (single sign-on or earlier authentication protocols, an RBAC role for users, and a review of MFA policies) are documented in the Entra-joined session hosts articles, which Chapters 7 and 8 verify. Treat the next paragraph as a forward reference until those chapters are reviewed.
 
 That RBAC requirement catches people out. On a domain-joined host, being assigned to the application group is enough. On an Entra-joined host, the user also needs an Azure RBAC role - Virtual Machine User Login or Virtual Machine Administrator Login - on the session hosts. Miss it and the user connects and is then rejected at Windows logon, which looks like an authentication fault rather than a missing role assignment.
 
@@ -174,14 +179,16 @@ Full treatment in [Chapter 7](ch07-identity-architecture-foundations.md) and [Ch
 
 [Chapter 1](ch01-what-avd-actually-is.md#5-licensing-explained-simply) established the three questions. Here is how the OS answers the second one.
 
-| Session host OS | AVD access rights | RDS CAL | Notes |
+| Session host OS | Eligible licence for internal commercial use (Learn) | RDS CAL | Notes |
 |---|---|---|---|
-| Windows 11 Enterprise multi-session | From eligible per-user licence | Not required | The default choice for pooled |
-| Windows 11 Enterprise single-session | From eligible per-user licence | Not required | Personal host pools |
-| Windows 10 Enterprise multi-session | From eligible per-user licence | Not required | Support lifecycle - see below |
-| Windows Server (any edition) | From eligible per-user licence | **Required** | Separate purchase, separate management |
+| Windows 11 Enterprise multi-session | Microsoft 365 E3, E5, A3, A5, F3, Business Premium or Student Use Benefit; Windows Enterprise E3, E5; Windows Education A3, A5; Windows VDA per user | Not required | The default choice for pooled |
+| Windows 11 Enterprise single-session | Same as above | Not required | Personal host pools |
+| Windows 10 Enterprise multi-session | Same as above | Not required | Support lifecycle - see below |
+| Windows Server 2016, 2019, 2022, 2025 | RDS CAL with Software Assurance (per user or per device), or RDS User Subscription Licenses | **Required** | The M365/Windows per-user licences in the rows above are not the eligible licence for Server. A Remote Desktop Services license server must be reachable |
 
-`CURRENCY FLAG - Windows 10 reached end of support in October 2025. Extended Security Update arrangements for Windows 10 Enterprise multi-session on AVD have their own terms and dates. [VERIFY BEFORE IMPLEMENTATION] - confirm the current position on Microsoft Learn before recommending Windows 10 for any new deployment. For greenfield work in 2026, deploy Windows 11.`
+External commercial use is different: Windows client session hosts use per-user access pricing (enrolled Azure subscription), and Learn says per-user access pricing is not available for Windows Server. Per-user access pricing is not a way to license internal users or contractors.
+
+`CURRENCY FLAG - reviewed 16 October 2026. Windows 10 reached end of support on 14 October 2025. Learn's AVD ESU page says Windows 10 multi-session and single-session session hosts in AVD are automatically eligible for Extended Security Updates at no additional cost, with no key or purchase, and that the Windows 10 22H2 multi-session image with Microsoft 365 Apps was to be retired from Azure Marketplace on 14 April 2026 while the image without it remains until 2028. CONFLICT/AMBIGUITY: the same page says devices need explicit ESU policy enablement (Intune or registry) and manual ESU installation on marketplace images, while the cloud-VM ESU page says no additional configuration is needed. This review did not resolve that; the cloud-VM ESU page was seen as a search excerpt only. [VERIFY BEFORE IMPLEMENTATION] - confirm the current position before recommending Windows 10. Learn's own best practice is to prioritise Windows 11. For greenfield work, deploy Windows 11.`
 
 **The mistake to avoid.** Comparing an AVD design against Windows 365 or Citrix on compute cost alone, having quietly chosen Windows Server session hosts and left the RDS CALs out of the model. Someone will find it, usually in front of a finance stakeholder.
 
@@ -226,7 +233,7 @@ Applying this to the [capstone customer](ch01-what-avd-actually-is.md#4-meet-the
 It is a Windows client edition that allows multiple users to have their own interactive session on one VM at the same time. Before it existed, only Windows Server could do that. It means users get a familiar Windows desktop, and you use existing per-user licensing instead of RDS CALs.
 
 **Strong senior architect answer**
-"It's what makes pooled AVD economically viable. Multiple concurrent interactive sessions on one host, with a client OS experience, covered by the per-user Microsoft 365 or Windows Enterprise licence rather than RDS CALs. The important architectural point is that it's a *separate OS edition*, not a feature of Windows 11 - so Windows treats it differently. That's why some Intune policies report Not applicable, why update rings don't work on it, and why you have to check vendor support statements rather than assume. It also only runs in production as part of AVD in Azure, so it isn't a general-purpose Windows edition."
+"It's what makes pooled AVD economically viable. Multiple concurrent interactive sessions on one host, with a client OS experience, covered by the per-user Microsoft 365 or Windows Enterprise licence rather than RDS CALs. The important architectural point is that it's a *separate OS edition*, not a feature of Windows 11 - so Windows treats it differently. That's why some Intune policies report Not applicable, why update rings aren't supported on it, and why you have to check vendor support statements rather than assume. It also may only run in production as part of the AVD service, so it isn't a general-purpose Windows edition."
 
 **Follow-up you should expect**
 "So when would you use Windows Server instead?" - a stated requirement only: an application that requires Server, or a vendor support statement. And you immediately raise the RDS CAL cost, because that is the thing that gets missed in comparisons.
@@ -275,10 +282,14 @@ It shows you can push back without being combative, you quantify the trade-off, 
 - Add session hosts to a host pool - https://learn.microsoft.com/en-us/azure/virtual-desktop/add-session-hosts-host-pool
 - Manage the operating system of session hosts - https://learn.microsoft.com/en-us/azure/virtual-desktop/management
 - Licensing Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/licensing
+- Apply Windows license to session host virtual machines - https://learn.microsoft.com/en-us/azure/virtual-desktop/apply-windows-license
+- Understanding Extended Security Updates for Windows 10 on AVD - https://learn.microsoft.com/en-us/azure/virtual-desktop/understanding-extended-security-updates
+- Windows Enterprise multi-session remote desktops (Intune) - https://learn.microsoft.com/en-us/mem/intune/fundamentals/azure-virtual-desktop-multi-session
+- Troubleshoot Azure Windows VM activation problems - https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-activation-problems
 
 ---
 
-## 8. Production Scenarios
+## 12. Production Scenarios
 
 ### Scenario 1: Intune policies report Not applicable on multi-session
 
@@ -290,11 +301,11 @@ It shows you can push back without being combative, you quantify the trade-off, 
 
 **Initial hypothesis.** Multi-session is a separate OS edition and some Windows Enterprise configurations are not supported on it. This is documented behaviour rather than a fault.
 
-**Investigation.** Portal path: *Microsoft Intune admin center > Devices > Configuration > the policy > Device assignment status*, and compare a session host against a laptop. Then filter the Settings catalog by **Enterprise multi-session** to see which settings are actually available for the edition. Cross check against the [Intune and AVD support matrix](../appendices/intune-avd-support-matrix.md).
+**Investigation.** Portal path (as written in Learn's Intune multi-session article): *Microsoft Intune admin center > Devices > By platform > Windows > Manage devices > Configuration*, then open the policy and its assignment status, and compare a session host against a laptop. Also check that the session hosts were enrolled with device credentials, that the profile is a Settings catalog or supported template, and that device-scoped policies are assigned to device groups (Learn: assigning device configuration to users, or user configuration to devices, is reported as Error or Not applicable). Then filter the Settings catalog by **Enterprise multi-session** to see which settings are actually available for the edition. Cross check against the [Intune and AVD support matrix](../appendices/intune-avd-support-matrix.md).
 
 **Evidence.** The unsupported settings do not appear when the catalog is filtered for multi-session.
 
-**Root cause.** The policies were built for a different OS edition.
+**Root cause.** The policies were built for a different OS edition, or used unsupported templates, or were assigned with the wrong scope (device versus user).
 
 **Fix.** Rebuild the baseline using settings available for Enterprise multi-session, and accept that a small number of controls have to be met another way, through the image or through host pool settings.
 
@@ -302,11 +313,9 @@ It shows you can push back without being combative, you quantify the trade-off, 
 
 **Prevention.** Maintain two baselines, one for physical endpoints and one for multi-session, and state clearly which controls are delivered by the image instead. Pilot every policy on one host before broad assignment.
 
-**Architect lesson.** Multi session being a separate edition changes your management tooling, and the gap is where incidents come from.
+**Architect's lesson.** Multi-session being a separate edition is not trivia. It changes management tooling, and the gap is where the incidents come from.
 
 **Interview lesson.** Explaining Not applicable as documented behaviour rather than a bug shows real Intune experience.
-
-**Architect's lesson.** Multi-session being a separate edition is not trivia. It changes management tooling, and the gap is where the incidents come from.
 
 ### Scenario 2: The RDS CAL nobody budgeted for
 
@@ -330,8 +339,6 @@ It shows you can push back without being combative, you quantify the trade-off, 
 
 **Prevention.** Add "does any host pool use Windows Server" to the design review checklist, and require the licensing line in the business case before OS selection is signed off.
 
-**Architect lesson.** OS selection is a licensing decision as much as a technical one.
-
 **Interview lesson.** Raising RDS CALs unprompted in an OS discussion signals commercial awareness, which senior roles look for.
 
 **Architect's lesson.** OS selection is a licensing decision as much as a technical one. Raise it at design time, when it is a cost line, rather than at go live, when it is a problem.
@@ -344,17 +351,19 @@ It shows you can push back without being combative, you quantify the trade-off, 
 
 **Business impact.** Activation warnings visible to users on newly built hosts, which erodes confidence even though nothing has actually stopped working.
 
-**Initial hypothesis.** Outbound access to Azure KMS on TCP 1688 is blocked. Activation has a grace period, which explains the delay between the change and the symptom.
+**Initial hypothesis.** Outbound access to Azure KMS on TCP 1688 is blocked. Existing hosts and newly built hosts behave differently because activation is attempted at build and on renewal. The exact grace and renewal timings were not verified in this review.
 
 **Investigation.** Check outbound rules for TCP 1688 from the session host subnet. Then from a host:
 
 ```bash
 az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
   --command-id RunPowerShellScript \
-  --scripts "Test-NetConnection -ComputerName azkms.core.windows.net -Port 1688; slmgr.vbs /dlv"
+  --scripts "Test-NetConnection -ComputerName azkms.core.windows.net -Port 1688; cscript //nologo C:\Windows\System32\slmgr.vbs /dlv"
 ```
 
-**Evidence.** The port test fails and the licensing status shows the host is not activated.
+`cscript //nologo` is used so `slmgr.vbs` writes to standard output instead of opening a dialog, which would not return through Run Command. `slmgr.vbs /ato` (from Learn's troubleshooting page) retries activation. These commands were not executed in this review. `[VERIFY BEFORE IMPLEMENTATION]`
+
+**Evidence.** The port test fails and the licensing status shows the host is not activated, typically with error 0xC004F074.
 
 **Root cause.** An egress rule change removed TCP 1688. Existing hosts stayed activated, so nothing broke immediately.
 
@@ -364,15 +373,13 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 **Prevention.** Include activation in the post build validation for every session host, so a failure is caught at build rather than weeks later.
 
-**Architect lesson.** Delayed symptoms make correlation hard, so validate at build time.
-
-**Interview lesson.** Explaining why a grace period delays the symptom shows you reason about timelines, not just causes.
+**Interview lesson.** Explaining why existing hosts can stay unaffected while new builds fail shows you reason about timelines, not just causes.
 
 **Architect's lesson.** Delayed symptoms make correlation hard. Validate at build time, so the gap between a change and its effect stays small.
 
 ---
 
-## 9. The Architect's Four Questions
+## 13. The Architect's Four Questions
 
 **What do I check first?** Which OS edition the host pool is running, and whether that matches what the tooling and licensing assume.
 
