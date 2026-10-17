@@ -22,3 +22,5 @@ Maintained during the 2026-10-16 chapter review. Each item lists what is in conf
 | U16 | Entra Domain Services limits (Domain Admin, schema) | Not checked | Ch7 | Unverified |
 | U17 | Ch8 identity architecture SVG/drawio | Draws Conditional Access at first sign-in only; with SSO, Windows Cloud Login is also a CA target. Caption note added, diagram not redrawn | Ch8, Ch9 | Open (diagram work, Phase 5) |
 | U18 | KDC proxy with Windows App | Learn's KDC proxy page names the Windows Desktop client only | Ch8 | Unverified |
+| U19 | Microsoft Remote Desktop app (a4a365df) as CA target | Removed from Ch9 because current Learn set-up-mfa page lists only AVD and Windows Cloud Login; `appendices/audit-01-chapter-contract.md` still lists it | Ch9, appendices | Unverified, cross-doc follow-up |
+| U20 | Who requests the session host SSO token | Learn set-up-mfa says the gateway initiates SSO via Windows Cloud Login; Ch8 mermaid shows client requesting RDP token | Ch8 | Unverified, diagram wording |

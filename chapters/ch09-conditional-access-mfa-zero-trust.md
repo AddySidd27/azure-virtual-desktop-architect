@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part II:** Identity and Authentication
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -46,7 +46,7 @@ This is the part that decides whether your policy works.
 
 Microsoft documents the split clearly. The service side: to access Azure Virtual Desktop resources you must first authenticate to the service with a Microsoft Entra ID account. Authentication happens whenever you subscribe to retrieve your resources, connect to the gateway when launching a connection, or when sending diagnostic information to the service. The Microsoft Entra ID resource used for this authentication is Azure Virtual Desktop, app ID 9cdead84-a844-4324-93f2-b2e6bb768d07.
 
-The session host side: Microsoft Remote Desktop, app ID a4a365df-50f1-4397-bc59-1a1564b8bb9c, and Windows Cloud Login, app ID 270efc09-cd0d-444b-a71f-39af4910ec45, apply when the user authenticates to the session host when single sign-on is enabled.
+The session host side: Windows Cloud Login, app ID 270efc09-cd0d-444b-a71f-39af4910ec45, applies when the user authenticates to the session host when single sign-on is enabled. An earlier version of this chapter also listed a Microsoft Remote Desktop app (a4a365df-50f1-4397-bc59-1a1564b8bb9c). The current Learn page (retrieved 16 October 2026) no longer lists it for AVD, so it has been removed from the table and its relevance today is Unverified. For thin clients, Learn tells you to confirm with the client's provider that Windows Cloud Login is the right app to target.
 
 Map that onto the three stages from [Chapter 8](ch08-authentication-flows-in-detail.md#1-three-authentications-not-one) and it becomes obvious:
 
@@ -54,7 +54,8 @@ Map that onto the three stages from [Chapter 8](ch08-authentication-flows-in-det
 |---|---|---|
 | 1. Service authentication, feed and gateway | Azure Virtual Desktop | `9cdead84-a844-4324-93f2-b2e6bb768d07` |
 | 2. Session host authentication with SSO | Windows Cloud Login | `270efc09-cd0d-444b-a71f-39af4910ec45` |
-| 2. Session host authentication with SSO | Microsoft Remote Desktop | `a4a365df-50f1-4397-bc59-1a1564b8bb9c` |
+
+**Do not target this app.** Learn says not to add the Azure Virtual Desktop Azure Resource Manager Provider app (`50e95039-b200-4007-bc97-8d5790743a63`) to any Conditional Access policy; it is only used to retrieve the feed and must not have MFA enforced. Learn also says the Windows App authenticates to both the Azure Virtual Desktop and Windows 365 apps (`0af06dc6-e4b5-4f28-818e-e78e62d137a5`), so a policy that blocks the Windows 365 app breaks sign-in for AVD-only users.
 
 **A naming trap.** The Azure Virtual Desktop app was previously called Windows Virtual Desktop. If you registered the Microsoft.DesktopVirtualization resource provider before the display name changed, the application will still be named Windows Virtual Desktop, with the same app ID. In an older tenant, search by app ID rather than by name.
 
@@ -73,13 +74,15 @@ Map that onto the three stages from [Chapter 8](ch08-authentication-flows-in-det
 
 ### Microsoft's design recommendation
 
-Match Conditional Access policies between these apps and the Azure Virtual Desktop app, except for the sign-in frequency.
+We recommended you match conditional access policies between these apps and the Azure Virtual Desktop app, except for the sign-in frequency. (Learn's wording; its two-policy table says Policy 2's sign-in frequency should match or exceed Policy 1.)
 
 That single sentence is the design rule for this whole chapter. Same conditions, same grant controls, different sign-in frequency. Section 2 explains why the exception exists.
 
 **What happens if you only target one app.** Microsoft's troubleshooting guidance is direct: if only the Azure Virtual Desktop app has a Conditional Access policy, the user is prompted for multifactor authentication at the Azure Virtual Desktop service layer and again at the session host. That is the double prompt users report, and it is a configuration gap rather than a product fault.
 
-`CURRENCY FLAG - verified August 2026. Microsoft has been consolidating session host authentication onto Windows Cloud Login. Check the current app list on the Microsoft page before building policies, because which apps you need to target has changed over time.`
+`CURRENCY FLAG - re-checked on 16 October 2026 against Learn's set-up-mfa page. The list of apps has changed over time (the Microsoft Remote Desktop app is no longer listed). Check the current page before building policies. [VERIFY BEFORE IMPLEMENTATION]`
+
+Learn's authentication flow on that page: the Windows App authenticates to the Azure Virtual Desktop app (policy 1 is evaluated and a token is issued), the client contacts the gateway with the token, and the gateway initiates session host SSO through the Windows Cloud Login app (policy 2 is evaluated). The diagram above follows that order.
 
 ---
 
@@ -100,7 +103,7 @@ Read the AVD app row again. **Background feed refresh and diagnostics upload sil
 
 ### The one setting not to use on the wrong app
 
-Microsoft is explicit: the Every time sign-in frequency option is supported only on the Windows Cloud Login app. Don't apply it to the Azure Virtual Desktop app. Doing so causes constant prompts on feed refresh and diagnostics upload.
+Learn is explicit: the Every time sign-in frequency option is only supported on the Windows Cloud Login app, when single sign-on is enabled for the host pool. Its misconfiguration table says applying it to the Azure Virtual Desktop app causes constant MFA prompts on feed refresh and diagnostics upload. With Every time on Windows Cloud Login, users are prompted when launching a new connection after 5 to 10 minutes since their last authentication.
 
 This is the single highest value fact in the chapter. If a customer tells you users are prompted constantly, check this first.
 
@@ -108,7 +111,7 @@ This is the single highest value fact in the chapter. If a customer tells you us
 
 The Azure Virtual Desktop app and Windows Cloud Login app each have their own Conditional Access policies and sign-in frequency. If the frequencies differ, one app's session expires before the other and triggers a reauthentication prompt during the Windows App user experience.
 
-So the two apps need frequencies that make sense together. Not necessarily identical, but chosen deliberately, with the interaction understood.
+So the two apps need frequencies that make sense together. Learn's table says to match or exceed Policy 1 on the Windows Cloud Login policy. Two further behaviours from the same page: after a connection is established users aren't prompted even if it outlasts the frequency, but a network disruption that forces the session to be re-established after the period does require reauthentication, so unstable networks produce more prompts. The sign-in frequency applies to the browser and to desktop clients selected in the policy's client apps condition (deselect legacy authentication clients).
 
 **Portal path to check or set it:** *Microsoft Entra admin center > Protection > Conditional Access > Policies > your policy > Access controls > Session > Sign-in frequency*.
 
@@ -124,6 +127,8 @@ And the symptom when it is not: when legacy per-user multifactor authentication 
 
 **Portal path to fix:** *Microsoft Entra admin center > Identity > Users > All users > Per-user MFA*, then set the multifactor authentication state to Disabled for each AVD user, and enforce MFA through Conditional Access instead.
 
+Learn adds: if you don't want to restrict sign in to strong authentication methods such as Windows Hello for Business on Entra joined hosts, you need to exclude the Azure Windows VM Sign-In app (the app that appears as AppId `372140e0-b3b7-4226-8ef9-d57986796201` in the Ch8 sign-in log query on Learn's troubleshooting page) from your Conditional Access policy. VM sign-ins do not support per-user enabled or enforced MFA. Conditional Access also cannot be used while Security Defaults are enabled, and needs Entra ID P1 or P2.
+
 **Architect's note.** In a large tenant, per-user MFA is usually a leftover from before Conditional Access existed. It is often enabled for a subset of users nobody remembers enabling it for, which is exactly why the failure looks random. Audit it before you design, not after go live.
 
 ---
@@ -136,7 +141,7 @@ A starting point for a typical enterprise, to be adapted rather than copied blin
 - Target: Azure Virtual Desktop app
 - Users: AVD user groups, break glass accounts excluded
 - Grant: require multifactor authentication
-- Session: periodic reauthentication, set to a period the business agrees, commonly measured in hours for regulated work and longer for general use
+- Session: periodic reauthentication, set to a period the business agrees (Learn does not prescribe a value)
 - Never set Every time on this app
 
 **Policy 2, session host access.**
@@ -146,11 +151,12 @@ A starting point for a typical enterprise, to be adapted rather than copied blin
 - Session: sign-in frequency chosen to line up with Policy 1 rather than fight it
 
 **Policy 3, device controls where applicable.**
-- Target: both apps
+- Target: start with the Azure Virtual Desktop app, which is evaluated against the client
 - Condition: device platform or device state
 - Grant: require compliant device for managed endpoints, or block legacy authentication
+- Caution from Learn: Entra joined session hosts may not satisfy compliance policies designed for user endpoints, and a policy that targets all cloud apps with a device compliance requirement can make SSO sign in fail. Location policies also behave differently: for Windows Cloud Login the IP address Conditional Access sees may differ from the user's client IP. Test device and location conditions against both apps in report only mode before enforcing.
 
-**Always excluded.** At least two break glass accounts, excluded from every policy, with long complex passwords, monitored sign-in alerting, and credentials held offline. If you lock yourself out of a tenant with a Conditional Access policy, these accounts are the only way back in.
+**Always excluded.** (General Entra practice, not stated on the set-up-mfa page.) At least two break glass accounts, excluded from every policy, with long complex passwords, monitored sign-in alerting, and credentials held offline. If you lock yourself out of a tenant with a Conditional Access policy, these accounts are the only way back in.
 
 **Always deployed in report only mode first.** Every policy. No exceptions in production.
 
@@ -210,11 +216,11 @@ Change one policy at a time. Do not edit both apps in the same change window, or
 
 **Business impact.** 40 finance users unable to sign in at go live, during a period when finance work is time critical.
 
-**Initial hypothesis.** Legacy per-user MFA is still enabled for those specific users, alongside Conditional Access. Microsoft documents this exact error for that combination on Entra joined session hosts.
+**Initial hypothesis.** Legacy per-user MFA is still enabled for those specific users, alongside Conditional Access. Learn documents this exact error for that combination on Entra joined session hosts.
 
 **Investigation.**
 
-Portal path: *Microsoft Entra admin center > Identity > Users > All users*, then select **Per-user MFA** from the toolbar. Sort by multifactor authentication state and compare the Enabled or Enforced list against the affected users.
+Portal path: *Microsoft Entra admin center > Identity > Users > All users*, then select **Per-user MFA** from the toolbar. Sort by multifactor authentication state and compare the Enabled or Enforced list against the affected users. If none are found, check whether a Conditional Access policy restricts sign in to strong authentication methods on Entra joined hosts; Learn's troubleshooting page gives that as another cause of this error and says to exclude the Azure Windows VM Sign-In app or enforce MFA per its guidance.
 
 Then confirm the join type of the host pool, because the documented behaviour is specific to Entra joined session hosts.
 
@@ -266,7 +272,7 @@ WVDConnections
 | order by LastSeen asc
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]` Confirm diagnostic table names in your own workspace before relying on this query. AVD table naming has changed over time.
+The query was not executed. Learn says the diagnostics upload silently fails after the reauthentication period; that this appears as missing `WVDConnections` rows is an inference of this chapter. `[VERIFY BEFORE IMPLEMENTATION]` Confirm the table exists in your workspace.
 
 Then correlate those users against the Entra sign-in logs to see when they last completed an interactive sign in.
 
@@ -305,6 +311,8 @@ Then correlate those users against the Entra sign-in logs to see when they last 
 ## 7. Common Mistakes
 
 - Targeting only the Azure Virtual Desktop app, then wondering about the second prompt at the session host.
+- Putting the Azure Virtual Desktop Azure Resource Manager Provider app in a policy, or blocking the Windows 365 app.
+- Requiring device compliance on all cloud apps and then failing SSO sign in to Entra joined hosts.
 - Setting Every time on the Azure Virtual Desktop app. It is only supported on Windows Cloud Login.
 - Setting different sign-in frequencies on the two apps without understanding the interaction.
 - Leaving legacy per-user MFA enabled alongside Conditional Access.
@@ -323,7 +331,7 @@ Then correlate those users against the Entra sign-in logs to see when they last 
 Conditional Access policies, not per-user MFA. Target the Azure Virtual Desktop app for service access and Windows Cloud Login for session host sign-in when SSO is enabled, and match the policies except for sign-in frequency.
 
 **Strong senior architect answer**
-"Conditional Access only. Per-user MFA has to be off, because the two together produce sign-in failures on Entra joined hosts. Then the key point is that there is more than one app involved. The Azure Virtual Desktop app covers subscribing to the feed and authenticating to the gateway. Windows Cloud Login covers signing in to the session host when SSO is enabled. Microsoft's recommendation is to match the policies across those apps except for sign-in frequency, because frequency behaves differently on each. If you only target the AVD app, users get challenged at the service and again at the session host, and that is the double prompt everyone complains about."
+"Conditional Access only. Per-user MFA has to be off, because the two together produce sign-in failures on Entra joined hosts. Then the key point is that there is more than one app involved. The Azure Virtual Desktop app covers subscribing to the feed and authenticating to the gateway. Windows Cloud Login covers signing in to the session host when SSO is enabled. Learn's recommendation is to match the policies across those apps except for sign-in frequency, because frequency behaves differently on each. If you only target the AVD app, users get challenged at the service and again at the session host, and that is the double prompt everyone complains about."
 
 **Follow-up you should expect**
 "Users say they are prompted constantly. What is your first check?" Sign-in frequency set to Every time on the AVD app. It is only supported on Windows Cloud Login, and on the AVD app it forces reauthentication on background feed refresh and diagnostics upload.
@@ -352,7 +360,8 @@ It starts from requirements, it separates the two apps correctly, it protects ob
 ## 9. Key Takeaways
 
 - More than one Entra app is involved. Azure Virtual Desktop for the service, Windows Cloud Login and Microsoft Remote Desktop for session host sign-in with SSO.
-- Match the policies across apps, except sign-in frequency.
+- Match the policies across apps, except sign-in frequency (Learn: Windows Cloud Login frequency should match or exceed the AVD app's).
+- Never put the Azure Virtual Desktop Azure Resource Manager Provider app in a policy, and do not block the Windows 365 app.
 - Every time is supported only on Windows Cloud Login. On the AVD app it causes constant prompts.
 - Different frequencies across the apps cause mid experience reprompts.
 - When the AVD app period expires, feed refresh and diagnostics upload fail silently.
@@ -364,7 +373,7 @@ It starts from requirements, it separates the two apps correctly, it protects ob
 ## 10. Official References
 
 - Enforce Microsoft Entra multifactor authentication for AVD using Conditional Access - https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-mfa
-- Troubleshoot single sign-on and Conditional Access for AVD - https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-desktop/troubleshoot-sso-conditional-access
+- Troubleshoot single sign-on and Conditional Access for AVD (not fetched in this review) - https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-desktop/troubleshoot-sso-conditional-access
 - Azure Virtual Desktop identities and authentication - https://learn.microsoft.com/en-us/azure/virtual-desktop/authentication
 - Configure single sign-on using Microsoft Entra ID - https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on
 
