@@ -62,6 +62,6 @@ Lab 1 (subscription, roles, providers)
 ## What this matrix does not prove
 
 - It does not prove any lab succeeds. No lab was executed.
-- It does not prove that the Terraform plans are valid. `plan` and `apply` were never run. `fmt`, `init -backend=false` and `validate` passed in GitHub CI on `main` at `86e083d`, which does not cover this branch's Terraform edits, and nothing was run locally (U25).
+- It does not prove that the Terraform plans are valid. `plan` and `apply` were never run. `fmt`, `init -backend=false` and `validate` passed in GitHub CI on `main` at `86e083d` and on this branch at `6a11662`, and nothing was run locally (U25).
 - Row 9 depends on a tenant and domain the author could not provision here.
 - Rows 18 and 23 are documented manual steps. Adding them to Terraform needs explicit approval because they are role assignments.

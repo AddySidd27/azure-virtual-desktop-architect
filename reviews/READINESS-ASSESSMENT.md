@@ -11,7 +11,7 @@ Two verdicts are given separately because they answer different questions. A doc
 | Official-source verified | Claim read on Microsoft Learn, URL and date recorded | Yes, Chapters 1 to 12 and 15 (caveats listed) |
 | Static repo checked | Files read, cross-checked, greps run | Yes |
 | Syntax parsed | HCL parsed with python-hcl2, XML parsed, Mermaid rendered | Yes (see Test results in the final report) |
-| Terraform validated | `terraform fmt -check`, `init -backend=false`, `validate` | **Yes in GitHub CI on `main` at `86e083d` (34 modules, Terraform 1.16.6). Not for this branch's 12 changed Terraform files. Not run locally (U25).** `plan` and `apply` were never run |
+| Terraform validated | `terraform fmt -check`, `init -backend=false`, `validate` | **Yes in GitHub CI on `main` at `86e083d` (34 modules, Terraform 1.16.6). Also on this branch at `6a11662` (dispatch run 39007047474, including its 12 changed Terraform files). Not run locally (U25).** `plan` and `apply` were never run |
 | Command executed | Azure CLI, PowerShell, KQL run | **No** |
 | Azure behaviour tested | Behaviour observed in a subscription | **No** |
 | End-to-end tested | Lab chain run to a user sign-in | **No** |
@@ -29,14 +29,14 @@ Evidence for:
 Blocking issues for a whole-repository publication:
 1. Twelve of 25 chapters (13, 14, 16 to 25 excluding 15) are `Not Reviewed` in the register. Publishing them implies a review that did not happen.
 2. No pass was independent (single reviewer).
-3. Terraform schema validation is recorded for `main` only. This branch's Terraform edits have not been through CI, and `plan` and `apply` were never run (U25). Any "this deploys" implication is unsupported.
+3. Terraform schema validation passed in CI on `main` and on this branch at `6a11662`, but `plan` and `apply` were never run (U25). Any "this deploys" implication is unsupported.
 
 Non-blocking caveats: U3, U4, U8, U9, U12, U15, U18 and U35 are Learn conflicts or gaps that the text states plainly. Two CAF pages cited in Ch12 are deprecated and will disappear after 2026-10-30 (U33).
 
 Actions to reach YES:
 1. Review Chapters 13, 14, 16 to 25 (technical and readability), or remove or mark them as drafts in the published navigation.
 2. Obtain one independent review of Chapters 1 to 12 and 15.
-3. Push the branch (or run `tools/terraform-validate-all.sh` where Terraform is available) so CI covers this branch's Terraform edits, and record the result.
+3. Done for `6a11662`: CI passed (see TERRAFORM-VALIDATION.md). Re-run CI after any further Terraform change.
 4. Re-check every dated claim (retirements, GA labels) at publication time.
 
 ## B. Hands-on implementation readiness
@@ -45,7 +45,7 @@ Actions to reach YES:
 
 Evidence against:
 - No lab, command, script or query has been executed. All are `[UNTESTED]`.
-- Terraform `plan` and `apply` were never run on any module. `fmt`, `init -backend=false` and `validate` passed in CI on `main`, but not yet for this branch's edits (U25).
+- Terraform `plan` and `apply` were never run on any module. `fmt`, `init -backend=false` and `validate` passed in CI on `main` and on this branch at `6a11662` (U25).
 - The Lab 4 to 8 sign-in chain needs a test Entra tenant with a verified domain and Entra Cloud Sync. The author could not provision it (U30, U32).
 - Some required controls are manual and outside Terraform: Start VM on Connect and autoscale role assignments (U28), VNet DNS (U24).
 - `nsg-storage` does not enforce anything on the private endpoint subnet by default (U23).
@@ -55,7 +55,7 @@ Blocking issues (implementation): U25, U23 (if the reader relies on the NSG), U2
 Non-blocking caveats: U35 (subscription scope satisfies both Learn pages), the image SKU string `win11-25h2-avd` is not checked against a live image list (U31).
 
 Actions to reach CONDITIONAL:
-1. Run `tools/terraform-validate-all.sh` or let CI run on this branch, then `plan` per layer (U25).
+1. Run `plan` per layer in a disposable subscription (U25). CI schema validation already passed.
 2. Execute [TEST-PLANS](TEST-PLANS.md) for U23, U26, U27 in a disposable subscription.
 3. Decide, with approval, whether to add the U28 role assignments to Terraform.
 

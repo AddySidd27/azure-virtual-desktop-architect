@@ -106,4 +106,4 @@ Approximate figures come from the labs and were not re-verified in October 2026.
 
 ## 8. What this page does not prove
 
-No path has been run. `terraform plan` and `apply` were never run. CI passed `fmt`, `init -backend=false` and `validate` on `main`, not on this branch's Terraform edits (U25). The Cloud Sync sign-in chain needs a tenant the author could not provision (U30, U32). Treat every "pass condition" above as the intended result, not an observed one.
+No path has been run. `terraform plan` and `apply` were never run. CI passed `fmt`, `init -backend=false` and `validate` on `main` and on this branch at `6a11662` (U25). The Cloud Sync sign-in chain needs a tenant the author could not provision (U30, U32). Treat every "pass condition" above as the intended result, not an observed one.

@@ -28,7 +28,7 @@ After the table above, the workflow was changed to pin Terraform 1.16.6 and the 
 
 Terraform version at `86e083d`: pinned to 1.16.6 by the workflow file. AzureRM version: the committed lock files select 5.10.0 (5.9.0 in `blog-post07-profile-storage`).
 
-**Not covered by those runs.** The local branch is 16 commits ahead of `main`. Twelve Terraform files differ from `main` (excluding lock files), including changes to `terraform/lab05-storage/storage.tf` (the `azure_files_authentication` block replaced by `lifecycle { ignore_changes }`) and `license_type` and image SKU changes in the four session-host files. None of that has been through CI or any local Terraform. To check it, push the branch to trigger CI (needs approval), or run `tools/terraform-validate-all.sh` where Terraform is available. Plan, apply and deployment remain unrun.
+**Superseded 17 October 2026.** The 12 Terraform files that differed from `main` were checked by CI on this branch at `6a11662` (see the section at the end of this page). `plan` and `apply` and local execution remain not done.
 
 ### Read-only diagnostic workflow
 
@@ -95,3 +95,15 @@ The workflow in [`.github/workflows/terraform-check.yml`](.github/workflows/terr
 3. Run and review a Terraform plan for each layer in dependency order.
 4. Deploy only in an authorized Azure subscription.
 5. Retain sanitized evidence before marking a lab or implementation validated.
+
+## CI result for this branch, 17 October 2026
+
+Pushed `6a11662` to `origin/docs/review-register-ch01-remediation`. A push to a non-`main` branch does not trigger the workflows (they run on `pull_request`, `push` to `main` and `workflow_dispatch`), so the three were dispatched manually on the branch. All three passed on `6a11662`:
+
+| Workflow | Run | Result |
+|---|---|---|
+| Terraform structural check (`fmt -check -recursive`, `init -backend=false` and `validate` per module, Gitleaks) | 39007047474 | success |
+| Repository check | 39007048778 | success |
+| Markdown link check | 39007050303 | success |
+
+This is schema-level validation only. It does not cover `plan`, `apply`, Azure behaviour or lab execution (U25 stays open for those).

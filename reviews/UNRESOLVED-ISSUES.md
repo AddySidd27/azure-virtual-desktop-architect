@@ -19,7 +19,7 @@ Definitions. **Blocks publication:** a reader would be misled by a false or unfl
 | U18 | No | No | Caveat. Ch8 does not assert Windows App support |
 | U23 | No | **Yes, if the reader relies on nsg-storage** | The NSG is not enforced on the private endpoint subnet by default (Learn). Documented in Lab 3 and Lab 5. Module unchanged. Not tested |
 | U24 | No | Conditional | Unknown whether a Lab 3 re-apply reverts VNet DNS. Reader is told to apply Lab 3 before Lab 4 |
-| U25 | No | **Yes, for plan and apply, and for this branch's Terraform edits** | Schema validation passed in CI on `main` at `86e083d`. Plan and apply were never run. Twelve Terraform files changed on this branch since then have not been through CI. Not run locally |
+| U25 | No | **Yes, for plan and apply, and for this branch's Terraform edits** | Schema validation passed in CI on `main` at `86e083d`. Plan and apply were never run. The 12 Terraform files changed on this branch passed the same CI checks on `6a11662` (dispatch run 39007047474). Plan and apply still never run. Not run locally |
 | U26 | No | Conditional | Full provider list untested. Only Microsoft.DesktopVirtualization is source verified |
 | U27 | No | Conditional | Commands written from Learn, not executed. Forwarding timeout rule added |
 | U28 | No | **Yes, for Start VM on Connect and autoscale** | Manual role assignments documented. Not in Terraform (approval needed). Not tested |

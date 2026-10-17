@@ -4,14 +4,14 @@ Prepared 17 October 2026. **Nothing on this page has been applied.** Each item i
 
 | # | Decision | Why it needs approval | Current state in the repo |
 |---|---|---|---|
-| D1 | Push the branch so CI validates its Terraform edits | Pushes are not allowed without approval | 16 local commits ahead of `main`. Twelve Terraform files differ from `main` and have not been through CI (U25) |
+| D1 | Push for CI (DONE 17 Oct 2026, approved) | Approved by the user | Branch pushed at `6a11662`. Workflows do not trigger on branch pushes, so the three were dispatched manually and passed. A pull request would trigger them automatically but was not authorized |
 | D2 | Create the U28 role assignments in Terraform | New role assignments change authorization | Documented as manual steps in Lab 7 Step 2b and Lab 10 Step 0 |
 | D3 | Enable private endpoint network policies on the storage subnet (U23) | Changes a Terraform module and a network control | `nsg-storage` is documented as not enforced |
 | D4 | Protect the Lab 4 VNet DNS setting from a Lab 3 re-apply (U24) | Changes a Terraform module | Documented warning and a `terraform plan` rule |
 | D5 | Approve the `random` provider baseline and its lock file for `capstone-northwind/platform/security` | Provider baseline and lock file changes | The module has no lock file. Not changed |
 | D6 | Autoscale role scope (U35): keep subscription scope | None needed unless you want a narrower scope | Subscription scope everywhere, with the Learn conflict stated |
 
-## D1. Push for CI
+## D1. Push for CI (done)
 
 CI (`.github/workflows/terraform-check.yml`) runs `terraform fmt -check`, `terraform init -backend=false` and `terraform validate` on every module and has passed on `main` at `86e083d`. It cannot see this branch until it is pushed. The alternative that needs no push is to run `tools/terraform-validate-all.sh` on a machine that has Terraform. Pushing a branch does not merge or deploy anything, but it still needs your approval.
 
