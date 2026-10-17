@@ -46,7 +46,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 | [Chapter 3 - The AVD Object Model: Host Pools, Application Groups and Workspaces](chapters/ch03-avd-object-model.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch3 record](reviews/ch03-review-record.md) |
 | [Chapter 4 - The Connection Flow, End to End](chapters/ch04-connection-flow-end-to-end.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch4 record](reviews/ch04-review-record.md) |
 | [Chapter 5 - Operating Systems, Multi-session and Licensing](chapters/ch05-operating-systems-multisession-licensing.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch5 record](reviews/ch05-review-record.md) |
-| [Chapter 6 - Clients and the Endpoint Story](chapters/ch06-clients-and-the-endpoint-story.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 6 - Clients and the Endpoint Story](chapters/ch06-clients-and-the-endpoint-story.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch6 record](reviews/ch06-review-record.md) |
 | [Chapter 7 - Identity Architecture Foundations](chapters/ch07-identity-architecture-foundations.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 8 - Authentication Flows in Detail](chapters/ch08-authentication-flows-in-detail.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 9 - Conditional Access, MFA and Zero Trust Access](chapters/ch09-conditional-access-mfa-zero-trust.md) | Not Reviewed | Not Reviewed | None |

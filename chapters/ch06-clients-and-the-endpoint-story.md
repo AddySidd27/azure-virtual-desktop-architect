@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part I:** AVD Fundamentals and the Architect's Mental Model
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -34,7 +34,7 @@
 
 The client feels like the least architectural part of AVD. It is a shortcut on a laptop. Nobody puts it in a design document.
 
-Then a support date passes, the old client stops working, and 3,000 people cannot get to their desktop on a Monday morning. That happened to a lot of organisations in 2026.
+Then a support date passes, the old client falls out of support, and thousands of people are left on an unsupported client with no plan. Learn's lifecycle notice gives exact dates, and section 1 records them.
 
 Client choice also quietly shapes the design. Whether you can use RDP Shortpath, whether users on unmanaged devices get a browser or an installed app, how you deploy updates, and how much your helpdesk hears about it are all client decisions.
 
@@ -42,25 +42,27 @@ Client choice also quietly shapes the design. Whether you can use RDP Shortpath,
 
 ## 1. The Client Situation Right Now
 
-`CURRENCY FLAG - verified August 2026. Client lifecycle dates have moved several times. Check the current Microsoft page before you build a migration plan.`
+`CURRENCY FLAG - re-checked against Microsoft Learn on 16 October 2026. Client lifecycle dates have moved several times. Check the current Microsoft page before you build a migration plan. [VERIFY BEFORE IMPLEMENTATION]`
 
 Microsoft has consolidated a confusing set of clients into one. The old names overlapped badly and people still mix them up, so start by getting the names straight.
 
 | Client | What it actually was | Status as of August 2026 |
 |---|---|---|
-| **Windows App** | The current unified client for AVD, Windows 365, Dev Box, RDS and remote PCs | Supported. This is the one you deploy |
-| Remote Desktop client for Windows (MSRDC, the MSI installer) | The standalone MSI, app name "Remote Desktop" | Retired for public cloud |
-| Remote Desktop app for Windows (Microsoft Store) | A separate Store app, also called "Remote Desktop" | Retired |
-| Remote Desktop web client | The older browser client | Retired for public cloud |
-| `mstsc.exe` | The built in Windows RDP tool | Still present. Not the AVD client. Used for direct RDP to a machine |
+| **Windows App** | The current unified client for AVD, Windows 365, Dev Box, and (on some platforms) RDS and remote PCs. Platforms: Windows, macOS, iOS/iPadOS, Android/Chrome OS, web browsers and Meta Quest | Supported. This is the one you deploy |
+| Remote Desktop client for Windows (MSRDC, the MSI installer) | The standalone MSI, app name "Remote Desktop" | No longer supported for public cloud from 27 March 2026 (dates below) |
+| Remote Desktop app for Windows (Microsoft Store) | A separate Store app, also called "Remote Desktop" | End of support September 2025; no longer available to download |
+| Remote Desktop web client | The older browser client | No longer supported for public cloud from 27 March 2026 |
+| `mstsc.exe` | The built in Windows RDP tool | Still present. Learn's prerequisites page says AVD does not support connections from the RADC or MSTSC clients. Used for direct RDP to a machine |
 
-The dates, from Microsoft's own lifecycle page:
+The dates, from the Remote Desktop client overview page on Microsoft Learn (retrieved 16 October 2026), paraphrased:
 
-As of March 27, 2026, the Microsoft Remote Desktop Client for Windows (MSI) and the Remote Desktop web client are no longer supported for customers using public cloud environments. Support for the Remote Desktop Client for Windows (MSI) has been extended until September 28, 2026 for Azure Government, Azure operated by 21Vianet and AVD Classic. There is currently no announced end of support date for the Remote Desktop web client in Azure Government or Azure operated by 21Vianet. The Remote Desktop app for Windows from the Microsoft Store is no longer supported and is no longer available for download or installation, having reached end of support in September 2025.
+From 27 March 2026 the MSI client and the Remote Desktop web client are no longer supported for customers using public cloud environments. MSI support was extended to 28 September 2026 for Azure Government, Azure operated by 21Vianet and AVD Classic. No end of support date is announced for the web client in Azure Government or Azure operated by 21Vianet. The Store app reached end of support in September 2025 and is no longer available for download.
+
+`CURRENCY FLAG - the 28 September 2026 date had already passed when this was reviewed. The Learn page still showed it unchanged on 16 October 2026, so what applies to those clouds now is UNVERIFIED. Confirm before advising an Azure Government, 21Vianet or AVD Classic customer.`
 
 Two details that catch people out.
 
-**The sovereign cloud dates are different.** If you run in Azure Government or Azure operated by 21Vianet, the MSI client has a later date. That does not mean you should wait. It means you have a bit more room to plan.
+**The sovereign cloud dates are different.** If you run in Azure Government or Azure operated by 21Vianet, the MSI client had a later date, 28 September 2026. That date has now passed, so do not read it as extra planning room.
 
 **AVD Classic is on the extended list too.** If you still have a classic deployment, you have two clocks running at once. The classic service itself is also ending. See [Chapter 1](ch01-what-avd-actually-is.md#3-how-avd-got-here).
 
@@ -68,13 +70,15 @@ Two details that catch people out.
 
 ## 2. What Windows App Is
 
-Windows App is one client that connects to several Microsoft remote services. Microsoft describes it as the new way to connect all of your cloud and remote resources, replacing the Remote Desktop client, covering Windows hosted in the cloud from Azure Virtual Desktop, Windows 365 and Microsoft Dev Box, along with Remote Desktop Services on premises and point to point connections with remote PCs.
+Windows App is one client that connects to several Microsoft remote services. Learn describes it as the new way to connect all of your cloud and remote resources, replacing the Remote Desktop client, covering Azure Virtual Desktop, Windows 365 and Microsoft Dev Box, along with Remote Desktop Services and remote PCs. Coverage is not uniform: Windows App on Windows does not connect to Remote Desktop Services (Learn says to keep using the Remote Desktop app on Windows for that), and the browser version connects to neither RDS nor remote PCs. Signing in needs a work or school account; personal Microsoft accounts are not supported.
 
 The reason for the change is worth understanding. Before Windows App, a user with a Cloud PC, an AVD desktop and a Dev Box needed to think about which app to open. Now it is one app and one list of resources.
 
-Windows App runs on Windows, macOS, iOS and iPadOS, Android and in a browser. Feature coverage is not identical across those platforms, which matters when you have a mixed endpoint estate. Check the current per platform comparison on Microsoft Learn rather than assuming parity. `[VERIFY BEFORE IMPLEMENTATION]`
+Windows App runs on Windows, macOS, iOS and iPadOS, Android and Chrome OS, in a browser, and on Meta Quest (the overview page lists it as a platform; the get-started page labels Quest preview, so treat Quest as unconfirmed). On Windows it needs Windows 11, Windows 10 1809 or later, or Windows Server 2019 or later, and Windows 10 devices out of mainstream support need to be enrolled in ESU. Browsers must be Edge 131+, Chrome 130+, Safari 18+ or Firefox 128+; mobile browsers are not supported.
 
-**Be honest about parity.** Microsoft has said it is working to ensure Windows App reaches feature parity with the Remote Desktop client for Windows to ease this migration. That wording tells you parity was not complete when the statement was made. If your users depend on a specific redirection or a specific setting, test it before you remove the old client, not after.
+Feature coverage is not identical across platforms, and Learn publishes a per platform comparison. Examples from that page: USB and serial port redirection are Windows only; multiple monitors are Windows and macOS only; scanners are Windows only; screen capture protection and Teams media optimization are not available in the browser. `[VERIFY BEFORE IMPLEMENTATION]` Re-read the comparison page before committing to a design.
+
+**Be honest about parity.** An earlier version of this chapter quoted a Microsoft statement about working towards feature parity with the Remote Desktop client for Windows. That statement was not found on the Learn pages reviewed, so it has been removed as Unverified. The practical rule stands: the platform comparison shows real differences, so if your users depend on a specific redirection or setting, test it before you remove the old client, not after.
 
 ---
 
@@ -82,13 +86,13 @@ Windows App runs on Windows, macOS, iOS and iPadOS, Android and in a browser. Fe
 
 Four places where this stops being a desktop support topic and becomes a design topic.
 
-**RDP Shortpath.** The transport is negotiated between client and session host. Client version and platform affect whether UDP is used. If half your users are on an old client build, part of your estate is silently on TCP only. See [Chapter 4, section 4](ch04-connection-flow-end-to-end.md#4-rdp-shortpath).
+**RDP Shortpath.** The transport is negotiated between client and session host. Learn's comparison shows platform differences: the browser has no Shortpath, iOS/iPadOS has managed-network Shortpath but not the public STUN or TURN variants, and Multipath needs specific Windows App versions (2.0.559.0 or later for Multipath with UDP, 2.0.1069.0 or later for UDP and TCP). Users on browsers or older builds are silently on TCP only. See [Chapter 4, section 4](ch04-connection-flow-end-to-end.md#4-rdp-shortpath).
 
 **Managed versus unmanaged devices.** An installed client needs a deployment mechanism. A browser does not. That single fact often decides how you handle contractors and BYOD users.
 
-**Conditional Access.** Device based policies need a device you can evaluate. Browser access from an unmanaged laptop is a different risk conversation to an installed client on an Intune managed device. See [Chapter 9](ch09-conditional-access-mfa-zero-trust.md).
+**Conditional Access.** Device based policies need a device you can evaluate. Token protection, for example, is listed for Windows App on Windows 2.0.379.0 or later only. Browser access from an unmanaged laptop is a different risk conversation to an installed client on an Intune managed device. See [Chapter 9](ch09-conditional-access-mfa-zero-trust.md).
 
-**Update control.** Store deployed and MSI deployed clients update differently. If you need to pin a version because of an application issue, know which delivery method gives you that control before you commit to it.
+**Update control.** Learn's get-started page points Windows users to the Microsoft Store for Windows App. How to deploy and pin versions through Intune was not verified in this review, so confirm which delivery method gives you version control before you commit. `[VERIFY BEFORE IMPLEMENTATION]`
 
 ---
 
@@ -121,13 +125,15 @@ flowchart TB
 
 **Step by step.** Establish who owns the device. A managed device supports an installed client, version control and device based Conditional Access. An unmanaged device pushes you towards the browser, which removes the install and the offboarding step but moves your controls inside the session. Thin clients remove the choice entirely, so the vendor's supported client has to be confirmed before anything else is agreed.
 
-**Architect's view.** The trade is between device assurance and endpoint management effort. Managed devices give you more signal to make access decisions with. Browser access gives you speed and zero endpoint footprint, and you compensate with session controls such as redirection restrictions and watermarking. See [Project 06](../scenarios/project-06-byod-remote-workforce.md).
+**Architect's view.** The trade is between device assurance and endpoint management effort. Managed devices give you more signal to make access decisions with. Browser access gives you speed and zero endpoint footprint, and you compensate with session controls such as redirection restrictions and watermarking (watermarking is supported in the browser; screen capture protection is not). See [Project 06](../scenarios/project-06-byod-remote-workforce.md).
 
-**Official reference:** https://learn.microsoft.com/en-us/windows-app/
+**Official reference:** https://learn.microsoft.com/en-us/windows-app/compare-platforms-features
 
 ---
 
 ## 5. Real-World Examples
+
+> The three examples below are illustrative composites, not customer case studies.
 
 ### Example 1: A 4,000 seat manufacturer running out of runway
 
@@ -153,13 +159,13 @@ flowchart TB
 
 **The requirement.** A financial services firm brings in contractors for three to nine month engagements. They use their own laptops. The firm will not manage those devices and will not ship hardware.
 
-**The decision.** Browser access through Windows App in the browser. No installed client. Conditional Access requiring MFA, plus session controls that block clipboard and drive redirection.
+**The decision.** Browser access through Windows App in the browser. No installed client. Conditional Access requiring MFA, plus session controls that block clipboard and drive redirection. Learn's comparison page says drive, clipboard, printer and USB drive redirection are disabled by default, so the design task is to keep them off.
 
 **Why this approach.** Installing software on a device you do not manage creates support and liability you do not want. A browser removes the install step entirely, which also removes the offboarding step. When the engagement ends you remove the group membership and access stops.
 
 **How it was implemented.** Publish the workspace URL in the onboarding pack. Create a Conditional Access policy scoped to the contractor group requiring MFA. Apply redirection controls on the host pool so data cannot leave the session. Session hosts for contractors live in their own host pool with tighter policy. See [Project 06](../scenarios/project-06-byod-remote-workforce.md).
 
-**What could go wrong.** Browser support has real requirements. Microsoft's guidance for the older web client set a clear expectation: only browser versions that are 12 months old on a rolling basis are supported, the browser must support the AVC codec, and WebGL must be enabled. Contractors on an old browser build will have a poor experience and will blame AVD. Put the browser requirement in the onboarding pack.
+**What could go wrong.** Browser support has real requirements. Learn's Windows App get-started page sets the expectation: the browser must be no more than 12 months old on a rolling basis, support the AVC codec and have WebGL enabled (applied from 15 June 2025), on top of minimum versions of Edge 131, Chrome 130, Safari 18 or Firefox 128. Contractors on an old browser build will have a poor experience and will blame AVD. Put the browser requirement in the onboarding pack.
 
 **How an architect validates it.** A test connection from an unmanaged device outside the corporate network, before the first contractor starts. Not from the office, and not from a corporate laptop, because both hide the problems you are trying to find.
 
@@ -216,10 +222,10 @@ A short, reusable sequence. It works for any client change, not just this one.
 Windows App is the current client. It replaced the MSI Remote Desktop client, the Store app and the old web client. The MSI client and the old web client ended support for public cloud in March 2026, with later dates for Azure Government and 21Vianet.
 
 **Strong senior architect answer**
-"Windows App is the one client now. It covers AVD, Windows 365, Dev Box, RDS and direct PC connections, which removes the old problem of users having to know which app to open. The MSI Remote Desktop client and the old web client went out of support for public cloud in March 2026, and the Store app went earlier. Sovereign clouds have later dates, so I check the environment before I plan. The part I care about as an architect is that the client is not just a desktop rollout. It affects whether Shortpath is used, how I handle unmanaged devices, and what Conditional Access can evaluate."
+"Windows App is the one client now. It covers AVD, Windows 365, Dev Box and, on most platforms, RDS and remote PCs, which removes the old problem of users having to know which app to open. The MSI Remote Desktop client and the old web client went out of support for public cloud on 27 March 2026, and the Store app in September 2025. Sovereign clouds and AVD Classic had a later MSI date of 28 September 2026, which has now passed, so I check the current position before I plan. The part I care about as an architect is that the client is not just a desktop rollout. It affects whether Shortpath is used, how I handle unmanaged devices, and what Conditional Access can evaluate."
 
 **Follow-up you should expect**
-"How would you run that migration for 4,000 users?" That is the sequence in section 5. Lead with inventory and persona based piloting, and make the point about deploying alongside rather than replacing.
+"How would you run that migration for 4,000 users?" That is the sequence in section 6. Lead with inventory and persona based piloting, and make the point about deploying alongside rather than replacing.
 
 ### Q15. Contractors on their own laptops need AVD access. What do you do?
 
@@ -230,7 +236,7 @@ Windows App is the current client. It replaced the MSI Remote Desktop client, th
 Add the reasoning. Installing software on a device you do not manage creates support you cannot deliver and a liability you do not want. Browser access means access ends when you remove group membership. Then the controls. MFA through Conditional Access, clipboard and drive redirection blocked at the host pool, and a separate host pool so contractor policy does not affect employees. Then the honest limitation. Browsers have version and codec requirements, so put that in the onboarding pack, and test from a genuinely unmanaged device off the corporate network before the first contractor starts.
 
 **Deep dive answer**
-There is a risk conversation worth having explicitly. A browser session on an unmanaged device is a different risk profile to a managed device, and you cannot evaluate device compliance on something you do not manage. So the controls shift from the device to the session. Watermarking, screen capture protection and redirection controls all apply at the host pool level. See [Project 06](../scenarios/project-06-byod-remote-workforce.md) and [Project 11](../scenarios/project-11-highly-secure-regulated.md), where the same controls are applied proportionately to a higher-risk population. Finish with the point that this is a deliberate trade. You accept less device assurance in exchange for zero endpoint management, and you compensate inside the session.
+There is a risk conversation worth having explicitly. A browser session on an unmanaged device is a different risk profile to a managed device, and you cannot evaluate device compliance on something you do not manage. So the controls shift from the device to the session. Watermarking, screen capture protection and redirection controls are configured on the session hosts or host pool, but client support differs: screen capture protection is not supported in the browser and watermarking is. Intune MAM can add client side redirection controls on iOS/iPadOS, Android and the Edge browser (not Windows App on Windows or macOS), and Learn says MAM redirection is not a substitute for securing redirection in the session. See [Project 06](../scenarios/project-06-byod-remote-workforce.md) and [Project 11](../scenarios/project-11-highly-secure-regulated.md), where the same controls are applied proportionately to a higher-risk population. Finish with the point that this is a deliberate trade. You accept less device assurance in exchange for zero endpoint management, and you compensate inside the session.
 
 ### Q16. Users say AVD stopped working after a client update. How do you handle it?
 
@@ -244,8 +250,8 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 
 ## 9. Key Takeaways
 
-- Windows App is the current client for AVD, Windows 365, Dev Box, RDS and remote PCs.
-- The MSI Remote Desktop client and the old web client ended support for public cloud on 27 March 2026. Azure Government, 21Vianet and AVD Classic have a later date of 28 September 2026 for the MSI client.
+- Windows App is the current client for AVD, Windows 365 and Dev Box, with RDS and remote PC support varying by platform.
+- The MSI Remote Desktop client and the old web client ended support for public cloud on 27 March 2026. Azure Government, 21Vianet and AVD Classic had a later MSI date of 28 September 2026, which has passed; current status is Unverified.
 - The Store based Remote Desktop app reached end of support in September 2025.
 - `mstsc.exe` is not the AVD client and still exists for direct RDP.
 - Do not assume full feature parity. Test the redirections your users depend on.
@@ -259,7 +265,10 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 - Windows App documentation - https://learn.microsoft.com/en-us/windows-app/
 - Remote Desktop client overview and lifecycle - https://learn.microsoft.com/en-us/previous-versions/remote-desktop-client/overview
 - Connect to Azure Virtual Desktop with Windows App - https://learn.microsoft.com/en-us/azure/virtual-desktop/users/connect-windows
-- Prepare for the Remote Desktop client for Windows end of support - https://techcommunity.microsoft.com/blog/windows-itpro-blog/prepare-for-the-remote-desktop-client-for-windows-end-of-support/4397724
+- What is Windows App? - https://learn.microsoft.com/en-us/windows-app/overview
+- Get started with Windows App - https://learn.microsoft.com/en-us/windows-app/get-started-connect-devices-desktops-apps
+- Compare Windows App features across platforms - https://learn.microsoft.com/en-us/windows-app/compare-platforms-features
+- Prerequisites for Azure Virtual Desktop (unsupported clients) - https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites
 
 ---
 
@@ -275,7 +284,7 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 
 **Initial hypothesis.** These devices never received the Windows App deployment because they were offline during the rollout waves.
 
-**Investigation.** Portal path: *Microsoft Intune admin center > Apps > Windows > Windows App > Device install status*. Filter for Not installed or Error, and compare against the affected user list. Then check last device check in time for those devices.
+**Investigation.** Portal path (typical Intune layout, not re-verified against Learn in this review): *Microsoft Intune admin center > Apps > All apps > the Windows App assignment > Device install status*. Filter for Not installed or Error, and compare against the affected user list. Then check last device check in time for those devices.
 
 **Evidence.** Affected devices show the app as not installed, and their last Intune check in predates the deployment.
 
@@ -286,8 +295,6 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 **Validation.** Each affected device shows the app installed, and the user connects with it rather than the browser.
 
 **Prevention.** Include a device check in age report in every client migration plan, and treat devices that have not checked in recently as a separate wave with a different communication approach.
-
-**Architect lesson.** Deployment coverage is not deployment success. Measure who received it.
 
 **Interview lesson.** Offering browser access as the same day workaround shows you separate restoring service from fixing the cause.
 
@@ -307,15 +314,13 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 
 **Evidence.** The device works on the old client and not on the new one, with the same host pool settings.
 
-**Root cause.** A redirection capability difference for that device class on the current client version.
+**Root cause.** A redirection capability difference for that device class on the current client version or platform. Learn lists USB and serial port redirection as supported only in Windows App on Windows, so a user on macOS, iOS, Android or the browser cannot get it.
 
 **Fix.** Confirm the current supported redirection behaviour on the Microsoft documentation for the client and platform in use, then either adjust host pool RDP properties or, if it is a genuine gap, keep that team on a supported path until it is closed.
 
 **Validation.** The device works inside a session for two users on the team, on their real hardware.
 
 **Prevention.** Test redirections by persona during pilot, not by volume of users. A team of eight can block a migration if their hardware is not covered.
-
-**Architect lesson.** A team of eight can block a migration if their hardware is not covered.
 
 **Interview lesson.** Choosing pilot groups by persona rather than volume is a small detail that signals real rollout experience.
 
@@ -342,8 +347,6 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 **Validation.** A previously affected user reports a normal experience after updating, tested from their own network.
 
 **Prevention.** State browser requirements at onboarding rather than in troubleshooting. Test from a genuinely unmanaged device off the corporate network before any BYOD rollout.
-
-**Architect lesson.** If you can only test from a managed device on the corporate network, you cannot see what BYOD users see.
 
 **Interview lesson.** Describing how you would test from a genuinely unmanaged device is more convincing than any technical answer here.
 
@@ -396,7 +399,7 @@ Part I is done. You can explain what AVD is, what Microsoft runs, how the object
 Take your own environment and answer three questions. Which client are users on today. What is your inventory method. Which personas would you put in a pilot group.
 
 **What comes next**
-Chapter 7 starts Part II with identity. This is where AVD designs succeed or fail, and it is the highest yield area in interviews after FSLogix. **[Lab 4](../labs/lab-04-identity-integration.md) begins there and is the first lab with running compute cost, roughly $30 to $70 per month for a single domain controller if left running.** The lab shows how to deallocate it between sessions.
+Chapter 7 starts Part II with identity. This is where AVD designs succeed or fail, and it is the highest yield area in interviews after FSLogix. **[Lab 4](../labs/lab-04-identity-integration.md) begins there and is the first lab with running compute cost.** The lab gives its own cost estimate and shows how to deallocate the domain controller between sessions.
 
 **Interview preparation carried forward**
 Q15 is the one to practise out loud. The BYOD contractor question comes up constantly, and a good answer covers the decision, the controls and the honest limitation.
