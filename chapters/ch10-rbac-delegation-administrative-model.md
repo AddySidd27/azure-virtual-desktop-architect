@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part II:** Identity and Authentication
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -75,23 +75,28 @@ Treat the split as a feature. A helpdesk needs to log users off and put a host i
 
 ## 2. The Built-in Roles
 
-`CURRENCY FLAG - verified August 2026. Microsoft adds AVD roles over time. Check the current list before designing a delegation model, and do not assume this table is complete for your tenant.`
+`CURRENCY FLAG - role descriptions checked against the Learn RBAC page retrieved 16 October 2026. Microsoft adds AVD roles over time. Check the current list before designing a delegation model, and do not assume this table is complete for your tenant.`
 
 | Role | What it allows | Common use |
 |---|---|---|
 | Desktop Virtualization Contributor | Manage all AVD resources, apart from user or group assignment. Does not grant access to compute resources | AVD engineering team, paired with compute and assignment rights |
 | Desktop Virtualization Reader | View all AVD resources, no changes | Auditors, monitoring, read only access reviews |
 | Desktop Virtualization User | Use an application on a session host from an application group as a non-administrative user | End users. Assigned automatically when you add a user or group to an application group |
-| Desktop Virtualization Host Pool Contributor | Manage all aspects of a host pool | Team owning one host pool |
+| Desktop Virtualization Host Pool Contributor | Manage all aspects of a host pool. Creating VMs also needs Virtual Machine Contributor. Deploying through the portal also needs Application Group Contributor and Workspace Contributor (or use Desktop Virtualization Contributor) | Team owning one host pool |
 | Desktop Virtualization Host Pool Reader | View all aspects of a host pool, no changes | Monitoring and diagnostics |
 | Desktop Virtualization Application Group Contributor | Manage all aspects of an application group, apart from user or group assignment. User Access Administrator also required to assign users | Application publishing team |
 | Desktop Virtualization Application Group Reader | View all aspects of an application group, no changes | Support reference |
 | Desktop Virtualization Workspace Contributor | Manage all aspects of workspaces. Also needs Application Group Reader to see applications in related application groups | Workspace owner |
 | Desktop Virtualization Workspace Reader | View all aspects of a workspace, no changes | Support reference |
-| Desktop Virtualization User Session Operator | Send messages, disconnect and sign out user sessions | Helpdesk. The most useful helpdesk role in AVD |
-| Desktop Virtualization Session Host Operator | Manage session hosts, including removing session hosts and changing drain mode, without adding new hosts | Operations team doing maintenance |
+| Desktop Virtualization User Session Operator | Send messages, disconnect sessions and use logoff to sign users out. Cannot remove session hosts or change drain mode. Can see assignments but not modify members. Microsoft recommends assigning it to specific host pools; at resource group scope it gives read on all host pools in that group | Helpdesk. The most useful helpdesk role in AVD |
+| Desktop Virtualization Session Host Operator | View and remove session hosts and change drain mode. Cannot add session hosts in the Azure portal (no host pool write). Outside the portal it can add hosts if the registration token is valid and Virtual Machine Contributor is also assigned | Operations team doing maintenance |
+| Desktop Virtualization Power On Contributor | Lets the AVD resource provider start VMs. Assigned to the service, not to people | Start VM on Connect, personal host pool autoscale |
+| Desktop Virtualization Power On Off Contributor | Lets the AVD resource provider start and stop VMs | Autoscale scaling plans |
+| Desktop Virtualization Virtual Machine Contributor | Lets the AVD resource provider create, delete, update, start and stop VMs | Session host configuration (automated host pools), see [Chapter 16](ch16-automated-host-pools-session-host-configuration.md) |
 
-**The role that surprises people.** Desktop Virtualization User is assigned automatically when you add a user or group to an application group. You do not usually assign it by hand. If someone has been granted it directly at a strange scope, that is worth investigating.
+**The role that surprises people.** Desktop Virtualization User is the role that publishing an application group to a user or group creates, scoped to that application group. The portal assignment blade does this for you. If someone holds it at a strange scope, that is worth investigating.
+
+**Service roles.** The last three rows are for the AVD resource provider, not for admins. They are normally granted by following the feature's own setup page (autoscale, Start VM on Connect, session host configuration), at the scope that page states. [VERIFY BEFORE IMPLEMENTATION] Check the current scope guidance for each feature.
 
 ---
 
@@ -116,7 +121,7 @@ Four tiers. Adapt the names, keep the shape.
 **Roles:**
 - Everything in Tier 1
 - Desktop Virtualization Session Host Operator
-- Virtual Machine Contributor, scoped to the session host resource group only
+- Virtual Machine Contributor, scoped to the session host resource group only (needed only if operations also adds hosts or manages the VMs; Session Host Operator alone covers drain mode and removal)
 
 **Not granted:** User Access Administrator. Operations does not decide who gets access.
 
@@ -182,8 +187,10 @@ resource "azurerm_role_assignment" "servicedesk_session_operator" {
 }
 
 resource "azurerm_role_assignment" "avd_users_vm_login" {
-  # Required for Entra joined session hosts. Without it, users
-  # authenticate successfully and are then rejected at Windows sign in.
+  # Required for Entra joined session hosts in a standard host pool. Without it,
+  # users authenticate and are then rejected at Windows sign in.
+  # See Chapter 7: not required for pools that use a session host
+  # configuration. [VERIFY BEFORE IMPLEMENTATION] Not executed in this repo.
   scope                = data.azurerm_resource_group.hosts.id
   role_definition_name = "Virtual Machine User Login"
   principal_id         = var.avd_users_group_object_id
@@ -206,7 +213,9 @@ Run this before any access review. It is also the first command to run when some
 
 Covered in [Chapter 5](ch05-operating-systems-multisession-licensing.md#5-entra-joined-session-hosts-change-the-prerequisites) and worth repeating in one line here because it belongs to RBAC.
 
-On Entra joined session hosts, users need an Azure RBAC role on the session hosts in addition to their application group assignment. Virtual Machine User Login for ordinary users, Virtual Machine Administrator Login for administrators.
+On Entra joined session hosts in a standard host pool, users need an Azure RBAC role on the session hosts in addition to their application group assignment. Virtual Machine User Login for ordinary users, Virtual Machine Administrator Login for administrators.
+
+`CURRENCY FLAG - 16 October 2026.` [Chapter 7](ch07-identity-architecture-foundations.md) records that the VM User Login role is not required for host pools that use a session host configuration. Confirm which model you have before treating a missing role as the cause. See `reviews/UNRESOLVED-ISSUES.md` U15.
 
 Miss it and the user connects, then gets rejected at Windows sign in. It looks like an authentication fault and it is an authorisation gap.
 
@@ -386,7 +395,7 @@ There is an availability angle worth adding here too. Least privilege limits bla
 ### Q28. A user connects to an Entra joined host and is rejected at sign in. What is it?
 
 **Strong answer**
-"Almost certainly the missing Azure RBAC role on the session hosts. Entra joined hosts need Virtual Machine User Login in addition to the application group assignment, and administrators are usually unaffected because they hold a broader role already, which is why it looks like it only affects some people. I would check role assignments on the session host resource group first. It presents as an authentication failure and it is actually authorisation, so people lose a lot of time in Conditional Access before they get to it."
+"Most likely the missing Azure RBAC role on the session hosts, if the pool is a standard host pool. Entra joined hosts in that model need Virtual Machine User Login in addition to the application group assignment, and administrators are usually unaffected because they hold a broader role already, which is why it looks like it only affects some people. I would check role assignments on the session host resource group first. It presents as an authentication failure and it is actually authorisation, so people lose a lot of time in Conditional Access before they get to it."
 
 ---
 
@@ -397,7 +406,7 @@ There is an availability angle worth adding here too. Least privilege limits bla
 - User Access Administrator is required to assign users or groups to application groups.
 - Desktop Virtualization User Session Operator is the correct helpdesk role.
 - Desktop Virtualization Session Host Operator covers drain mode and session host removal without allowing new hosts to be added.
-- Entra joined session hosts also need Virtual Machine User Login for users.
+- Entra joined session hosts in a standard host pool also need Virtual Machine User Login for users (not required with a session host configuration, per Chapter 7).
 - Scope matters more than the role. Assign to groups, at the narrowest scope, and put it in Terraform.
 
 ---
@@ -405,6 +414,7 @@ There is an availability angle worth adding here too. Least privilege limits bla
 ## 11. Official References
 
 - Built-in Azure RBAC roles for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/rbac
+- Delegated access in Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/delegated-access-virtual-desktop
 - Azure built-in roles for Compute - https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/compute
 - Understand scope for Azure RBAC - https://learn.microsoft.com/en-us/azure/role-based-access-control/scope-overview
 - Microsoft Entra Privileged Identity Management - https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/
