@@ -2,10 +2,14 @@ name: Terraform structural check
 
 on:
   pull_request:
-    paths: ["terraform/**"]
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-check.yml"
   push:
     branches: [main]
-    paths: ["terraform/**"]
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-check.yml"
   workflow_dispatch:
 
 jobs:
