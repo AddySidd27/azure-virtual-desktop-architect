@@ -1,0 +1,290 @@
+name: H1 lock-file generation (proposal run, throwaway copies, nothing committed)
+
+# TEMPORARY workflow. It exists only on branch chore/h1-lock-gen and is never
+# intended for main. Runs once per push to that branch.
+#
+# Read-only by design: no secrets, no Azure credentials, no plan/apply, nothing
+# committed or pushed. The proposed lock files are generated on throwaway COPIES
+# of the modules inside $RUNNER_TEMP; the checkout is never modified (checked at
+# the end). The proposed files and a validation report come back through
+# annotations by the proven transfer method (base64 chunks of at most 4000
+# characters, indexed titles, at most 10 payload annotations per step, SHA-256
+# at every stage), with an artifact as an independent copy.
+#
+# The capstone security module is BLOCKED: its random provider has no approved
+# baseline. It is not generated; the run fails if it appears in the output.
+on:
+  push:
+    branches: ["chore/h1-lock-gen"]
+
+permissions:
+  contents: read
+
+env:
+  CHUNK: "4000"
+  PER_STEP: "10"
+
+jobs:
+  gen:
+    name: generate proposed lock files (terraform 1.16.6)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "1.16.6"
+          terraform_wrapper: false
+
+      - name: Generate, validate and build the report
+        env:
+          TF_IN_AUTOMATION: "true"
+          CHECKPOINT_DISABLE: "1"
+        run: |
+          set -eu
+          echo "OUT=$RUNNER_TEMP/gen-out" >> "$GITHUB_ENV"
+          export OUT="$RUNNER_TEMP/gen-out"
+          mkdir -p "$OUT/locks"
+          cat > "$RUNNER_TEMP/gen.py" <<'PY'
+          import base64, gzip, hashlib, io, json, os, re, shutil, subprocess, sys, tarfile
+
+          OUT = os.environ["OUT"]
+          WORK = os.path.join(os.environ["RUNNER_TEMP"], "gen")
+          SRC = os.environ["GITHUB_WORKSPACE"]
+          CH = int(os.environ["CHUNK"]); K = int(os.environ["PER_STEP"])
+          PLATS = ["linux_amd64", "darwin_arm64", "darwin_amd64", "windows_amd64"]
+          BLOG = "terraform/blog-post07-profile-storage"
+          BLOCKED = ["terraform/capstone-northwind/platform/security"]
+          BASE = {"hashicorp/azurerm": "5.10.0", "hashicorp/azuread": "3.10.0"}
+          BLOG_BASE = {"hashicorp/azurerm": "5.9.0", "azure/azapi": "2.13.0"}
+          S = lambda b: hashlib.sha256(b).hexdigest()
+
+          def run(args, cwd):
+              p = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=1500)
+              return p.returncode, (p.stdout + p.stderr)
+          def tail(s, n=500):
+              s = s.strip(); return s if len(s) <= n else "..." + s[-n:]
+
+          def parse_lock(path):
+              out, cur = {}, None
+              for line in open(path, encoding="utf-8"):
+                  m = re.match(r'^provider "([^"]+)" \{', line)
+                  if m:
+                      cur = {"version": None, "constraints": None, "h1": set(), "zh": set()}
+                      out[m.group(1).replace("registry.terraform.io/", "")] = cur; continue
+                  if cur is None: continue
+                  if line.startswith("}"): cur = None; continue
+                  m = re.match(r'^\s+version\s*=\s*"([^"]+)"', line)
+                  if m: cur["version"] = m.group(1); continue
+                  m = re.match(r'^\s+constraints\s*=\s*"([^"]+)"', line)
+                  if m: cur["constraints"] = m.group(1); continue
+                  m = re.match(r'^\s+"(h1|zh):([^"]*)"', line)
+                  if m: cur[m.group(1)].add(m.group(1) + ":" + m.group(2))
+              return out
+
+          def declared(mod):
+              t = open(os.path.join(SRC, mod, "versions.tf"), encoding="utf-8").read()
+              return {k.lower(): v for k, v in re.findall(r'source\s*=\s*"([^"]+)"\s*\n\s*version\s*=\s*"([^"]+)"', t)}
+
+          def vt(v): return tuple(int(x) for x in v.split("."))
+          def satisfies(v, c):
+              if "-" in v: return False
+              m = re.fullmatch(r"~>\s*(\d+(?:\.\d+)+)", c)
+              if not m: return None
+              lo = vt(m.group(1)); n = len(lo)
+              if n < 2: return None
+              return lo <= vt(v) < lo[:n-2] + (lo[n-2] + 1, 0)
+
+          def check_lock(mod, lock):
+              prov = declared(mod); base = BLOG_BASE if mod == BLOG else BASE; problems = []
+              if set(lock) != set(prov): problems.append(f"provider set {sorted(lock)} != declared {sorted(prov)}")
+              for name, e in lock.items():
+                  d = prov.get(name)
+                  if e["constraints"] != d: problems.append(f"{name}: lock constraints {e['constraints']!r} != versions.tf {d!r}")
+                  if satisfies(e["version"] or "", d or "") is not True: problems.append(f"{name}: version {e['version']} does not satisfy {d}")
+                  if name not in base: problems.append(f"{name}: no approved baseline (version {e['version']})")
+                  elif e["version"] != base[name]: problems.append(f"{name}: {e['version']} differs from approved baseline {base[name]}")
+                  if len(e["h1"]) != 4: problems.append(f"{name}: expected 4 h1 entries, found {len(e['h1'])}")
+                  if not e["zh"]: problems.append(f"{name}: no zh entries")
+              return problems
+
+          def files_manifest(d):
+              m = {}
+              for root, dirs, files in os.walk(d):
+                  dirs[:] = [x for x in dirs if x != ".terraform"]
+                  for f in files:
+                      if f == ".terraform.lock.hcl": continue
+                      p = os.path.join(root, f); m[os.path.relpath(p, d)] = S(open(p, "rb").read())
+              return m
+
+          INIT = ["terraform", "init", "-backend=false", "-input=false", "-no-color"]
+          all_mods = sorted(os.path.dirname(os.path.relpath(os.path.join(r, "versions.tf"), SRC))
+                            for r, _, fs in os.walk(os.path.join(SRC, "terraform")) if "versions.tf" in fs)
+          assert len(all_mods) == 34, len(all_mods)
+          assert BLOG in all_mods and all(b in all_mods for b in BLOCKED)
+          mods = [m for m in all_mods if m not in BLOCKED]
+          assert len(mods) == 33
+          new_mods = [m for m in mods if m != BLOG]
+          res = {"terraform": run(["terraform", "version"], SRC)[1].splitlines()[0],
+                 "modules_total": len(all_mods), "processed": len(mods), "new_files": len(new_mods),
+                 "blocked": BLOCKED, "blocked_declared": {b: declared(b) for b in BLOCKED},
+                 "entries": []}
+          tracked_pre = {m: os.path.exists(os.path.join(SRC, m, ".terraform.lock.hcl")) for m in mods}
+          assert [m for m, v in tracked_pre.items() if v] == [BLOG], tracked_pre
+
+          for mod in mods:
+              e = {"module": mod, "problems": [], "kind": "update" if mod == BLOG else "new"}
+              G = os.path.join(WORK, mod); shutil.copytree(os.path.join(SRC, mod), G, symlinks=True)
+              lg = os.path.join(G, ".terraform.lock.hcl")
+              before = open(lg, "rb").read() if os.path.exists(lg) else None
+              before_lock = parse_lock(lg) if before else None
+              e["sha_before"] = S(before) if before else None
+              rc, o = run(["terraform", "providers", "lock", "-no-color"] + [f"-platform={x}" for x in PLATS], G)
+              e["providers_lock_rc"] = rc
+              if rc: e["problems"].append("providers lock failed: " + tail(o))
+              if os.path.isdir(os.path.join(G, ".terraform")): e["problems"].append(".terraform present after providers lock")
+              if not os.path.exists(lg):
+                  e["problems"].append("no lock file produced"); e["ok"] = False; res["entries"].append(e); continue
+              data = open(lg, "rb").read(); g1 = S(data)
+              lock = parse_lock(lg)
+              e["sha"] = g1; e["bytes"] = len(data)
+              e["crlf"] = b"\r" in data; e["ends_newline"] = data.endswith(b"\n")
+              if e["crlf"] or not e["ends_newline"]: e["problems"].append("line-ending or trailing-newline anomaly")
+              e["providers"] = {k: [v["version"], v["constraints"], len(v["h1"]), len(v["zh"])] for k, v in lock.items()}
+              e["problems"] += check_lock(mod, lock)
+              if before_lock is not None:
+                  for name, b in before_lock.items():
+                      a = lock.get(name)
+                      if not a or (a["version"], a["constraints"]) != (b["version"], b["constraints"]) or not b["h1"] <= a["h1"] or a["zh"] != b["zh"]:
+                          e["problems"].append(f"{name}: tracked lock not preserved (version, constraints, h1 superset, zh identical)")
+                  e["added_h1"] = {n: len(lock[n]["h1"] - before_lock[n]["h1"]) for n in before_lock if n in lock}
+              rc, o = run(INIT, G); e["init_rc"] = rc
+              if rc: e["problems"].append("init failed: " + tail(o))
+              g2 = S(open(lg, "rb").read()); e["unchanged_after_init"] = g1 == g2
+              if g1 != g2: e["problems"].append("lock changed after init")
+              rc, o = run(["terraform", "validate", "-no-color"], G); e["validate_rc"] = rc
+              if rc: e["problems"].append("validate failed: " + tail(o))
+              rc, o = run(INIT, G); g3 = S(open(lg, "rb").read())
+              e["unchanged_after_second_init"] = g1 == g3
+              if g1 != g3: e["problems"].append("lock changed after second init")
+              e["module_files_unchanged"] = files_manifest(os.path.join(SRC, mod)) == files_manifest(G)
+              if not e["module_files_unchanged"]: e["problems"].append("module files other than the lock differ from source")
+              dst = os.path.join(OUT, "locks", mod); os.makedirs(dst, exist_ok=True)
+              open(os.path.join(dst, ".terraform.lock.hcl"), "wb").write(data)   # state right after providers lock
+              e["ok"] = not e["problems"]; res["entries"].append(e)
+              print(f"{mod}: {'OK' if e['ok'] else 'PROBLEMS'}")
+              shutil.rmtree(G, ignore_errors=True)
+
+          # --- global checks ------------------------------------------------
+          rc, st = run(["git", "status", "--porcelain"], SRC)
+          res["checkout_clean"] = (st.strip() == "")
+          res["blocked_absent"] = not any(os.path.exists(os.path.join(OUT, "locks", b)) for b in BLOCKED)
+          vers = {}
+          for e in res["entries"]:
+              for p, v in e.get("providers", {}).items(): vers.setdefault(p, {}).setdefault(v[0], 0); vers[p][v[0]] += 1
+          res["provider_version_counts"] = vers
+          res["global_ok"] = (res["checkout_clean"] and res["blocked_absent"] and all(e["ok"] for e in res["entries"])
+                              and len(res["entries"]) == 33)
+
+          # --- payload: tar of the proposed lock files + independent sha list
+          lockfiles = sorted(os.path.relpath(os.path.join(r, ".terraform.lock.hcl"), OUT)
+                             for r, _, fs in os.walk(os.path.join(OUT, "locks")) if ".terraform.lock.hcl" in fs)
+          res["lock_file_count"] = len(lockfiles)
+          shalist = "".join(f"{S(open(os.path.join(OUT, p), 'rb').read())}  {p[len('locks/'):]}\n" for p in lockfiles)
+          rc, o = run(["sha256sum"] + lockfiles, OUT)          # independent computation
+          indep = "".join(l.replace("  locks/", "  ", 1) + "\n" for l in o.strip().splitlines())
+          res["shalist_matches_sha256sum"] = (indep == shalist)
+          buf = io.BytesIO()
+          with tarfile.open(fileobj=buf, mode="w", format=tarfile.PAX_FORMAT) as t:
+              for p in lockfiles:
+                  d = open(os.path.join(OUT, p), "rb").read()
+                  ti = tarfile.TarInfo(p[len("locks/"):]); ti.size = len(d); ti.mtime = 0
+                  ti.mode = 0o644; ti.uid = ti.gid = 0; ti.uname = ti.gname = ""
+                  t.addfile(ti, io.BytesIO(d))
+          tar = buf.getvalue()
+          gzb = io.BytesIO()
+          with gzip.GzipFile(fileobj=gzb, mode="wb", mtime=0) as g: g.write(tar)
+          gz = gzb.getvalue(); b64 = base64.b64encode(gz).decode()
+          chunks = [b64[i:i+CH] for i in range(0, len(b64), CH)]
+          rep = json.dumps(res, sort_keys=True, separators=(",", ":")).encode()
+          repgz = io.BytesIO()
+          with gzip.GzipFile(fileobj=repgz, mode="wb", mtime=0) as g: g.write(rep)
+          rgz = repgz.getvalue(); rb64 = base64.b64encode(rgz).decode()
+          rchunks = [rb64[i:i+CH] for i in range(0, len(rb64), CH)]
+          # split sha list on line boundaries so no line is cut
+          slc, cur = [], ""
+          for l in shalist.splitlines(keepends=True):
+              if len(cur) + len(l) > CH: slc.append(cur); cur = ""
+              cur += l
+          if cur: slc.append(cur)
+          man = {"proposal_files": len(lockfiles), "tar_bytes": len(tar), "tar_sha256": S(tar),
+                 "gz_bytes": len(gz), "gz_sha256": S(gz), "b64_chars": len(b64), "b64_sha256": S(b64.encode()),
+                 "chunks": len(chunks), "chunk_sha256": [S(c.encode()) for c in chunks],
+                 "report_json_bytes": len(rep), "report_json_sha256": S(rep), "report_gz_sha256": S(rgz),
+                 "report_b64_sha256": S(rb64.encode()), "report_chunks": len(rchunks),
+                 "report_chunk_sha256": [S(c.encode()) for c in rchunks],
+                 "shalist_sha256": S(shalist.encode()), "shalist_parts": len(slc),
+                 "shalist_part_sha256": [S(c.encode()) for c in slc], "chunk_size": CH, "global_ok": res["global_ok"]}
+          total = len(chunks) + len(rchunks) + len(slc)
+          man["payload_annotations"] = total
+          open(f"{OUT}/report.json", "wb").write(rep); open(f"{OUT}/payload.tar.gz", "wb").write(gz)
+          open(f"{OUT}/lock-sha256-list.txt", "w").write(shalist)
+          open(f"{OUT}/manifest.json", "w").write(json.dumps(man, indent=1))
+          # ordered sequence of payload annotations, 10 per step file
+          seq = [("lockchunk", i + 1, len(chunks), c) for i, c in enumerate(chunks)]
+          seq += [("reportchunk", i + 1, len(rchunks), c) for i, c in enumerate(rchunks)]
+          seq += [("shalist", i + 1, len(slc), c) for i, c in enumerate(slc)]
+          json.dump(seq, open(f"{OUT}/sequence.json", "w"))
+          print(json.dumps({k: v for k, v in man.items() if not k.endswith("sha256") or not isinstance(v, list)}, indent=1))
+          print("global_ok", res["global_ok"], "entries", len(res["entries"]), "versions", vers)
+          if total > 3 * K:
+              print("::error title=payload too large::%d annotations exceed 3 steps of %d" % (total, K)); sys.exit(1)
+          enc = lambda s: s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print("::notice title=gen manifest::" + enc(json.dumps(man, separators=(",", ":"))))
+          PY
+          python3 -I "$RUNNER_TEMP/gen.py"
+
+      - name: Payload annotations 1 to 10
+        if: always()
+        run: |
+          python3 -I - <<'PY'
+          import json, os
+          OUT = os.environ["OUT"]; K = int(os.environ["PER_STEP"])
+          seq = json.load(open(f"{OUT}/sequence.json"))
+          for n, (kind, i, tot, c) in enumerate(seq[0:K], start=1):
+              enc = c.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice title=gen {kind} {i:02d} of {tot:02d}::" + enc)
+          PY
+
+      - name: Payload annotations 11 to 20
+        if: always()
+        run: |
+          python3 -I - <<'PY'
+          import json, os
+          OUT = os.environ["OUT"]; K = int(os.environ["PER_STEP"])
+          seq = json.load(open(f"{OUT}/sequence.json"))
+          for kind, i, tot, c in seq[K:2*K]:
+              enc = c.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice title=gen {kind} {i:02d} of {tot:02d}::" + enc)
+          PY
+
+      - name: Payload annotations 21 to 30
+        if: always()
+        run: |
+          python3 -I - <<'PY'
+          import json, os
+          OUT = os.environ["OUT"]; K = int(os.environ["PER_STEP"])
+          seq = json.load(open(f"{OUT}/sequence.json"))
+          for kind, i, tot, c in seq[2*K:3*K]:
+              enc = c.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice title=gen {kind} {i:02d} of {tot:02d}::" + enc)
+          PY
+
+      - name: Upload proposal (independent comparison source)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h1-lock-gen-proposal
+          path: ${{ runner.temp }}/gen-out
+          if-no-files-found: warn
