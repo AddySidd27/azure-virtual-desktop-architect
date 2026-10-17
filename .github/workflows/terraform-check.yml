@@ -20,6 +20,14 @@ jobs:
           terraform_version: "1.16.6"
           terraform_wrapper: false
 
+      - name: Show Terraform version (temporary verification step)
+        run: |
+          set -eu
+          v=$(terraform version)
+          echo "$v"
+          echo "::notice title=terraform version output::$(printf '%s' "$v" | tr '\n' '|')"
+          echo "::notice title=terraform binary::$(command -v terraform)"
+
       - name: terraform fmt -check -recursive
         run: terraform fmt -check -recursive -diff terraform/
 
