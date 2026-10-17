@@ -42,3 +42,11 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: URL tool caveats added (.NET 4.6.2, RDAgent 1.0.2944.400, no wildcard check); Multipath flag updated with GA, macOS beta and Azure Government statuses.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Editorial and Learn re-check, 17 October 2026
+
+Source re-read: [RDP Shortpath for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-shortpath), retrieved 17 October 2026. Confirmed unchanged: port 3390 default for the managed-network listener, STUN/TURN for public networks, `51.5.0.0/16` and UDP 3478, ephemeral range 49152-65535 with 65330 reserved, first-found selection, Azure Government range `20.140.236.0/22` in public preview, and security equal to TCP reverse connect.
+
+Corrections: the opening now says Shortpath is set up alongside the reverse connect connection and replaces it when it succeeds (Learn's connection sequence); the client firewall row now gives the destination Learn states (public IPs of the NAT gateway or Azure Firewall); "Learn expects the managed path to win" changed to Learn's "likely"; symmetric NAT (Azure Firewall, Azure NAT Gateway) and TURN added; two unsupported frequency claims reworded or marked as judgement. Inline source link added. First-use acronym expansions added.
+
+Not verified: the RDP Multipath statements (unchanged from the 16 October flag). No Azure, CLI, PowerShell or KQL execution.

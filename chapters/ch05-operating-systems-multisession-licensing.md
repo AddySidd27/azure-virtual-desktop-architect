@@ -47,7 +47,7 @@ It is also difficult to reverse. Changing session host OS means a new image, a n
 
 Microsoft's own framing is the clearest: Windows 10 Enterprise multi-session and Windows 11 Enterprise multi-session allow multiple concurrent interactive sessions - previously only Windows Server could do this (Windows Enterprise multi-session FAQ). This gives users a familiar Windows experience for session hosts in a pooled host pool, and IT gets the cost advantages of multi-session while using existing per-user Windows licensing instead of RDS Client Access Licenses.
 
-That sentence contains the entire business case. Before multi-session Windows client existed, high-density VDI meant giving users a Windows Server desktop that looked and behaved differently from the Windows their organisation actually ran - and it meant buying RDS CALs.
+That sentence contains the entire business case. Before multi-session Windows client existed, high-density VDI (virtual desktop infrastructure) meant giving users a Windows Server desktop that looked and behaved differently from the Windows their organisation actually ran - and it meant buying RDS CALs.
 
 ### Multi-session is a distinct edition, not a feature
 
@@ -57,7 +57,7 @@ Windows 11 Enterprise multi-session is not standard Windows 11 with a checkbox e
 
 The consequences show up everywhere:
 
-- Intune policies that work on physical laptops may report **Not applicable**. Learn says only the Settings catalog, certificate templates and a device-tunnel VPN template are supported, and unsupported templates show as Not applicable ([Chapter 24](ch24-intune-and-avd-endpoint-management.md) and the [Intune support matrix](../appendices/intune-avd-support-matrix.md))
+- Intune policies that work on physical laptops may report **Not applicable**. Learn says only the Settings catalog, certificate templates and a device-tunnel VPN (virtual private network) template are supported, and unsupported templates show as Not applicable ([Chapter 24](ch24-intune-and-avd-endpoint-management.md) and the [Intune support matrix](../appendices/intune-avd-support-matrix.md))
 - Windows Update ring policies are not supported. Quality updates are managed through settings available in the Settings catalog
 - Some application installers check `ProductType` and refuse to install. Learn's advice is to ask the vendor for an updated version
 - Windows Autopilot, the enrollment status page and some remote actions (such as wipe) are not supported
@@ -134,7 +134,7 @@ That is not evasion - it is the truth. Density is a measured outcome, not a spec
 | Memory | Often the real limit before CPU, especially with browser-heavy users |
 | Disk IOPS | Logon storms are an IO problem before they are a CPU problem |
 | Profile storage performance | A slow profile share caps density regardless of host size |
-| Application mix | One badly behaved LOB app can halve density |
+| Application mix | One badly behaved LOB (line-of-business) app can halve density |
 | User behaviour | Number of browser tabs is a genuine engineering input, unfortunately |
 
 **The honest method** (developed properly in [Project 07](../scenarios/project-07-call-centre-high-density.md)):
@@ -153,9 +153,9 @@ That is not evasion - it is the truth. Density is a measured outcome, not a spec
 
 Activation differs by where the session host runs, and it is a common source of confusion in hybrid designs.
 
-**Session hosts on Azure.** Marketplace images activate against Azure's KMS infrastructure. This is why `azkms.core.windows.net` on TCP 1688 appears in the required outbound list ([Chapter 4](ch04-connection-flow-end-to-end.md#3-what-session-hosts-actually-need-outbound)). Learn's activation troubleshooting page lists region-specific KMS endpoints: `azkms.core.windows.net:1688` for Azure public cloud and `kms.core.usgovcloudapi.net:1688` for Azure US Government. Block the endpoint and activation fails (typically error 0xC004F074, "No Key Management Service (KMS) could be contacted").
+**Session hosts on Azure.** Marketplace images activate against Azure's KMS infrastructure. This is why `azkms.core.windows.net` on TCP (Transmission Control Protocol) 1688 appears in the required outbound list ([Chapter 4](ch04-connection-flow-end-to-end.md#3-what-session-hosts-actually-need-outbound)). Learn's activation troubleshooting page lists region-specific KMS endpoints: `azkms.core.windows.net:1688` for Azure public cloud and `kms.core.usgovcloudapi.net:1688` for Azure US Government. Block the endpoint and activation fails (typically error 0xC004F074, "No Key Management Service (KMS) could be contacted").
 
-**Azure license benefit.** Separately from activation, the Windows license entitlement is applied to the VM. Creating session hosts in the Azure portal or the ARM template applies it automatically. To apply or check it manually, Learn shows `LicenseType = "Windows_Client"` on the VM for client OS (`Get-AzVM` shows `LicenseType`). Learn also records a known limitation: a Windows Server session host created by the host pool process can be assigned an incorrect license type and may need to be converted with the Azure Hybrid Benefit procedure.
+**Azure license benefit.** Separately from activation, the Windows license entitlement is applied to the VM. Creating session hosts in the Azure portal or the ARM (Azure Resource Manager) template applies it automatically. To apply or check it manually, Learn shows `LicenseType = "Windows_Client"` on the VM for client OS (`Get-AzVM` shows `LicenseType`). Learn also records a known limitation: a Windows Server session host created by the host pool process can be assigned an incorrect license type and may need to be converted with the Azure Hybrid Benefit procedure.
 
 **Session hosts on Azure Local.** The rules are explicit: for session hosts on Azure Local you must license and activate the VMs before using them with AVD. For activating Windows 10 and Windows 11 Enterprise multi-session, and Windows Server 2022 Datacenter: Azure Edition, use Azure verification for VMs. For all other OS images - such as Windows 10 and Windows 11 Enterprise, and other editions of Windows Server - continue to use existing activation methods. Verified against [Azure verification for VMs](https://learn.microsoft.com/azure/azure-local/manage/azure-verification) (retrieved 16 October 2026, U6): Windows 11 multi-session activates automatically with the 9 April 2024 (4B) update or later, Windows 10 multi-session needs legacy OS support, and only Windows Server 2022 Datacenter: Azure Edition is listed, so Server 2025 Azure Edition is Unverified. Azure verification cannot be used outside Azure Local. Azure Local itself requires version 23H2 or later, and the Azure Connected Machine agent. It is not an Arc-enabled service and is not supported on other Arc-enabled servers or multicloud. A host pool cannot mix Azure and Azure Local hosts. Learn's two pages list slightly different OS sets (the Architecture Center page omits Server 2025), so confirm against the Azure Local overview (U7).
 
@@ -167,7 +167,7 @@ Activation differs by where the session host runs, and it is a common source of 
 
 Worth flagging here because the OS choice and the join model interact.
 
-Learn's prerequisites page itself only says Entra-joined session hosts need Entra tenant membership and that account permissions to join devices are required; the additional sign-in steps (single sign-on or earlier authentication protocols, an RBAC role for users, and a review of MFA policies) are documented in the Entra-joined session hosts articles, which Chapters 7 and 8 verify. Chapter 7's review adds that Learn requires the Virtual Machine User Login role only for Entra joined pools without a session host configuration, and says the additional role assignment is not required when a session host configuration is used.
+Learn's prerequisites page itself only says Entra-joined session hosts need Entra tenant membership and that account permissions to join devices are required; the additional sign-in steps (single sign-on or earlier authentication protocols, an RBAC (role-based access control) role for users, and a review of MFA (multifactor authentication) policies) are documented in the Entra-joined session hosts articles, which Chapters 7 and 8 verify. Chapter 7's review adds that Learn requires the Virtual Machine User Login role only for Entra joined pools without a session host configuration, and says the additional role assignment is not required when a session host configuration is used.
 
 That RBAC requirement catches people out. On a domain-joined host, being assigned to the application group is enough. On an Entra-joined host, the user also needs an Azure RBAC role - Virtual Machine User Login or Virtual Machine Administrator Login - on the session hosts. Miss it and the user connects and is then rejected at Windows logon, which looks like an authentication fault rather than a missing role assignment.
 
@@ -291,6 +291,8 @@ It shows you can push back without being combative, you quantify the trade-off, 
 
 ## 12. Production Scenarios
 
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
 ### Scenario 1: Intune policies report Not applicable on multi-session
 
 **Problem.** A security team applies its standard Windows hardening policies to a new multi-session host pool. Around a third report Not applicable and the compliance dashboard shows the hosts as unmanaged.
@@ -387,11 +389,13 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 **What must not be changed blindly?** Session host OS, which means a new image, retesting and often a new host pool. Host pool type, which cannot be changed at all. Max session limit in production during working hours, because it affects where users land.
 
-**When do I escalate to Microsoft?** For activation failures where outbound 1688 is proven open, or where a documented multi-session capability does not behave as documented. Collect the output of `slmgr.vbs /dlv`, the connectivity test, the image publisher, offer, SKU and version, and the region.
+**When do I escalate to Microsoft?** For activation failures where outbound 1688 is proven open, or where a documented multi-session capability does not behave as documented. Collect the output of `slmgr.vbs /dlv`, the connectivity test, the image publisher, offer, SKU (stock keeping unit) and version, and the region.
 
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They treat multi-session as a Windows 11 feature. It is a separate edition, and that is why policies, tools and some applications behave differently on it.
 

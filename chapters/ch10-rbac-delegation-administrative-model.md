@@ -14,7 +14,7 @@
 | **Objective** | Design a least privilege administrative model for AVD that a helpdesk can actually work with, and understand why the built-in roles do not do what people expect |
 | **Prerequisites** | Chapters 1 to 9. Labs 1 to 4 complete |
 | **Dependencies** | Uses the object model from [Chapter 3](ch03-avd-object-model.md) and the join models from [Chapter 7](ch07-identity-architecture-foundations.md) |
-| **Estimated lab time** | Role assignments are introduced in Labs 5 and 7; there is no separate RBAC lab |
+| **Estimated lab time** | Role assignments are introduced in Labs 5 and 7; there is no separate RBAC (role-based access control) lab |
 | **Azure resources required** | None for the chapter |
 | **Cost** | $0.00 |
 
@@ -231,6 +231,8 @@ Miss it and the user connects, then gets rejected at Windows sign in. It looks l
 
 ## 6. Production Scenarios
 
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
 ### Scenario 1: The helpdesk that got subscription Contributor
 
 **Problem.** A service desk cannot sign out a stuck user. To unblock them, someone grants the helpdesk group Contributor at subscription scope. Six months later a security review flags it.
@@ -263,7 +265,7 @@ Order matters. Grant the correct access and validate it before removing the broa
 
 **Prevention.** Put role assignments in Terraform, so a new host pool arrives with the right access already attached. Add an alert on new role assignments at subscription scope. Publish a short table mapping helpdesk tasks to roles, so the next request is answered correctly.
 
-**Architect's lesson.** Over-permissioning is almost always a knowledge gap rather than carelessness. Publishing the task to role mapping prevents more than a policy does.
+**Architect's lesson.** Over-permissioning is often a knowledge gap rather than carelessness (Judgement). Publishing the task to role mapping prevents more than a policy does.
 
 **Interview lesson.** Describing the order of operations, grant the narrow role and validate before removing the broad one, shows you have done this without causing an outage.
 
@@ -359,7 +361,7 @@ az monitor activity-log list \
 - Removing User Access Administrator from the account that manages assignments, which can leave nobody able to grant access.
 - Deleting an application group, which removes access for everyone assigned to it.
 
-**When do I escalate to Microsoft?** Rarely. RBAC problems are almost always configuration. Escalate when a documented role does not grant a documented permission, and you can reproduce it with a clean test account. Collect the role assignment output, the exact operation attempted, the resource ID, the error code and the correlation ID from the portal.
+**When do I escalate to Microsoft?** Rarely. RBAC problems are normally configuration. Escalate when a documented role does not grant a documented permission, and you can reproduce it with a clean test account. Collect the role assignment output, the exact operation attempted, the resource ID, the error code and the correlation ID from the portal.
 
 ---
 
@@ -430,6 +432,8 @@ There is an availability angle worth adding here too. Least privilege limits bla
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They expect one AVD role to do everything, hit the assignment limit, and solve it with subscription Contributor. The permission model is two planes plus assignment, and it is deliberate.
 

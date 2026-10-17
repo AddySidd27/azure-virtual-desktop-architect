@@ -15,7 +15,7 @@
 | **Prerequisites** | Chapters 1 to 6. Labs 1 to 3 complete |
 | **Dependencies** | Uses the connection flow from [Chapter 4](ch04-connection-flow-end-to-end.md) and the OS choice from [Chapter 5](ch05-operating-systems-multisession-licensing.md) |
 | **Estimated lab time** | 120 minutes ([Lab 4](../labs/lab-04-identity-integration.md)) |
-| **Azure resources required** | One Windows Server VM, static private IP, VNet DNS change |
+| **Azure resources required** | One Windows Server VM, static private IP, VNet DNS (Domain Name System) change |
 | **Estimated Lab 4 cost** | See the cost section of [Lab 4](../labs/lab-04-identity-integration.md); these figures were not re-verified in this review. First lab with real compute cost |
 
 ---
@@ -44,7 +44,7 @@ It is also the second highest yield interview topic after FSLogix. Interviewers 
 
 Whatever join model you choose, the user must be findable in Microsoft Entra ID. Microsoft is explicit about this: since users must be discoverable through Microsoft Entra ID to access Azure Virtual Desktop, user identities that exist only in Active Directory Domain Services aren't supported.
 
-So an on-premises-only account is not an option, and that includes standalone AD deployments with AD FS. You either sync it to Entra ID or you create it there. For hybrid identities, Learn adds that either the UPN or the SID must match between AD and Entra ID.
+So an on-premises-only account is not an option, and that includes standalone AD deployments with AD FS. You either sync it to Entra ID or you create it there. For hybrid identities, Learn adds that either the UPN (user principal name) or the SID must match between AD and Entra ID.
 
 There is a second rule in the same guidance that causes real problems when ignored: Azure Virtual Desktop supports scenarios where the same Microsoft Entra ID identity is used to authenticate to the service and to sign in to the session host. Learn also names local Windows accounts and other identities not represented in Entra ID as unsupported ways to sign in to session hosts. Signing in with different identities at the same time can lead to users reconnecting to the wrong session host, incorrect or missing information in the Azure portal, error messages when using App Attach, and bypassed Microsoft Entra ID authentication and Conditional Access enforcement.
 
@@ -101,8 +101,8 @@ Other Learn rules for Entra join:
 - Host pools should contain only one join type.
 - For hybrid or cloud-only users the OS must be Windows 11 or Windows 10 (version 2004 or later) single or multi-session, or Windows Server 2022 or 2019.
 - Entra join only joins the VM to the same tenant as the subscription.
-- If SSO is not enabled and the user's PC is not Entra joined, hybrid joined or registered in the same tenant, add the custom RDP property `targetisaadjoined:i:1`, which limits sign in to username and password.
-- The domain join account used at deployment (for AD) cannot have MFA enabled.
+- If SSO is not enabled and the user's PC is not Entra joined, hybrid joined or registered in the same tenant, add the custom RDP (Remote Desktop Protocol) property `targetisaadjoined:i:1`, which limits sign in to username and password.
+- The domain join account used at deployment (for AD) cannot have MFA (multifactor authentication) enabled.
 - On Azure Local, session hosts can only join an AD DS domain (hybrid join is allowed).
 - If session hosts are joined to Microsoft Entra Domain Services, Learn says they cannot be managed with Intune.
 
@@ -112,7 +112,7 @@ Other Learn rules for Entra join:
 
 The session host is joined to on-premises AD and also registered in Entra ID. Two identities for one machine.
 
-This is the most common model in real migrations, because most organisations already have AD, existing GPOs, and applications that expect a domain. You get GPO and Intune together, which is useful during a transition but creates the setting ownership problem covered in [Chapter 24](ch24-intune-and-avd-endpoint-management.md).
+This is a natural fit for organisations that already have AD, existing GPOs, and applications that expect a domain. You get GPO (Group Policy Object) and Intune together, which is useful during a transition but creates the setting ownership problem covered in [Chapter 24](ch24-intune-and-avd-endpoint-management.md).
 
 The cost is a permanent dependency. Session hosts need a working network path to a domain controller. That path has to exist in every region you deploy to, and it has to survive a DR event.
 
@@ -134,7 +134,7 @@ Entra Kerberos solves that for Azure Files. Learn describes it this way: in hybr
 
 And the practical effect for FSLogix in the hybrid-identity case: the session hosts don't need network line-of-sight to the domain controller, but a system with line-of-sight to the DC is required to configure the permissions on the Azure Files share.
 
-That second part matters. For hybrid identities you still need a machine that can reach the DC in order to **set Windows ACLs** on the share during setup, even though the session hosts do not need it at runtime. The answer to "why do I still need a DC" is: for configuration, not for operation. For cloud-only identities the Azure Files page says configuring permissions through File Explorer is not supported, and Learn's FSLogix page points to the **Manage access** tab on the file share. The Entra Kerberos introduction says cloud-only authorization uses Azure RBAC with no NTFS ACL enforcement, while the FSLogix page still tells you to configure storage permissions for profile containers. That difference is not resolved here. Chapter 20 covers the permission model.
+That second part matters. For hybrid identities you still need a machine that can reach the DC in order to **set Windows ACLs** on the share during setup, even though the session hosts do not need it at runtime. The answer to "why do I still need a DC" is: for configuration, not for operation. For cloud-only identities the Azure Files page says configuring permissions through File Explorer is not supported, and Learn's FSLogix page points to the **Manage access** tab on the file share. The Entra Kerberos introduction says cloud-only authorization uses Azure RBAC (role-based access control) with no NTFS ACL enforcement, while the FSLogix page still tells you to configure storage permissions for profile containers. That difference is not resolved here. Chapter 20 covers the permission model.
 
 **Constraints to know:**
 
@@ -161,13 +161,15 @@ Three options, and the choice is usually about who operates them.
 
 **Microsoft Entra Domain Services.** A managed domain that syncs from Entra ID. Useful when you need a domain but do not want to run one. The claim in earlier versions that you lose Domain Admin and schema extension rights was not checked against Learn in this review (Unverified), but Learn's prerequisites page does say session hosts joined to Entra Domain Services cannot be managed with Intune.
 
-**Line of sight back to on-premises DCs.** Over ExpressRoute or VPN. Works, and it is common, but it makes every logon depend on a WAN link. If the link drops, users cannot sign in even though everything in Azure is healthy.
+**Line of sight back to on-premises DCs.** Over ExpressRoute or VPN (virtual private network). Works, and it is common, but it makes every logon depend on a WAN link. If the link drops, users cannot sign in even though everything in Azure is healthy.
 
 **The design rule.** If session hosts depend on domain controllers, put at least one DC close to the session hosts in every region you run them in. Do not make Chicago users authenticate over a WAN link to Amsterdam because it saved a VM. Latency at logon is felt directly by users, and a single WAN failure becomes a total outage of your desktop service.
 
 ---
 
 ## 5. Real-World Examples
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Example 1: Greenfield 300 user professional services firm
 
@@ -189,7 +191,7 @@ Three options, and the choice is usually about who operates them.
 
 **The decision.** Entra hybrid join, with domain controllers deployed in both Azure regions.
 
-**Why this approach.** The CAD and SAP components expect a domain. Fifteen years of GPO is not something you rewrite as a side effect of a VDI project. Hybrid join keeps GPO working while giving the devices an Entra identity, which unlocks Intune for security baselines and compliance policies feeding Conditional Access.
+**Why this approach.** The CAD and SAP components expect a domain. Fifteen years of GPO is not something you rewrite as a side effect of a VDI (virtual desktop infrastructure) project. Hybrid join keeps GPO working while giving the devices an Entra identity, which unlocks Intune for security baselines and compliance policies feeding Conditional Access.
 
 **How it would be implemented.** Two DCs in the East US 2 region and two in West Europe, each in the identity subnet, synced with the on-premises forest. Session hosts joined to the domain and registered in Entra ID. Setting ownership documented up front so that GPO and Intune are not both trying to manage the same thing.
 
@@ -280,7 +282,7 @@ It shows you treat session hosts as rebuildable rather than precious, it puts ap
 - Introduction to Microsoft Entra Kerberos - https://learn.microsoft.com/en-us/entra/identity/authentication/kerberos
 - Store FSLogix profile containers on Azure Files using Microsoft Entra ID - https://learn.microsoft.com/en-us/fslogix/how-to-configure-profile-container-entra-id-hybrid
 - Enable Microsoft Entra Kerberos authentication for hybrid identities on Azure Files - https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-hybrid-identities-enable
-- Identity and access management recommendations for AVD (not fetched in this review; the CAF AVD scenario set is deprecated with removal announced for 30 October 2026) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-identity-and-access-management
+- Identity and access management recommendations for AVD (not fetched in this review; the CAF (Cloud Adoption Framework) AVD scenario set is deprecated with removal announced for 30 October 2026) - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-identity-and-access-management
 - Prerequisites for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/prerequisites
 
 ---
@@ -292,6 +294,8 @@ The practical work for this chapter is in **[Lab 4 - Identity Integration](../la
 ---
 
 ## 10. Production Troubleshooting
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Scenario 1: Domain join fails for new session hosts
 
@@ -410,9 +414,11 @@ Then check the FSLogix logs in `C:\ProgramData\FSLogix\Logs` (log location and E
 
 ## Architect's Reality Check
 
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
+
 **What engineers commonly get wrong.** They deploy a domain controller out of habit. Entra Kerberos removed the main reason it had to exist, and many designs still carry one for no requirement.
 
-**What I would check first in production.** The join model of the host pool, then whether the symptom is a known consequence of it. Entra joined rejection at sign in is almost always the missing Virtual Machine User Login role.
+**What I would check first in production.** The join model of the host pool, then whether the symptom is a known consequence of it. A frequent cause of Entra joined rejection at sign in is the missing Virtual Machine User Login role, so check it first (Judgement).
 
 **What I would ask the customer.** What session hosts actually need to reach on premises. Often the honest answer is nothing, and that changes the whole design.
 

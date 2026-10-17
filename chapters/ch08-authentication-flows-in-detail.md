@@ -22,7 +22,7 @@
 
 ## What You Will Learn
 
-- The three separate authentications in one AVD connection, and why mixing them up causes most MFA problems
+- The three separate authentications in one AVD connection, and why mixing them up causes most MFA (multifactor authentication) problems
 - How to enable single sign-on with Entra authentication, step by step
 - When you need a Kerberos server object and what happens if you skip it
 - When you need a KDC proxy
@@ -42,7 +42,7 @@ Getting this right is also what makes single sign-on work, and single sign-on is
 
 ## 1. Three Authentications, Not One
 
-Microsoft's own documentation splits the problem the same way. Learn's authentication page names three phases: cloud service authentication (subscribing to resources and authenticating to the gateway, with Microsoft Entra ID), remote session authentication (to the remote VM, with single sign-on recommended), and in-session authentication (to applications and sites inside the session). The KDC proxy page describes the first two as the two components of the service that need to be authenticated: the feed, authenticated in Entra ID, and the RDP session, which uses Kerberos and needs a KDC proxy for remote smart card users.
+Microsoft's own documentation splits the problem the same way. Learn's authentication page names three phases: cloud service authentication (subscribing to resources and authenticating to the gateway, with Microsoft Entra ID), remote session authentication (to the remote VM, with single sign-on recommended), and in-session authentication (to applications and sites inside the session). The KDC proxy page describes the first two as the two components of the service that need to be authenticated: the feed, authenticated in Entra ID, and the RDP (Remote Desktop Protocol) session, which uses Kerberos and needs a KDC proxy for remote smart card users.
 
 > **OUR ORIGINAL ARCHITECTURE DIAGRAM.** Created for this book. Not a Microsoft diagram.
 > Editable source: [`ch08-identity-architecture.drawio`](../diagrams/architecture/ch08-identity-architecture.drawio)
@@ -98,7 +98,7 @@ Authentication and authorization are separated deliberately. Stage 1 proves who 
 1. **Stage 1, service authentication.** The user signs in to Microsoft Entra ID. Conditional Access is evaluated here, including MFA, device state and location. The token is issued against the Azure Virtual Desktop application.
 2. **Authorization.** The service checks which application groups the identity is assigned to and returns the feed. See [Chapter 3](ch03-avd-object-model.md).
 3. **Stage 2, session host authentication.** The user signs in to Windows on the session host. With single sign-on enabled, the gateway starts SSO through the Windows Cloud Login application, which issues the token for the session host, and no second prompt appears. Without it, the user is prompted again.
-4. **Kerberos.** Windows sign in uses Kerberos or NTLM. Kerberos needs a ticket from a domain controller over TCP 88, which requires line of sight or a KDC proxy.
+4. **Kerberos.** Windows sign in uses Kerberos or NTLM. Kerberos needs a ticket from a domain controller over TCP (Transmission Control Protocol) 88, which requires line of sight or a KDC proxy.
 5. **Stage 3, in-session authentication.** Applications and SMB shares inside the session authenticate separately, typically with integrated Windows authentication.
 
 ### Architect's interpretation
@@ -110,7 +110,7 @@ The Kerberos path is the other design driver. It decides whether smart card user
 ### Important design decisions
 
 - **Single sign-on or not.** Enabling it removes the stage 2 prompt and, per Learn, involves five tasks, covered in section 2. With SSO, a locked session disconnects by default so Conditional Access is re-evaluated at reconnect.
-- **Kerberos reachability.** Line of sight, VPN, or a KDC proxy. Each has an infrastructure cost. See section 3.
+- **Kerberos reachability.** Line of sight, VPN (virtual private network), or a KDC proxy. Each has an infrastructure cost. See section 3.
 - **Same identity throughout.** Using different identities for the service and the session host can bypass Conditional Access enforcement.
 - **Which Entra app the policy targets.** See [Chapter 9](ch09-conditional-access-mfa-zero-trust.md), where the two applications behave differently.
 
@@ -138,11 +138,13 @@ This is the configuration that removes the second prompt. It is also the one peo
 
 ### What you are actually enabling
 
+Source for this section: [Configure single sign-on for Azure Virtual Desktop using Microsoft Entra ID](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on), retrieved 17 October 2026.
+
 Microsoft's guidance describes the first step: you must first allow Microsoft Entra authentication for Windows in your Microsoft Entra tenant, which enables issuing RDP access tokens allowing users to sign in to your Azure Virtual Desktop session hosts. You set the isRemoteDesktopProtocolEnabled property to true on the service principal's remoteDesktopSecurityConfiguration object for the Windows Cloud Login application, app ID 270efc09-cd0d-444b-a71f-39af4910ec45.
 
 In plain terms. You are telling Entra ID that it is allowed to issue tokens that Windows will accept as a sign-in on a session host.
 
-**Prerequisites from Learn.** You need the Application Administrator or Cloud Application Administrator role; session hosts on Windows 11 (KB5018418 or later), Windows 10 (KB5018410 or later) or Windows Server 2022 (KB5018421 or later); Entra joined or Entra hybrid joined hosts (hosts joined to Entra Domain Services or to AD only are not supported); a two-way trust if hybrid hosts are in a different AD domain than the users, otherwise connections fall back to older protocols; Microsoft Graph PowerShell SDK 2.9.0 or later; and a supported client (all Windows App versions on Windows, macOS 10.9.10+, iOS/iPadOS 10.5.2+, web browser).
+**Prerequisites from Learn.** You need the Application Administrator or Cloud Application Administrator role; session hosts on Windows 11 (KB5018418 or later), Windows 10 (KB5018410 or later) or Windows Server 2022 (KB5018421 or later); Entra joined or Entra hybrid joined hosts (hosts joined to Entra Domain Services or to AD only are not supported); a two-way trust if hybrid hosts are in a different AD domain than the users, otherwise connections fall back to older protocols; Microsoft Graph PowerShell SDK 2.9.0 or later; and a supported client (all Windows App versions on Windows, macOS 10.9.10+, iOS/iPadOS 10.5.2+, web browser; the page also lists versions of the Remote Desktop clients, which [Chapter 6](ch06-clients-and-the-endpoint-story.md) covers, including the end of support for the Windows MSI client). Learn also says that if you provide resources to external identities, SSO must be enabled for the host pool.
 
 **Session lock.** With SSO on, a locked session disconnects by default (configurable to show the remote lock screen). Learn gives this as a security feature: Conditional Access, MFA and sign-in frequency are re-evaluated at reconnect.
 
@@ -239,6 +241,8 @@ Learn's prerequisites: remote client machines running at least Windows 10 with t
 
 ## 4. Production Troubleshooting
 
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
 Three scenarios, in the standard format. Each one is real, in the sense that these are the shapes these failures actually take.
 
 ---
@@ -255,7 +259,7 @@ Three scenarios, in the standard format. Each one is real, in the sense that the
 
 **Business impact.** A third of users prompted for credentials at every sign in, and a service desk resetting passwords that were never wrong.
 
-**Initial hypothesis.** SSO configuration is incomplete rather than absent, because it works for some users. Candidates, all from Learn: a host pool where the RDP property was not applied; a missing Kerberos server object on hybrid joined hosts; hybrid hosts in a different AD domain from the users without a two-way trust (connections fall back to older protocols); administrator accounts blocked by the RODC Password Replication Policy; and Conditional Access on Windows Cloud Login.
+**Initial hypothesis.** SSO configuration is incomplete rather than absent, because it works for some users. Candidates, all from Learn: a host pool where the RDP property was not applied; a missing Kerberos server object on hybrid joined hosts; hybrid hosts in a different AD domain from the users without a two-way trust (connections fall back to older protocols); administrator accounts blocked by the RODC (read-only domain controller) Password Replication Policy; and Conditional Access on Windows Cloud Login.
 
 **Investigation.**
 
@@ -424,7 +428,7 @@ Test-NetConnection -ComputerName avdlab-dc01.avdlab.local -Port 88
 **What must not be changed blindly?**
 - `CustomRdpProperty` on a production host pool. It overwrites rather than merges, and it affects every user at their next connection.
 - Conditional Access policies. Change one at a time, in report only mode first, with a break glass account excluded.
-- VNet DNS. See [Lab 4 Step 5](../labs/lab-04-identity-integration.md).
+- VNet DNS (Domain Name System). See [Lab 4 Step 5](../labs/lab-04-identity-integration.md).
 - Disabling SSO to "test something". Every user is affected immediately.
 - Excluding the wrong app from MFA. Chapter 9 covers which app to exclude for Entra joined hosts.
 
@@ -460,7 +464,7 @@ Three separate authentications. To the service in Entra ID for the feed, to Wind
 ### Q21. Users are getting an extra password prompt. How do you find out why?
 
 **30 second answer**
-"First I would establish which stage is failing, because a prompt after connecting is stage two, which is usually the SSO configuration but can also be Conditional Access on the Windows Cloud Login app. Then I would compare host pools, because the most common cause is one pool missing the SSO RDP property. Then I would check whether the Kerberos server object exists if the estate is hybrid joined."
+"First I would establish which stage is failing, because a prompt after connecting is stage two, which is usually the SSO configuration but can also be Conditional Access on the Windows Cloud Login app. Then I would compare host pools, because a likely cause is one pool missing the SSO RDP property. Then I would check whether the Kerberos server object exists if the estate is hybrid joined."
 
 **2 minute answer**
 Add the method. Check whether it affects everyone or a subset, and whether the subset maps to a host pool. Read `CustomRdpProperty` across all host pools with a single command. Check the tenant setting on the Windows Cloud Login service principal. Then look at Security event 4624 on an affected host to see which authentication package was used. Finish with the fix warning: the RDP property overwrites, so read it before you write it, or you will remove other settings and cause a second incident while fixing the first.
@@ -494,6 +498,8 @@ Add the method. Check whether it affects everyone or a subset, and whether the s
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They treat three authentications as one. A prompt after connecting is stage two. It is usually an SSO configuration gap, but Conditional Access on Windows Cloud Login can cause it, so check both before spending a day on either.
 

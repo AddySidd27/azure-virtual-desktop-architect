@@ -34,3 +34,30 @@
 | Workspace | AVD object that presents associated application groups to users |
 
 Primary reference: [Azure Virtual Desktop terminology](https://learn.microsoft.com/en-us/azure/virtual-desktop/terminology)
+
+## Abbreviations used in Chapters 1 to 12
+
+| Term | Meaning |
+|---|---|
+| ARM | Azure Resource Manager, the deployment and management layer for Azure resources |
+| CAF | Cloud Adoption Framework, Microsoft's cloud adoption guidance |
+| DNS | Domain Name System, name resolution |
+| FQDN | Fully qualified domain name, for example a complete host name with its domain |
+| GPO | Group Policy Object, Active Directory policy settings |
+| KDC | Key distribution center, the Kerberos ticket service that runs on a domain controller |
+| LOB | Line-of-business, an application the organisation depends on for its own work |
+| MFA | Multifactor authentication |
+| NAT | Network Address Translation, rewriting IP addresses as traffic crosses a gateway |
+| NSG | Network security group, Azure's subnet and network interface traffic filter |
+| RBAC | Role-based access control, Azure's authorization model |
+| RDP | Remote Desktop Protocol |
+| RODC | Read-only domain controller |
+| SKU | Stock keeping unit, Azure's term for a specific size or edition of a product |
+| SLA | Service level agreement |
+| STUN | Simple Traversal Underneath NAT, the name Learn uses for the protocol that discovers a public address behind NAT |
+| TCP | Transmission Control Protocol |
+| TURN | Traversal Using Relay NAT, a relay used when a direct connection is blocked |
+| UDP | User Datagram Protocol |
+| UPN | User principal name, the sign-in name in user@domain form |
+| VDI | Virtual desktop infrastructure |
+| VPN | Virtual private network |

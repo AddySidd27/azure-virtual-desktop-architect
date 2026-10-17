@@ -164,6 +164,8 @@ A starting point for a typical enterprise, to be adapted rather than copied blin
 
 ## 5. Production Scenarios
 
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
 ### Scenario 1: Users are prompted for MFA constantly
 
 **Problem.** A 900 user rollout goes live. Within two days the service desk has over 200 tickets saying users are asked to authenticate repeatedly, sometimes several times an hour.
@@ -294,7 +296,7 @@ Then correlate those users against the Entra sign-in logs to see when they last 
 
 ## 6. The Architect's Four Questions
 
-**What do I check first?** The sign-in frequency setting on every policy targeting the AVD app. It explains constant prompts, double prompts and missing diagnostics, which is three of the most common complaints.
+**What do I check first?** The sign-in frequency setting on every policy targeting the AVD app. It explains constant prompts, double prompts and missing diagnostics, which covers three frequent complaints.
 
 **What can I safely change now?** Creating a new policy in report only mode. Reading policy configuration. Checking sign-in logs. Adding a user to a pilot group.
 
@@ -381,6 +383,8 @@ It starts from requirements, it separates the two apps correctly, it protects ob
 
 ## Architect's Reality Check
 
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
+
 **What engineers commonly get wrong.** They target one application. There are two stages and two sets of apps, and targeting only the AVD app produces the double prompt everyone complains about.
 
 **What I would check first in production.** Sign in frequency on every policy targeting the AVD app. It explains constant prompts, double prompts and missing diagnostics, which is most of the complaints in this area.
@@ -412,7 +416,7 @@ You can target the right applications, choose sign-in frequency deliberately, av
 Open your tenant and list every Conditional Access policy targeting the AVD app or Windows Cloud Login, with its sign-in frequency. If you cannot produce that list quickly, that is the first gap to close.
 
 **What comes next**
-Chapter 10 covers RBAC and the administrative model, including the role assignment that Entra joined session hosts require and the delegation model for a helpdesk team.
+Chapter 10 covers RBAC (role-based access control) and the administrative model, including the role assignment that Entra joined session hosts require and the delegation model for a helpdesk team.
 
 **Interview preparation carried forward**
 Q24 separates candidates quickly. Most know sign-in frequency exists. Few know it behaves differently per app, and almost nobody mentions the silent diagnostics failure.

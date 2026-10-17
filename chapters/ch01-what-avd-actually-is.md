@@ -25,7 +25,7 @@
 - What Azure Virtual Desktop is as a service, and what it is *not*
 - The split between Microsoft-managed and customer-managed components
 - How AVD got here: RDS → WVD → AVD → today's platform
-- How AVD compares to Windows 365, Citrix DaaS, and traditional on-premises VDI
+- How AVD compares to Windows 365, Citrix DaaS, and traditional on-premises VDI (virtual desktop infrastructure)
 - How AVD licensing works at a level you can explain in an interview
 - When an architect should recommend **against** AVD
 - The Northwind Global capstone customer you will design for across the whole book
@@ -34,7 +34,7 @@
 
 ## Why This Matters
 
-Most engineers learn AVD by clicking through the Azure portal. They create a host pool, add session hosts, publish a desktop, and it works. Then a real project starts and the questions change:
+A common way to learn AVD is by clicking through the Azure portal. They create a host pool, add session hosts, publish a desktop, and it works. Then a real project starts and the questions change:
 
 - "Why is logon taking 90 seconds?"
 - "Can we run this without any inbound internet access to the session hosts?"
@@ -102,7 +102,7 @@ Here is the split visually.
 
 The important consequence: **your session hosts never need an inbound connection from the internet.** The session host makes an outbound connection to the AVD service, and the user's session is delivered over that established path. This is called reverse connect, and Chapter 4 pulls it apart properly.
 
-In practical terms this means a correctly designed AVD environment does not expose TCP 3389 to the public internet, and does not need a public IP address on any session host. That single property removes an entire category of attack that on-premises RDS deployments have suffered from for years.
+In practical terms this means a correctly designed AVD environment does not expose TCP (Transmission Control Protocol) 3389 to the public internet, and does not need a public IP address on any session host. That single property removes an entire category of attack that on-premises RDS deployments have suffered from for years.
 
 ### What AVD is *not*
 
@@ -124,9 +124,9 @@ You need this history for two reasons: interviewers ask, and half the material y
 
 **Windows Virtual Desktop (WVD), 2019.** Microsoft took the broker, gateway, web access and diagnostics components and ran them as an Azure service. The headline feature was Windows 10 Enterprise multi-session - a Windows client OS that allows several users to have interactive sessions on the same VM at the same time. Microsoft Learn describes it as exclusive to Azure Virtual Desktop, which today runs in Azure and on Azure Local; Azure Virtual Desktop Hybrid does not support it. Management at this stage was through PowerShell and a separate tenant concept, not through Azure Resource Manager.
 
-**Azure Virtual Desktop, 2021.** The rename came with the change that actually mattered: the service moved onto Azure Resource Manager. Host pools, application groups and workspaces became real Azure resources. That gave the service Azure RBAC, tags, policy, activity logs, ARM templates, Terraform and Bicep support, and normal portal management. This is the version you deploy today.
+**Azure Virtual Desktop, 2021.** The rename came with the change that actually mattered: the service moved onto Azure Resource Manager. Host pools, application groups and workspaces became real Azure resources. That gave the service Azure RBAC (role-based access control), tags, policy, activity logs, ARM templates, Terraform and Bicep support, and normal portal management. This is the version you deploy today.
 
-**The old model has passed its retirement date.** AVD (classic) - the pre-ARM version - has been blocked from creating new tenants since September 2023 (Microsoft Learn, What's new). Microsoft's published retirement date was 30 September 2026, and Learn says connections to classic resources will be blocked after that date. That date has now passed, but Learn's pages still showed the pre-retirement banner when checked on 16 October 2026, so confirm the real state of any classic environment instead of assuming it. If you find yourself in an environment still running it, migration is not optional and it is overdue. Microsoft documents both an automatic and a manual migration path to ARM-based host pools. `CURRENCY FLAG - Microsoft Learn pages retrieved 16 October 2026. Recheck What's new before relying on this paragraph.`
+**The old model has passed its retirement date.** AVD (classic) - the pre-ARM version - has been blocked from creating new tenants since September 2023 (Microsoft Learn, What's new). Microsoft's published retirement date was 30 September 2026, and Learn says connections to classic resources will be blocked after that date. That date has now passed, but Learn's pages still showed the pre-retirement banner when checked on 16 October 2026, so confirm the real state of any classic environment instead of assuming it. If you find yourself in an environment still running it, migration is not optional and it is overdue. Microsoft documents both an automatic and a manual migration path to ARM-based host pools (see [What's new](https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new)). `CURRENCY FLAG - Microsoft Learn pages retrieved 16 October 2026. Recheck What's new before relying on this paragraph.`
 
 **2024-2026: the platform matured into an operations product.** A short list of what changed, because it directly affects how you design today:
 
@@ -141,6 +141,8 @@ You need this history for two reasons: interviewers ask, and half the material y
 | **Managed identity for host pools** | Generally available per What's new (September 2026). Learn says host pools with a session host configuration will require a managed identity in a future service update; no date is given | Plan identity and role assignments for host pool operations |
 | **Regional host pools** | Generally available per What's new (September 2026). The Regional Host Pools article still carries preview wording, which is stale against What's new. The Data locations page limits the regional scope to Central US and East US 2. Deployment scope cannot be changed after creation. Errors and checkpoints for regional session hosts are not reported to Log Analytics | Decide the deployment scope before you create the host pool |
 | **Windows App replaced the old Windows client** | Learn says support for the Remote Desktop client for Windows (MSI) ends on 27 March 2026 and tells users to migrate to Windows App | Client rollout and support conversations changed |
+
+Sources for the table: [What's new in Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/whats-new), [Host pool management approaches](https://learn.microsoft.com/en-us/azure/virtual-desktop/host-pool-management-approaches), [App Attach overview](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview), [Regional host pools](https://learn.microsoft.com/en-us/azure/virtual-desktop/regional-host-pools), [Azure Virtual Desktop Hybrid overview](https://learn.microsoft.com/en-us/azure/virtual-desktop/hybrid-overview) and [Configure managed identity](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-managed-identity).
 
 `CURRENCY FLAG - Microsoft Learn pages retrieved 16 October 2026 (evidence: reviews/ch01-review-record.md). Where Learn gives no GA date, none is stated here. Recheck What's new before using this table in a design.`
 
@@ -190,7 +192,7 @@ Licensing is where a lot of otherwise strong candidates lose an interview. It is
 
 AVD access rights are **not** purchased as an AVD product for your own employees. They come from a licence the user already holds. If employees already hold eligible Microsoft 365 or Windows licences, they can access Azure Virtual Desktop with no additional service charge, and no separate VDA licence is needed.
 
-Typical qualifying licences include Microsoft 365 E3/E5/F3/A3/A5/Business Premium (and Student Use Benefit), Windows Enterprise E3/E5, Windows Education A3/A5, and Windows VDA per user. Always check the current eligible-licence table on the Licensing Azure Virtual Desktop page for the specific SKU in front of you rather than working from memory - the list changes.
+Typical qualifying licences include Microsoft 365 E3/E5/F3/A3/A5/Business Premium (and Student Use Benefit), Windows Enterprise E3/E5, Windows Education A3/A5, and Windows VDA per user. Always check the current eligible-licence table on the Licensing Azure Virtual Desktop page for the specific SKU (stock keeping unit) in front of you rather than working from memory - the list changes.
 
 ### Question 2 - What operating system are the session hosts running?
 
@@ -276,7 +278,7 @@ Recommending against your own preferred technology is one of the fastest ways to
 
 3. **There is no identity foundation.** AVD depends completely on a working, healthy identity platform. If Active Directory is broken, unsynchronised, or nobody owns it, fix identity first. AVD will simply expose the mess at logon time.
 
-4. **The network is not ready.** No reliable path to Azure, no DNS design, unmanaged internet egress. AVD is a network-dependent service and a poor network produces a poor desktop.
+4. **The network is not ready.** No reliable path to Azure, no DNS (Domain Name System) design, unmanaged internet egress. AVD is a network-dependent service and a poor network produces a poor desktop.
 
 5. **The organisation has no capacity to operate it.** No image process, no monitoring, no patching discipline. AVD is a platform, not an appliance.
 
@@ -307,7 +309,7 @@ Before the next chapter, internalise these four positions. They are the ones you
 
 **AVD is a shared-responsibility service.** Microsoft's half is invisible and reliable. Your half is where every incident you will ever handle comes from. Know the line precisely.
 
-**Reverse connect is a security feature, not a technical footnote.** Being able to say "we do not expose RDP to the internet and our session hosts have no public IP addresses" is one of the strongest points in an AVD business case.
+**Reverse connect is a security feature, not a technical footnote.** Being able to say "we do not expose RDP (Remote Desktop Protocol) to the internet and our session hosts have no public IP addresses" is one of the strongest points in an AVD business case.
 
 **Multi-session plus autoscaling is the economic engine.** If a design does not exploit both, it is probably paying cloud prices for on-premises behaviour.
 
@@ -412,7 +414,9 @@ No Azure resources. No cost. Twenty minutes with a notepad.
 
 ## 14. Production Scenarios
 
-Three real decisions. Each one is a conversation you will have.
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
+Three decisions, written as composites. Each one is a conversation you are likely to have.
 
 ### Scenario 1: The 60 user firm that should not use AVD
 
@@ -489,6 +493,8 @@ Three real decisions. Each one is a conversation you will have.
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They start from the technology. Someone decides AVD is the answer before anyone has written down what problem it solves, and then the design becomes an exercise in justifying a decision that was already made.
 

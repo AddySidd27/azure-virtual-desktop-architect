@@ -231,7 +231,7 @@ Time to apply this. Northwind Global Manufacturing has six personas (Chapter 1),
 | Engineers (CAD) | `hp-cad-prd-eus2-01` | Personal | Desktop | GPU, large local working sets |
 | Developers | `hp-dev-prd-eus2-01` | Personal | Desktop | Local admin, unpredictable resource use |
 | Executives | `hp-know-prd-eus2-01` | Pooled | Desktop | Small group; no case for separate compute |
-| LOB apps for external partners | `hp-apps-prd-eus2-01` | Pooled | RemoteApp | Apps only, no desktop |
+| LOB (line-of-business) apps for external partners | `hp-apps-prd-eus2-01` | Pooled | RemoteApp | Apps only, no desktop |
 
 Plus the same structure in West Europe for Amsterdam users, with its own workspace because of the location rule.
 
@@ -249,7 +249,7 @@ That last line is worth remembering. It is the difference between an architect a
 
 ## 7. Common Mistakes
 
-- **Assigning users to host pools.** You cannot. Assignment happens on the application group. This is the most common conceptual error and it produces the "user sees nothing" symptom.
+- **Assigning users to host pools.** You cannot. Assignment happens on the application group. This is an easy conceptual error to make and it produces the "user sees nothing" symptom.
 - **Building a host pool per department.** Build per sizing and security requirement. Departments are a naming concern, not an architecture one.
 - **Deleting the auto-created `-DAG` application group without understanding why it exists.** Fine if you are RemoteApp-only. Not fine if you later want to publish a desktop and cannot work out where it went.
 - **Assuming one global workspace works.** The location rule prevents it. Design workspace-per-region from the start.
@@ -323,6 +323,8 @@ This chapter's practical work is in **[Lab 2](../labs/lab-02-terraform-foundatio
 ---
 
 ## 11. Production Scenarios
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Scenario 1: New starters see an empty workspace
 
@@ -431,11 +433,13 @@ Get-AzWvdApplicationGroup -ResourceGroupName rg-avd-service-lab-eus2-01 |
 
 **What must not be changed blindly?** Deleting an application group, which removes access for everyone assigned to it. Changing workspace association. Removing the auto-created desktop application group without knowing whether a desktop is published from it. Host pool type cannot be changed at all after creation.
 
-**When do I escalate to Microsoft?** Rarely for object model problems, because these are almost always configuration. Escalate when assignments and associations are provably correct and the feed still does not reflect them after a full sign out and re-subscribe.
+**When do I escalate to Microsoft?** Rarely for object model problems, because these are normally configuration. Escalate when assignments and associations are provably correct and the feed still does not reflect them after a full sign out and re-subscribe.
 
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They think users are assigned to host pools. Assignment lives on the application group, and this single misunderstanding produces most of the empty feed tickets in a new deployment.
 
@@ -468,7 +472,7 @@ You know the AVD object model, the cardinality and location rules, the preferred
 The full Lab 2 validation checklist, especially the drift test. Then sketch Northwind's object model from memory and compare it against section 6.
 
 **What comes next**
-Chapter 4 walks the complete connection flow end to end - feed discovery, brokering, reverse connect, RDP Shortpath and RDP Multipath - with a step-by-step trace of what happens between clicking an icon and seeing a desktop. **Lab 3 (VNet, subnets, NSGs and DNS) also begins there, and builds the network the later labs depend on. Its base cost is $0.00 (Lab 3 cost summary); Lab 4 is the first lab with running compute cost.**
+Chapter 4 walks the complete connection flow end to end - feed discovery, brokering, reverse connect, RDP (Remote Desktop Protocol) Shortpath and RDP Multipath - with a step-by-step trace of what happens between clicking an icon and seeing a desktop. **Lab 3 (VNet, subnets, NSGs and DNS (Domain Name System)) also begins there, and builds the network the later labs depend on. Its base cost is $0.00 (Lab 3 cost summary); Lab 4 is the first lab with running compute cost.**
 
 **Interview preparation carried forward**
 Q6 and Q7 are both high-frequency questions. Q7 in particular is a common practical screen, because the answer reveals immediately whether you understand that assignment lives on the application group.

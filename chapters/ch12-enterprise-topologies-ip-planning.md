@@ -42,7 +42,7 @@ AVD makes this worse than most workloads for two reasons. Session host counts gr
 
 The first thing to get straight is ownership. Microsoft's guidance places AVD as a workload, not as a platform: you deploy AVD resources into an application landing zone.
 
-That means the hub, the firewall, the ExpressRoute circuit and the DNS design usually belong to a platform team. The AVD architect consumes them and states requirements. This is a better position than it sounds, because it means you are not responsible for the hub, but you are responsible for stating clearly what AVD needs from it.
+That means the hub, the firewall, the ExpressRoute circuit and the DNS (Domain Name System) design usually belong to a platform team. The AVD architect consumes them and states requirements. This is a better position than it sounds, because it means you are not responsible for the hub, but you are responsible for stating clearly what AVD needs from it.
 
 `CURRENCY FLAG - reviewed 16 October 2026.` The Cloud Adoption Framework page this chapter originally drew on ([AVD network topology and connectivity](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/eslz-network-topology-and-connectivity)) is marked deprecated and is due to be removed on 30 October 2026. Its current text no longer contains the four-point "design foundations" sentence this section used to quote, so that sentence is dropped here as `[UNVERIFIED]`. The landing zone placement point stands: the page still says to have an Azure landing zone in place and then deploy AVD resources into a workload landing zone. The topology claims below are re-sourced to the Cloud Adoption Framework topology pages and the Azure Architecture Center hub-spoke pages, which were fetched in full.
 
@@ -56,7 +56,7 @@ Both are valid landing zone topologies. Neither is universally correct.
 
 **Hub and spoke.** You build and operate the hub virtual network yourself. Microsoft describes it as a network architecture in which a hub virtual network acts as a central point of connectivity to several spoke virtual networks. The hub can also be the connectivity point to on-premises datacenters. The spoke virtual networks peer with the hub and help to isolate workloads.
 
-**Virtual WAN.** Microsoft operates the hub. It is a networking service that brings networking, security and routing functions together in a single operational interface. Learn's current Cloud Adoption Framework guidance is to use a Virtual WAN topology if any of these apply: resources across several Azure regions with global connectivity between virtual networks and multiple on-premises locations; an SD-WAN deployment or more than 30 branch sites for native IPsec termination; or a need for transitive routing between VPN and ExpressRoute. A traditional hub and spoke topology fits one or several regions with some cross-region traffic but no full mesh, fewer than 30 site-to-site tunnels, and a wish for full control of routing.
+**Virtual WAN.** Microsoft operates the hub. It is a networking service that brings networking, security and routing functions together in a single operational interface. Learn's current Cloud Adoption Framework guidance is to use a Virtual WAN topology if any of these apply: resources across several Azure regions with global connectivity between virtual networks and multiple on-premises locations; an SD-WAN deployment or more than 30 branch sites for native IPsec termination; or a need for transitive routing between VPN (virtual private network) and ExpressRoute. A traditional hub and spoke topology fits one or several regions with some cross-region traffic but no full mesh, fewer than 30 site-to-site tunnels, and a wish for full control of routing.
 
 ### The scale trigger
 
@@ -102,7 +102,7 @@ The decision is about region count and transit needs, and it is a platform decis
 
 ### Architect's view
 
-The honest position in an interview or a design review is that this is rarely the AVD architect's call. If a hub already exists, use it. If the platform team is building one, state your requirements clearly and early: address space, egress control capable of FQDN filtering, DNS resolution to your domain controllers or resolvers, and a route that does not break the outbound path in [Chapter 11](ch11-network-fundamentals-required-connectivity.md).
+The honest position in an interview or a design review is that this is rarely the AVD architect's call. If a hub already exists, use it. If the platform team is building one, state your requirements clearly and early: address space, egress control capable of FQDN (fully qualified domain name) filtering, DNS resolution to your domain controllers or resolvers, and a route that does not break the outbound path in [Chapter 11](ch11-network-fundamentals-required-connectivity.md).
 
 The two operational differences worth knowing, because they will come up:
 
@@ -154,7 +154,7 @@ A `/24` would have given 251 usable, which looks fine at steady state and fails 
 
 If you own the hub, size it once and stop thinking about it. A `/22` for the hub is a common enterprise allocation because it holds the gateway subnet, firewall subnet, Bastion subnet and shared services with room left over. Expanding a hub address space later means re-peering every spoke.
 
-The gateway subnet has a specific requirement. The Azure Architecture Center hub and spoke guidance says to create a gateway subnet of at least /26 named GatewaySubnet, so that it has room for gateway size limits and extra ExpressRoute circuits later. That is a recommendation, not the platform minimum. The ExpressRoute and VPN gateway pages say /27 or larger for most configurations and /26 or larger if you plan to connect 16 ExpressRoute circuits, and the Azure Networking design guide lists /27 as the minimum. Never put anything else in the gateway subnet, and do not attach an NSG to it. `AzureFirewallSubnet` and `AzureBastionSubnet` are /26 minimum.
+The gateway subnet has a specific requirement. The Azure Architecture Center hub and spoke guidance says to create a gateway subnet of at least /26 named GatewaySubnet, so that it has room for gateway size limits and extra ExpressRoute circuits later. That is a recommendation, not the platform minimum. The ExpressRoute and VPN gateway pages say /27 or larger for most configurations and /26 or larger if you plan to connect 16 ExpressRoute circuits, and the Azure Networking design guide lists /27 as the minimum. Never put anything else in the gateway subnet, and do not attach an NSG (network security group) to it. `AzureFirewallSubnet` and `AzureBastionSubnet` are /26 minimum.
 
 ### Reserved subnet names
 
@@ -172,8 +172,8 @@ Topology has a real bill attached, and it is usually paid by the platform team r
 | Virtual WAN hub | Hourly charge plus per GB processed |
 | Azure Firewall | Hourly deployment charge plus per GB processed. Significant fixed cost |
 | ExpressRoute | Circuit charge plus gateway charge |
-| NAT Gateway | Hourly plus data processed |
-| VPN Gateway | Hourly by SKU |
+| NAT (Network Address Translation) Gateway | Hourly plus data processed |
+| VPN Gateway | Hourly by SKU (stock keeping unit) |
 | Private endpoints | Per endpoint per hour plus data |
 
 **The AVD specific point.** If FSLogix profile storage sits in a different virtual network from the session hosts, every profile read and write crosses a peering and is billed. At 3,000 users that is not a rounding error. Keep profile storage in the same virtual network as the session hosts, or accept and model the cost.
@@ -198,6 +198,8 @@ This is one of the few places where a network design decision shows up directly 
 
 ## 6. Production Scenarios
 
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
+
 ### Scenario 1: The acquisition with overlapping address space
 
 **Problem.** A manufacturer acquires a competitor. Both run 10.0.0.0/16 on-premises. The AVD estate needs to serve users from both businesses and reach file servers in both datacentres.
@@ -212,7 +214,7 @@ This is one of the few places where a network design decision shows up directly 
 
 **Evidence.** A table of source ranges, destination ranges and the overlapping subset. In this case the overlap was limited to two /24 ranges containing the acquired file servers.
 
-**Root cause.** Two independently designed networks, both using the most common private range.
+**Root cause.** Two independently designed networks, both using the same private range.
 
 **Fix.** Three options were presented with time and risk attached:
 
@@ -403,6 +405,8 @@ Add the operational layer. A subnet utilisation alert at 70 percent gives you wa
 
 ## Architect's Reality Check
 
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
+
 **What engineers commonly get wrong.** They size the session host subnet from user count. It has to be sized from peak host count during a rolling update, which is roughly double the steady state.
 
 **What I would check first in production.** Address space overlap and subnet utilisation. Those two account for most topology problems in AVD.
@@ -421,7 +425,7 @@ Add the operational layer. A subnet utilisation alert at 70 percent gives you wa
 You can state AVD's requirements to a platform team, explain the topology decision without pretending it is yours to make, and size address space that survives growth and rolling updates.
 
 **What you should test**
-Take your Lab 3 subnet plan and work the sizing method against a 1,600 user host pool. Then check whether your current employer's AVD or VDI subnets would survive a rolling update at full size.
+Take your Lab 3 subnet plan and work the sizing method against a 1,600 user host pool. Then check whether your current employer's AVD or VDI (virtual desktop infrastructure) subnets would survive a rolling update at full size.
 
 **What comes next**
 Chapter 13 covers hybrid connectivity and egress control. ExpressRoute, VPN, Azure Firewall with the AVD FQDN tag, and the full egress architecture diagram deferred from [Chapter 11](ch11-network-fundamentals-required-connectivity.md).

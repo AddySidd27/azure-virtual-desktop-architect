@@ -81,3 +81,9 @@ Actions to reach YES: run Labs 1 to 8 end to end in a test tenant and record rea
 3. Lab 3 re-apply may revert VNet DNS set in Lab 4 (U24, unverified).
 4. Lab 4 Step 7 depends on a tenant and verified domain not otherwise listed as a cost or prerequisite up front.
 5. The lab scan is keyword-based. It is not a substitute for a reader walking the labs.
+
+## Update, 17 October 2026 (Chapters 1 to 12 editorial pass)
+
+Publication verdict is unchanged: CONDITIONAL. The pass removed unsupported frequency claims, labelled illustrative scenarios and judgement sections, expanded acronyms at first use, and re-read the Chapter 4 Shortpath and Chapter 8 SSO sections against Learn. It did not add independent review and did not close any issue. Implementation verdict is unchanged: NO.
+
+CI note: the passing GitHub CI runs (39007047474, 39007048778, 39007050303) were on `6a11662`. The later commits are documentation and chapter edits only. They have not had a fresh CI run, and the Markdown link check workflow has not been run on them.

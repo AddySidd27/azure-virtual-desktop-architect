@@ -11,7 +11,7 @@
 | Item | Detail |
 |---|---|
 | **Chapter number** | 11 |
-| **Objective** | Build an egress and DNS design that AVD actually supports, and know how to prove it works before users find out it does not |
+| **Objective** | Build an egress and DNS (Domain Name System) design that AVD actually supports, and know how to prove it works before users find out it does not |
 | **Prerequisites** | Chapters 1 to 10. Labs 1 to 4 complete |
 | **Dependencies** | Extends the connection flow from [Chapter 4](ch04-connection-flow-end-to-end.md) and the network built in [Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md) |
 | **Estimated lab time** | Lab 3 builds the base network; Lab 5 adds a storage private endpoint |
@@ -24,7 +24,7 @@
 
 - Required versus optional FQDNs, and why the difference matters at design time
 - The two platform addresses that behave differently from everything else
-- When to use service tags, when you have no choice but FQDN filtering
+- When to use service tags, when you have no choice but FQDN (fully qualified domain name) filtering
 - What DNS actually needs to look like
 - What Private Link for AVD does, what it does not do, and its hard constraints
 - Three production scenarios with exact investigation steps
@@ -59,7 +59,7 @@ The required list is in [Chapter 4, section 3](ch04-connection-flow-end-to-end.m
 
 ## 2. The Two Addresses That Behave Differently
 
-Two entries in the required list are not normal internet endpoints, and treating them as such causes confusion. Learn lists them as: `169.254.169.254` TCP 80 (IMDS), and `168.63.129.16` TCP 80 and 32526, plus 53 (TCP/UDP) only when using Azure-provided DNS. Microsoft states this traffic must not be intercepted, proxied or redirected.
+Two entries in the required list are not normal internet endpoints, and treating them as such causes confusion. Learn lists them as: `169.254.169.254` TCP (Transmission Control Protocol) 80 (IMDS), and `168.63.129.16` TCP 80 and 32526, plus 53 (TCP/UDP) only when using Azure-provided DNS. Microsoft states this traffic must not be intercepted, proxied or redirected.
 
 169.254.169.254, the Instance Metadata Service, is a link-local address that provides VM metadata and identity information. Traffic is accessible only from within the VM and never leaves the host. 168.63.129.16, WireServer, is used by the Azure VM agent for health signals and core platform communication, including DNS when using Azure-provided DNS, and DHCP. These addresses are available in all Azure regions and clouds. Azure platform routing protects this traffic at the fabric layer, so standard network security group rules and user-defined routes do not affect connectivity by default.
 
@@ -67,13 +67,13 @@ Two practical consequences.
 
 **You do not need to route them.** They work by default. An engineer who adds NSG rules for these addresses has usually misdiagnosed something else. The exception is a restrictive deny-all outbound rule: Learn says to include explicit allows for the `AzurePlatformIMDS` and `AzurePlatformDNS` service tags, and to remove any deny rule that targets them.
 
-**You can still break them.** The protection is at the fabric layer by default, which is not the same as being unbreakable. Learn names the in-VM causes: VPN clients and secure web gateway agents in forced-tunnel mode, proxy or PAC settings, host firewalls, and endpoint security or DLP software. These addresses cannot be proxied and cannot traverse VPN tunnels. Use split tunnelling or explicit bypass rules for both addresses. Source: [Azure fabric communication IPs](https://learn.microsoft.com/en-us/azure/virtual-desktop/azurecommunicationips). When a session host reports health problems and everything else looks correct, check whether something inside Windows is interfering with these two addresses.
+**You can still break them.** The protection is at the fabric layer by default, which is not the same as being unbreakable. Learn names the in-VM causes: VPN (virtual private network) clients and secure web gateway agents in forced-tunnel mode, proxy or PAC settings, host firewalls, and endpoint security or DLP software. These addresses cannot be proxied and cannot traverse VPN tunnels. Use split tunnelling or explicit bypass rules for both addresses. Source: [Azure fabric communication IPs](https://learn.microsoft.com/en-us/azure/virtual-desktop/azurecommunicationips). When a session host reports health problems and everything else looks correct, check whether something inside Windows is interfering with these two addresses.
 
 ---
 
 ## 3. Service Tags, Wildcards and Why the IP List Does Not Exist
 
-The most common conversation with a network team goes like this. They ask for the AVD IP ranges. You explain there are none. They ask again.
+A conversation with a network team often goes like this. They ask for the AVD IP ranges. You explain there are none. They ask again.
 
 The supported approach: service tags represent groups of IP address prefixes from a given Azure service. Microsoft manages the address prefixes encompassed by the service tag and automatically updates the service tag as addresses change, minimizing the complexity of frequent updates to network security rules. Service tags can be used in rules for Network Security Groups and Azure Firewall to restrict outbound network access.
 
@@ -176,7 +176,7 @@ Read that last sentence again. Deleting one workspace stops feed discovery for t
 
 **Port range.** If you restrict ports to the host pool connection private endpoint, allow the entire TCP range 1 to 65535. Learn says users may be unable to connect otherwise.
 
-**UDP is opt-in.** UDP over Private Link, including Shortpath for managed networks, is blocked unless you tick the UDP option on the host pool Networking page, and RDP Shortpath for public networks (STUN and TURN) must then be disabled.
+**UDP (User Datagram Protocol) is opt-in.** UDP over Private Link, including Shortpath for managed networks, is blocked unless you tick the UDP option on the host pool Networking page, and RDP (Remote Desktop Protocol) Shortpath for public networks (STUN (Simple Traversal Underneath NAT, where NAT is Network Address Translation) and TURN (Traversal Using Relay NAT)) must then be disabled.
 
 **Agent restart required after changes.** After you've changed a private endpoint to a host pool, you must restart the Remote Desktop Agent Loader service on each session host in the host pool. You also need to restart this service whenever you change a host pool's network configuration. Instead of restarting the service, you can restart each session host.
 
@@ -204,6 +204,8 @@ Use it when a regulator or a security standard requires service traffic to stay 
 ---
 
 ## 6. Production Scenarios
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Scenario 1: The network team wants an IP allow list
 
@@ -388,6 +390,8 @@ There is an assessment conversation worth having here. A security team asking fo
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They promise the network team an IP allow list. AVD does not publish one, and the conversation goes nowhere until that is stated plainly with the Microsoft support position attached.
 

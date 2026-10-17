@@ -35,7 +35,7 @@
 
 At 09:10 on a Monday, users cannot connect. Someone says "AVD is down."
 
-Almost always, it is not. In the overwhelming majority of real incidents, the Microsoft-managed service is fine and something in your half of the architecture has failed - the session hosts are off, the agent has stopped reporting, the domain controller is unreachable, or the profile share is throttled.
+Usually it is not. This is an engineering judgement, not an incident statistic: when the feed loads, the Microsoft-managed brokering is working, so look first at your half of the architecture - the session hosts are off, the agent has stopped reporting, the domain controller is unreachable, or the profile share is throttled.
 
 An architect who knows the component model can narrow that down in two minutes. An engineer who does not will open a Microsoft support case and wait.
 
@@ -49,9 +49,9 @@ People say "control plane" to mean everything Microsoft runs. That is close enou
 
 **Control plane.** The Microsoft-run services that get a user connected: the web service, the broker, the gateway and the resource directory, plus the diagnostics service that records connection telemetry. You do not deploy or scale these. Microsoft does.
 
-**Management plane.** Azure Resource Manager. This is how *you* create and change AVD objects - host pools, application groups, workspaces, scaling plans, App Attach packages. Portal, PowerShell, Azure CLI, Terraform and Bicep all talk to ARM. This is also where RBAC, tags, policy and activity logs apply.
+**Management plane.** Azure Resource Manager. This is how *you* create and change AVD objects - host pools, application groups, workspaces, scaling plans, App Attach packages. Portal, PowerShell, Azure CLI, Terraform and Bicep all talk to ARM. This is also where RBAC (role-based access control), tags, policy and activity logs apply.
 
-**Data plane.** The actual remote session: screen, keyboard, mouse, audio, printers, redirected drives. This is RDP traffic flowing between the user's device and your session host.
+**Data plane.** The actual remote session: screen, keyboard, mouse, audio, printers, redirected drives. This is RDP (Remote Desktop Protocol) traffic flowing between the user's device and your session host.
 
 Why separate them? Because they fail independently and they have different consequences.
 
@@ -61,7 +61,7 @@ Why separate them? Because they fail independently and they have different conse
 | Management plane | ARM or RBAC issue | Admins cannot change configuration. Users are usually unaffected |
 | Data plane | Network, session host or protocol issue | Sessions are slow, freeze, or drop |
 
-That table alone answers a very common interview question: *"If Microsoft's AVD service has an outage, do users lose their sessions?"* Not necessarily - the session traffic is a separate path from the brokering that set it up. Say that, then be honest that new connections depend on the service.
+That table alone answers a question interviewers are likely to ask: *"If Microsoft's AVD service has an outage, do users lose their sessions?"* Not necessarily - the session traffic is a separate path from the brokering that set it up. Say that, then be honest that new connections depend on the service.
 
 ---
 
@@ -91,7 +91,7 @@ Azure Resource Manager sits apart because it is how you administer the environme
 1. The user authenticates and requests their feed from the **web service** over HTTPS 443. The resource directory identifies which database holds the user's data, and the feed is built from the host pool, application group and workspace metadata held there.
 2. The user launches a desktop or app. The request goes to the **broker service**, which reads host pool configuration from the metadata store.
 3. The broker selects a session host and instructs it through the AVD agent already running on it.
-4. Flows 2 to 4 in the numbered list are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
+4. Flows 2 to 4 in the numbered list are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP (Transmission Control Protocol) 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
 5. Inside the customer boundary, the session host authenticates the user against identity, mounts the FSLogix profile over SMB 445, and sends telemetry to the diagnostics service.
 6. Diagnostic settings forward data into your Log Analytics workspace, which is where AVD Insights reads from.
 
@@ -116,7 +116,7 @@ The second thing to read from this diagram is the split of effort. Microsoft's h
 | Broker | Feed loads, launch fails | Session host availability and agent health |
 | Gateway | New connections fail | Service Health, then the client network path |
 | Session host outbound 443 | Hosts show unavailable | Event ID 3701 in the WVD-Agent log |
-| Identity path | Sign in hangs or fails at Windows logon | Domain controller reachability and DNS |
+| Identity path | Sign in hangs or fails at Windows logon | Domain controller reachability and DNS (Domain Name System) |
 | Storage path | Slow logon or temporary profile | Share reachability, permissions, throttling |
 | Diagnostics | No user impact, monitoring gaps only | Diagnostic settings configuration |
 
@@ -126,7 +126,7 @@ The second thing to read from this diagram is the split of effort. Microsoft's h
 
 ## 3. Where Your Configuration Actually Lives
 
-This is a detail most engineers never learn, and it decides your regional availability story.
+This detail is easy to miss, and it decides your regional availability story.
 
 When you create a host pool, its configuration metadata is stored by the service. Microsoft now offers two models for where that happens, and the difference matters for resilience.
 
@@ -178,7 +178,7 @@ This table is the practical payoff of the whole chapter. Learn it.
 | **Your identity platform** | Sign-in fails, or logon hangs at "Please wait" | Feed may still load | Domain controller reachability, DNS, Entra Connect sync health |
 | **Your profile storage** | Logon very slow, or temporary profile | Connection itself succeeds | Share reachability, permissions, throttling |
 
-Notice the shape of it: **when the feed loads but the session does not start, the problem is almost always yours.** That single heuristic will save you hours.
+Notice the shape of it: **when the feed loads but the session does not start, the problem is most likely yours.** (Judgement: a loaded feed shows the control plane answered, which narrows the search to your side.) That single heuristic will save you hours.
 
 ---
 
@@ -188,7 +188,7 @@ Notice the shape of it: **when the feed loads but the session does not start, th
 - **Assuming the diagnostics service is a monitoring solution.** It provides connection telemetry. It is not a replacement for Azure Monitor, Log Analytics and proper alerting (see the monitoring material listed in [SUMMARY.md](../SUMMARY.md)).
 - **Forgetting that the management plane is ARM.** People look for AVD-specific permissions when the real problem is a missing Azure RBAC role assignment at the right scope.
 - **Believing a session host with no outbound internet path will work.** It will not register, and this is a design decision that must be made deliberately (Chapter 11), not discovered during deployment.
-- **Promising control plane availability in an SLA you wrote.** Reference Microsoft's SLA, do not invent your own.
+- **Promising control plane availability in an SLA (service level agreement) you wrote.** Reference Microsoft's SLA, do not invent your own.
 
 ---
 
@@ -226,7 +226,7 @@ It helps to name the plane separation explicitly: existing sessions ride the dat
 - Three planes: control (getting connected), management (ARM, how you administer), data (the session itself). They fail independently.
 - Host pool metadata lives either in a geographical database or, with regional host pools, in your selected region with zone-redundant replicas and paired-region replication.
 - Reverse connect means outbound-only from session hosts, and no public inbound path is required.
-- If the feed loads but the session does not start, the fault is almost always on your side.
+- If the feed loads but the session does not start, the fault is most likely on your side.
 
 ---
 
@@ -246,6 +246,8 @@ This chapter's practical work is in **[Lab 1](../labs/lab-01-azure-prerequisites
 ---
 
 ## 10. Production Scenarios
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Scenario 1: "AVD is down" on a Monday morning
 
@@ -299,7 +301,7 @@ Update-AzWvdSessionHost -ResourceGroupName rg-avd-service-lab-eus2-01 `
 
 **Business impact.** 30 of 40 hosts unavailable, so capacity drops to a quarter. Users who do connect land on overloaded hosts, which turns an availability incident into a performance one as well.
 
-**Initial hypothesis.** Blocked outbound FQDNs. The regional split is the clue, because part of the required FQDN list is region specific.
+**Initial hypothesis.** Blocked outbound FQDNs. The regional split is the clue, because part of the required FQDN (fully qualified domain name) list is region specific.
 
 **Investigation.**
 
@@ -367,7 +369,9 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 ## Architect's Reality Check
 
-**What engineers commonly get wrong.** They call a Microsoft outage before checking their own half. The feed loading is proof the control plane is working, and most teams never learn that one signal.
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
+
+**What engineers commonly get wrong.** They call a Microsoft outage before checking their own half. The feed loading is proof the control plane is working, and it is a signal that is easy to overlook.
 
 **What I would check first in production.** Whether the feed loads. Then session host availability and drain mode. Azure Service Health comes third, not first, because it is usually not the answer.
 

@@ -121,3 +121,7 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Ch1 status table rows for Session host configuration, Dynamic autoscaling, Ephemeral OS disks and Regional host pools rewritten with the Learn evidence.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Editorial pass, 17 October 2026
+
+Inline source links added under the "How AVD got here" table and the classic retirement paragraph (What's new, host pool management approaches, App Attach, Regional host pools, AVD Hybrid, managed identity). The table contents were not re-verified on 17 October; they carry the 16 October retrieval date. The "three real decisions" scenarios are now labelled as illustrative composites. U3 and U4 are unchanged.

@@ -88,3 +88,10 @@ All pages below were read on 2026-10-16 (Microsoft Learn). Process note: single 
 | Re-verified unchanged (2026-10-17) | Autoscale scenarios, Prerequisites, Ephemeral OS disks, Windows App get-started, KDC proxy, azure-ad-joined-session-hosts, Intune MSIX guidance | No new evidence | U3, U4, U8, U9, U12, U15, U18 |
 
 Not verified in this pass: Windows 365, AVD Hybrid (Arc) and managed identity beyond the What's new entries. Chapter 1 statements on them rest on What's new only.
+
+## Editorial re-check, 17 October 2026
+
+| Topic | Sources read (retrieved 17 October 2026) | Result | Issue |
+|---|---|---|---|
+| RDP Shortpath (Ch4) | [RDP Shortpath for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-shortpath) | Ports, ranges, selection and security statements match. Four wording corrections in Chapter 4 | none new |
+| Single sign-on (Ch8) | [Configure single sign-on](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on) | Prerequisites and steps match. Client list and external identity requirement added | U15, U18 unchanged |

@@ -51,3 +51,11 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Mermaid sequence, chapter text, SVG and drawio corrected so the gateway initiates SSO via Windows Cloud Login; SVG viewed and mermaid rendered.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Editorial and Learn re-check, 17 October 2026
+
+Source re-read: [Configure single sign-on for Azure Virtual Desktop using Microsoft Entra ID](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on), retrieved 17 October 2026. Confirmed unchanged: five tasks, Windows Cloud Login app ID `270efc09-cd0d-444b-a71f-39af4910ec45`, Application Administrator or Cloud Application Administrator, the three KB minimums, Graph SDK 2.9.0, consent prompt (15 hosts for 30 days, up to 10 device groups), Kerberos server object criteria, `enablerdsaadauth`, and the domain administrator caveat.
+
+Corrections: the supported client sentence now notes that Learn also lists Remote Desktop client versions (with a pointer to Chapter 6 for the end of support of the MSI client) and Learn's statement that external identities require SSO on the host pool. Inline source link added. One "most common cause" claim softened. First-use acronym expansions added.
+
+U15 and U18 are unchanged and stay open. No Azure, PowerShell or Graph execution.

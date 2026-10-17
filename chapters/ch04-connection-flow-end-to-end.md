@@ -15,7 +15,7 @@
 | **Prerequisites** | Chapters 1-3, Labs 1-2 complete |
 | **Dependencies** | Uses the control plane components from [Chapter 2](ch02-control-plane-management-plane-data-plane.md) and the object model from [Chapter 3](ch03-avd-object-model.md) |
 | **Estimated lab time** | 90 minutes ([Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md)) |
-| **Azure resources required** | Virtual network, subnets, NSGs, DNS settings |
+| **Azure resources required** | Virtual network, subnets, NSGs, DNS (Domain Name System) settings |
 | **Estimated Lab 3 cost** | **$0.00/month for the base build.** Optional Azure Bastion adds roughly $140/month - read the warning in Lab 3 before deploying it |
 
 ---
@@ -25,7 +25,7 @@
 - The complete connection sequence, in order, with the component responsible for each step
 - What reverse connect actually is and why it removes inbound firewall rules
 - The FQDNs and service tags session hosts genuinely need
-- How RDP Shortpath is negotiated, and the difference between managed and public networks
+- How RDP (Remote Desktop Protocol) Shortpath is negotiated, and the difference between managed and public networks
 - Where each step fails in production, and the single event ID that solves most registration problems
 
 ---
@@ -36,7 +36,7 @@ Almost every AVD incident is a connection problem wearing a costume. "Slow logon
 
 If you know the sequence, you can bisect it. If you do not, you are guessing.
 
-This is also the most common senior interview question in the whole subject. Interviewers ask it because the answer cannot be faked: you either know the order or you don't.
+Expect this question in a senior interview. Interviewers ask it because the answer cannot be faked: you either know the order or you don't.
 
 ---
 
@@ -84,7 +84,7 @@ Nothing in this sequence involves an inbound connection to your session host fro
 
 ### Step-by-step flow
 
-**Steps 1-2 - Authentication.** The client authenticates the user against Microsoft Entra ID. Conditional Access and MFA are evaluated here. Note that this is authentication to the *service*, not to Windows - that happens later at step 12. Chapter 8 pulls the three separate authentications apart.
+**Steps 1-2 - Authentication.** The client authenticates the user against Microsoft Entra ID. Conditional Access and MFA (multifactor authentication) are evaluated here. Note that this is authentication to the *service*, not to Windows - that happens later at step 12. Chapter 8 pulls the three separate authentications apart.
 
 **Steps 3-4 - Feed.** The client presents its token to the feed subscription service, which validates it and returns the entitled resources as digitally signed connection configuration. The client stores one `.rdp` file per resource. The result depends on the object model and assignments (Chapters 2 and 3). If the feed is empty, nothing below this line has been attempted yet.
 
@@ -92,7 +92,7 @@ Nothing in this sequence involves an inbound connection to your session host fro
 
 **Steps 8-9 - Reverse connect.** The session host's Remote Desktop stack opens a TLS connection to the same gateway instance as the client. Once both are connected the gateway relays data between them, forming the base reverse connect transport through a nested tunnel. This is the default transport.
 
-**Steps 10-11 - Transport negotiation.** Per Microsoft, all connections begin by establishing a TCP-based reverse connect transport over the AVD gateway; the client and session host then establish the initial RDP transport and exchange capabilities, with the session host sending its list of IPv4 and IPv6 addresses to the client. While that is happening, there are simultaneous attempts to connect using RDP Shortpath for managed networks through port 3390 by default, and RDP Shortpath for public networks through the ICE/STUN protocol. Learn describes a first-found algorithm: whichever connection is established first is used. If a UDP path succeeds, the session moves to it and the TCP transport is dropped. If not, it stays on TCP through the gateway.
+**Steps 10-11 - Transport negotiation.** Per Microsoft, all connections begin by establishing a TCP-based reverse connect transport over the AVD gateway; the client and session host then establish the initial RDP transport and exchange capabilities, with the session host sending its list of IPv4 and IPv6 addresses to the client. While that is happening, there are simultaneous attempts to connect using RDP Shortpath for managed networks through port 3390 by default, and RDP Shortpath for public networks through the ICE/STUN protocol. Learn describes a first-found algorithm: whichever connection is established first is used. If a UDP (User Datagram Protocol) path succeeds, the session moves to it and the TCP (Transmission Control Protocol) transport is dropped. If not, it stays on TCP through the gateway.
 
 **Step 12 - Windows logon.** Only now does Windows authenticate the user, apply policy, and mount the FSLogix profile. This is where most "slow logon" complaints actually live, and [Project 15](../scenarios/project-15-production-troubleshooting.md) decomposes it as part of the 10-layer isolation method.
 
@@ -127,10 +127,10 @@ Microsoft's own network guidance states it plainly: the AVD control plane gatewa
 
 **What you take on:**
 
-- A hard dependency on outbound connectivity. Block the wrong FQDN and the host is unusable.
+- A hard dependency on outbound connectivity. Block the wrong FQDN (fully qualified domain name) and the host is unusable.
 - Less visibility into the transport, since Microsoft operates the relay.
 
-That trade is almost always worth it, and being able to articulate both halves is what makes it a senior answer rather than a marketing line.
+Judgement: that trade is usually worth it, and being able to articulate both halves is what makes it a senior answer rather than a marketing line.
 
 ---
 
@@ -185,13 +185,13 @@ Two things to notice.
 
 ## 4. RDP Shortpath
 
-Shortpath is the UDP transport that bypasses the gateway when it can. It matters because UDP handles packet loss far better than TCP for interactive graphics.
+Shortpath is a UDP transport that is set up alongside the gateway connection. Every connection starts on TCP reverse connect through the AVD gateway. If a UDP path is established, the session moves to it and the TCP connection is dropped. Learn says UDP gives better connection reliability and more consistent latency, while TCP reverse connect has the best compatibility. Source: [RDP Shortpath for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-shortpath), retrieved 17 October 2026.
 
 There are two modes, and they solve different problems.
 
 ### Managed networks
 
-For private connectivity - ExpressRoute private peering, site-to-site or point-to-site VPN.
+For private connectivity - ExpressRoute private peering, site-to-site or point-to-site VPN (virtual private network).
 
 You need direct connectivity between the client and the session host, meaning the client can reach the session host on port 3390 by default and isn't blocked by firewalls (including Windows Firewall) or a Network Security Group. To use it you must enable a UDP listener on your session hosts; port 3390 is the default though you can change it.
 
@@ -201,18 +201,18 @@ Note the significant exception: when the listener isn't enabled and an inbound p
 
 For users on home, hotel and café networks.
 
-There are two connection types with a public connection, in order of preference: a direct UDP connection between client and session host using STUN, or a relayed connection through TURN. Learn's firewall tables for the Azure cloud give these requirements:
+There are two connection types with a public connection, in order of preference: a direct UDP connection between client and session host using STUN (Simple Traversal Underneath NAT, where NAT is Network Address Translation), or a relayed connection through TURN (Traversal Using Relay NAT). Learn's firewall tables for the Azure cloud give these requirements:
 
 - Session host subnet: outbound UDP to `51.5.0.0/16` on port 3478 (STUN and TURN relay), and outbound UDP to any destination on ports 1024-65535 (default 49152-65535, with 65330 reserved by Azure) for direct STUN connections
-- Client network: UDP to `51.5.0.0/16` on port 3478, and UDP on the same port range for direct connections
+- Client network: UDP to `51.5.0.0/16` on port 3478, and UDP on the same port range to the public IP addresses of the session host's NAT gateway or Azure Firewall (as given by the STUN endpoint) for direct connections
 
-A TURN relay is chosen by the client's physical location; a client far from any relay region may fall back to TCP. TURN connections can drop briefly during relay maintenance, after which the client reconnects automatically. In Azure for US Government the TURN range is `20.140.236.0/22` and Learn describes the feature as public preview.
+Learn says that in an environment with symmetric NAT, which it states is the case with Azure Firewall and Azure NAT Gateway, a relayed (TURN) connection can be used. A TURN relay is chosen by the client's physical location; a client far from any relay region may fall back to TCP. TURN connections can drop briefly during relay maintenance, after which the client reconnects automatically. In Azure for US Government the TURN range is `20.140.236.0/22` and Learn describes the feature as public preview.
 
 And an important reassurance for security reviews: the setting that configures these connections is turned on by default and maintains the same level of encryption as TCP reverse connect.
 
 ### How it is chosen
 
-Both are attempted at once. When the client initiates the connection, there are simultaneous attempts using managed-network Shortpath through port 3390 and public-network Shortpath through ICE/STUN. Learn describes a first-found algorithm: the connection established first is used. Because the public path involves NAT and STUN, Learn expects the managed path to win when both exist. If none succeed, the session stays on TCP reverse connect and still works - just with less resilience to packet loss.
+Both are attempted at once. When the client initiates the connection, there are simultaneous attempts using managed-network Shortpath through port 3390 and public-network Shortpath through ICE/STUN. Learn describes a first-found algorithm: the connection established first is used. Because the public path involves more steps (a NAT device, a load balancer or a STUN server), Learn says it is likely that the managed path is established first when both exist. If none succeed, the session stays on TCP reverse connect and still works - just with less resilience to packet loss.
 
 ### RDP Multipath
 
@@ -224,7 +224,7 @@ Shortpath is not a switch you flip for "better performance". It is a network des
 
 - On ExpressRoute with a controlled client estate, enable the managed-network listener and get a clean direct UDP path.
 - For remote and BYOD users, public-network Shortpath is on by default and works without you doing anything - as long as UDP 3478 outbound is not blocked by your egress policy.
-- If a security team blocks all outbound UDP, you have silently removed Shortpath for every user. Sessions still work over TCP, so nobody reports a fault - they just report that "AVD feels laggy". This is a genuinely common and hard-to-diagnose situation. Verify UDP egress explicitly.
+- If a security team blocks all outbound UDP, you have silently removed Shortpath for every user. Sessions still work over TCP, so nobody reports a fault - they just report that "AVD feels laggy". The symptom is easy to misattribute because nothing fails outright. Verify UDP egress explicitly.
 
 ---
 
@@ -329,6 +329,8 @@ This chapter's practical work is in **[Lab 3 - VNet, Subnets, NSGs and DNS](../l
 ---
 
 ## 10. Production Scenarios
+
+> The scenarios below are illustrative composites written for this knowledgebase, not documented customer engagements. User counts, costs and timings are assumptions chosen to make the reasoning concrete.
 
 ### Scenario 1: Sessions feel laggy after a security hardening project
 
@@ -447,11 +449,13 @@ Then correlate against host CPU and memory over the same window, and check wheth
 
 ## Architect's Reality Check
 
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
+
 **What engineers commonly get wrong.** They treat a slow session as a sizing problem. Very often it is transport, and the client tells you in one click whether the session is on UDP or TCP.
 
 **What I would check first in production.** Which step of the connection flow failed. Feed, launch, connect, or in session. Everything else follows from that.
 
-**What I would ask the customer.** What changed on the network recently. Firewall tightening and proxy work are the most common causes of registration and transport problems, and they are rarely mentioned unless you ask.
+**What I would ask the customer.** What changed on the network recently. Firewall tightening and proxy changes are plausible causes of registration and transport problems, and people rarely volunteer them unless asked.
 
 **What I would decide as the architect.** Outbound UDP 3478 allowed, documented with a comment saying what breaks without it. Event 3701 and the Agent URL Tool in the runbook as the first two checks. No inbound rules to session hosts, ever.
 
@@ -481,4 +485,4 @@ Lab 3's validation checklist. Then, from memory, write out the thirteen steps an
 Chapter 5 covers operating systems, multi-session and licensing - including why Windows Enterprise multi-session behaves as a distinct OS edition, which matters for both Intune ([Ch 24](ch24-intune-and-avd-endpoint-management.md)) and application compatibility.
 
 **Interview preparation carried forward**
-Q8 is the highest-frequency question in this book. Practise the 30-second version until it is automatic, then the 2-minute version. Interviewers commonly open with it and judge the rest of the conversation on how you handle it.
+Q8 is the highest-frequency question in this book. Practise the 30-second version until it is automatic, then the 2-minute version. Expect it early in an interview.

@@ -100,3 +100,15 @@ Chapters 1 to 12 were re-reviewed against 34 tracked issues. 21 are closed (U29 
 - New U36 (no documented route to an interactive DC session). U35 re-confirmed against two Learn pages.
 - U25 corrected: CI had already validated Terraform on `main`. `plan` and `apply` still never run; this branch's 12 changed Terraform files not CI-checked. Added `tools/terraform-validate-all.sh` (syntax-checked only).
 - Added [DECISIONS-REQUIRED](reviews/DECISIONS-REQUIRED.md) for items needing approval. README now carries a status notice and an evidence legend.
+
+## Chapters 1 to 12 editorial pass, 17 October 2026
+
+Single reviewer, not independent. Gap analysis of all twelve chapters found them structurally complete, so changes were limited to evidence and clarity:
+
+- 23 unsupported frequency or experience claims ("almost always", "most common", "most teams never learn") reworded or marked as judgement.
+- Every scenario or example section now states that it is an illustrative composite. Every Architect's Reality Check states that it is engineering judgement, not measured data.
+- About 70 first-use acronym expansions added where the chapter never expanded the term. Glossary extended.
+- Two sections re-read against Learn (Chapter 4 Shortpath, Chapter 8 SSO) with corrections recorded in their review records. Inline source links added to Chapter 1, 4 and 8.
+- `chapters/README.md` now has a status table for Chapters 1 to 12 with labs and open issues.
+
+Mermaid blocks in Chapters 1 to 12 (8) render without error with mmdc and the Playwright Chromium. Rendered output was not visually inspected in this pass. No issue was closed. U23 to U28, U35 and U36 are unchanged.

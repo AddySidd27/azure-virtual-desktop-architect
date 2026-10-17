@@ -36,7 +36,7 @@ The client feels like the least architectural part of AVD. It is a shortcut on a
 
 Then a support date passes, the old client falls out of support, and thousands of people are left on an unsupported client with no plan. Learn's lifecycle notice gives exact dates, and section 1 records them.
 
-Client choice also quietly shapes the design. Whether you can use RDP Shortpath, whether users on unmanaged devices get a browser or an installed app, how you deploy updates, and how much your helpdesk hears about it are all client decisions.
+Client choice also quietly shapes the design. Whether you can use RDP (Remote Desktop Protocol) Shortpath, whether users on unmanaged devices get a browser or an installed app, how you deploy updates, and how much your helpdesk hears about it are all client decisions.
 
 ---
 
@@ -86,7 +86,7 @@ Feature coverage is not identical across platforms, and Learn publishes a per pl
 
 Four places where this stops being a desktop support topic and becomes a design topic.
 
-**RDP Shortpath.** The transport is negotiated between client and session host. Learn's comparison shows platform differences: the browser has no Shortpath, iOS/iPadOS has managed-network Shortpath but not the public STUN or TURN variants, and Multipath needs specific Windows App versions (2.0.559.0 or later for Multipath with UDP, 2.0.1069.0 or later for UDP and TCP). Users on browsers or older builds are silently on TCP only. See [Chapter 4, section 4](ch04-connection-flow-end-to-end.md#4-rdp-shortpath).
+**RDP Shortpath.** The transport is negotiated between client and session host. Learn's comparison shows platform differences: the browser has no Shortpath, iOS/iPadOS has managed-network Shortpath but not the public STUN (Simple Traversal Underneath NAT, where NAT is Network Address Translation) or TURN (Traversal Using Relay NAT) variants, and Multipath needs specific Windows App versions (2.0.559.0 or later for Multipath with UDP (User Datagram Protocol), 2.0.1069.0 or later for UDP and TCP (Transmission Control Protocol)). Users on browsers or older builds are silently on TCP only. See [Chapter 4, section 4](ch04-connection-flow-end-to-end.md#4-rdp-shortpath).
 
 **Managed versus unmanaged devices.** An installed client needs a deployment mechanism. A browser does not. That single fact often decides how you handle contractors and BYOD users.
 
@@ -159,7 +159,7 @@ flowchart TB
 
 **The requirement.** A financial services firm brings in contractors for three to nine month engagements. They use their own laptops. The firm will not manage those devices and will not ship hardware.
 
-**The decision.** Browser access through Windows App in the browser. No installed client. Conditional Access requiring MFA, plus session controls that block clipboard and drive redirection. Learn's comparison page says drive, clipboard, printer and USB drive redirection are disabled by default, so the design task is to keep them off.
+**The decision.** Browser access through Windows App in the browser. No installed client. Conditional Access requiring MFA (multifactor authentication), plus session controls that block clipboard and drive redirection. Learn's comparison page says drive, clipboard, printer and USB drive redirection are disabled by default, so the design task is to keep them off.
 
 **Why this approach.** Installing software on a device you do not manage creates support and liability you do not want. A browser removes the install step entirely, which also removes the offboarding step. When the engagement ends you remove the group membership and access stops.
 
@@ -367,6 +367,8 @@ It shows a method rather than a guess, it reuses the connection flow, and it end
 ---
 
 ## Architect's Reality Check
+
+> Engineering judgement, not measured data or documented customer cases. Statements about what is common or likely are reasoning, not survey results.
 
 **What engineers commonly get wrong.** They treat the client as a desktop team task. Client version affects transport, redirection and what Conditional Access can evaluate, so it belongs in the architecture.
 
