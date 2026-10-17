@@ -1,0 +1,282 @@
+name: H1 compatibility test (CLI matrix, throwaway copies only)
+
+# TEMPORARY workflow. It exists only on branch chore/h1-compat-test and is never
+# intended for main. Runs once per push to that branch.
+#
+# Read-only by design: no secrets, no Azure credentials, no plan/apply, nothing
+# committed or pushed. Every terraform command runs on a throwaway COPY of a
+# module inside $RUNNER_TEMP; the checkout is never modified and no lock file is
+# delivered anywhere. Results are returned as a JSON report transferred through
+# annotations by the method proven in the G3 proof of concept (base64 chunks of
+# at most 4000 characters, indexed titles, at most 10 payload annotations per
+# step, SHA-256 at every stage) plus an artifact as an independent copy.
+on:
+  push:
+    branches: ["chore/h1-compat-test"]
+
+permissions:
+  contents: read
+
+env:
+  CHUNK: "4000"
+  PER_STEP: "10"
+
+jobs:
+  compat:
+    name: compat (terraform ${{ matrix.cli }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        cli: ["1.9.0", "1.16.6", "latest"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ matrix.cli }}
+          terraform_wrapper: false
+
+      - name: Run compatibility checks and build the report
+        env:
+          CLI_LABEL: ${{ matrix.cli }}
+          TF_IN_AUTOMATION: "true"
+          CHECKPOINT_DISABLE: "1"
+        run: |
+          set -eu
+          echo "OUT=$RUNNER_TEMP/compat-out" >> "$GITHUB_ENV"
+          export OUT="$RUNNER_TEMP/compat-out"
+          mkdir -p "$OUT"
+          cat > "$RUNNER_TEMP/compat.py" <<'PY'
+          import base64, gzip, hashlib, json, os, re, shutil, subprocess, sys
+
+          CLI = os.environ["CLI_LABEL"]
+          OUT = os.environ["OUT"]
+          WORK = os.path.join(os.environ["RUNNER_TEMP"], "compat")
+          SRC = os.environ["GITHUB_WORKSPACE"]
+          CH = int(os.environ["CHUNK"])
+          PLATS = ["linux_amd64", "darwin_arm64", "darwin_amd64", "windows_amd64"]
+          REPS = ["terraform/lab08-session-hosts", "terraform/lab02-foundation",
+                  "terraform/capstone-northwind/platform/security",
+                  "terraform/blog-post07-profile-storage"]
+          BLOG = "terraform/blog-post07-profile-storage"
+          BASE = {"hashicorp/azurerm": "5.10.0", "hashicorp/azuread": "3.10.0"}
+          BLOG_BASE = {"hashicorp/azurerm": "5.9.0", "azure/azapi": "2.13.0"}
+          S = lambda b: hashlib.sha256(b).hexdigest()
+
+          def run(args, cwd):
+              p = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=1500)
+              return p.returncode, (p.stdout + p.stderr)
+
+          def tail(s, n=500):
+              s = s.strip()
+              return s if len(s) <= n else "..." + s[-n:]
+
+          def parse_lock(path):
+              out, cur = {}, None
+              for line in open(path, encoding="utf-8"):
+                  m = re.match(r'^provider "([^"]+)" \{', line)
+                  if m:
+                      cur = {"version": None, "constraints": None, "h1": 0, "zh": 0}
+                      out[m.group(1).replace("registry.terraform.io/", "")] = cur
+                      continue
+                  if cur is None: continue
+                  if line.startswith("}"): cur = None; continue
+                  m = re.match(r'^\s+version\s*=\s*"([^"]+)"', line)
+                  if m: cur["version"] = m.group(1); continue
+                  m = re.match(r'^\s+constraints\s*=\s*"([^"]+)"', line)
+                  if m: cur["constraints"] = m.group(1); continue
+                  m = re.match(r'^\s+"(h1|zh):', line)
+                  if m: cur[m.group(1)] += 1
+              return out
+
+          def declared(mod):
+              t = open(os.path.join(SRC, mod, "versions.tf"), encoding="utf-8").read()
+              prov = {k.lower(): v for k, v in re.findall(r'source\s*=\s*"([^"]+)"\s*\n\s*version\s*=\s*"([^"]+)"', t)}
+              rv = re.search(r'required_version\s*=\s*"([^"]+)"', t)
+              return prov, (rv.group(1) if rv else None)
+
+          def vt(v): return tuple(int(x) for x in v.split("."))
+          def satisfies(v, c):
+              if "-" in v: return False
+              m = re.fullmatch(r"~>\s*(\d+(?:\.\d+)+)", c)
+              if m:
+                  lo = vt(m.group(1)); n = len(lo)
+                  if n < 2: return None
+                  hi = lo[:n-2] + (lo[n-2] + 1, 0)
+                  return lo <= vt(v) < hi
+              return None
+
+          def check_lock(mod, lock):
+              prov, _ = declared(mod)
+              base = BLOG_BASE if mod == BLOG else BASE
+              problems, unbaselined = [], []
+              if set(lock) != set(prov): problems.append(f"provider set {sorted(lock)} != declared {sorted(prov)}")
+              for name, e in lock.items():
+                  d = prov.get(name)
+                  if e["constraints"] != d: problems.append(f"{name}: lock constraints {e['constraints']!r} != versions.tf {d!r}")
+                  ok = satisfies(e["version"] or "", d or "")
+                  if ok is not True: problems.append(f"{name}: version {e['version']} does not satisfy {d} (check result {ok})")
+                  if name in base:
+                      if e["version"] != base[name]: problems.append(f"{name}: {e['version']} differs from approved baseline {base[name]}")
+                  else:
+                      unbaselined.append(f"{name}={e['version']}")
+              return problems, unbaselined
+
+          def copy_mod(mod, tag):
+              dst = os.path.join(WORK, tag, mod)
+              shutil.copytree(os.path.join(SRC, mod), dst, symlinks=True)
+              return dst
+
+          def files_manifest(d):
+              m = {}
+              for root, dirs, files in os.walk(d):
+                  dirs[:] = [x for x in dirs if x != ".terraform"]
+                  for f in files:
+                      if f == ".terraform.lock.hcl": continue
+                      p = os.path.join(root, f)
+                      m[os.path.relpath(p, d)] = S(open(p, "rb").read())
+              return m
+
+          INIT = ["terraform", "init", "-backend=false", "-input=false", "-no-color"]
+          res = {"cli_label": CLI, "tests": [], "all34": [], "fmt": None}
+
+          rc, v = run(["terraform", "version", "-json"], SRC)
+          tfv = json.loads(v)
+          res["terraform_version"] = tfv.get("terraform_version"); res["platform"] = tfv.get("platform")
+          res["prerelease"] = "-" in (tfv.get("terraform_version") or "")
+
+          # --- Test A: representative modules, every CLI -------------------
+          for mod in REPS:
+              t = {"module": mod, "problems": [], "steps": {}}
+              _, rv = declared(mod); t["required_version"] = rv
+              F = copy_mod(mod, "F")
+              rc, o = run(INIT, F); t["steps"]["fresh_init"] = rc
+              if rc: t["problems"].append("fresh init failed: " + tail(o))
+              rc, o = run(["terraform", "validate", "-no-color"], F); t["steps"]["fresh_validate"] = rc
+              if rc: t["problems"].append("fresh validate failed: " + tail(o))
+              lf = os.path.join(F, ".terraform.lock.hcl")
+              fl = parse_lock(lf) if os.path.exists(lf) else {}
+              t["fresh_lock"] = fl
+              p, ub = check_lock(mod, fl); t["problems"] += p; t["unbaselined"] = ub
+
+              G = copy_mod(mod, "G")
+              lg = os.path.join(G, ".terraform.lock.hcl")
+              pre = S(open(lg, "rb").read()) if os.path.exists(lg) else None
+              t["tracked_lock_sha_before"] = pre
+              rc, o = run(["terraform", "providers", "lock", "-no-color"] + [f"-platform={x}" for x in PLATS], G)
+              t["steps"]["providers_lock"] = rc
+              if rc: t["problems"].append("providers lock failed: " + tail(o))
+              if os.path.isdir(os.path.join(G, ".terraform")): t["problems"].append(".terraform present after providers lock (no-init expectation)")
+              g1 = S(open(lg, "rb").read()) if os.path.exists(lg) else None
+              gl = parse_lock(lg) if os.path.exists(lg) else {}
+              t["generated_lock"] = gl; t["generated_lock_sha"] = g1
+              p, _ = check_lock(mod, gl); t["problems"] += p
+              for name in set(gl) | set(fl):
+                  a, b = gl.get(name), fl.get(name)
+                  if not a or not b or (a["version"], a["constraints"]) != (b["version"], b["constraints"]):
+                      t["problems"].append(f"{name}: generated lock differs from fresh-init lock in version or constraints")
+                  elif a["h1"] < 4: t["problems"].append(f"{name}: generated lock has only {a['h1']} h1 entries (<4)")
+              rc, o = run(INIT, G); t["steps"]["init_on_generated"] = rc
+              if rc: t["problems"].append("init on generated lock failed: " + tail(o))
+              g2 = S(open(lg, "rb").read())
+              t["lock_unchanged_after_init"] = (g1 == g2)
+              if g1 != g2: t["problems"].append("lock file changed after init on the generated lock")
+              rc, o = run(["terraform", "validate", "-no-color"], G); t["steps"]["validate_on_generated"] = rc
+              if rc: t["problems"].append("validate on generated lock failed: " + tail(o))
+              rc, o = run(INIT, G); t["steps"]["second_init"] = rc
+              g3 = S(open(lg, "rb").read())
+              t["lock_unchanged_after_second_init"] = (g2 == g3)
+              if g2 != g3: t["problems"].append("lock file changed after second init")
+              t["source_files_unchanged"] = files_manifest(os.path.join(SRC, mod)) == files_manifest(G)
+              if not t["source_files_unchanged"]: t["problems"].append("module files other than the lock differ from source")
+              # blog: tracked lock must keep its recorded versions
+              if mod == BLOG:
+                  for name, e in gl.items():
+                      if e["version"] != BLOG_BASE.get(name): t["problems"].append(f"blog {name} version {e['version']} != {BLOG_BASE.get(name)}")
+              t["ok"] = not t["problems"]
+              res["tests"].append(t)
+              print(f"[{CLI}] {mod}: {'OK' if t['ok'] else 'PROBLEMS'}")
+
+          # --- Test B: all 34 modules, only on the pinned candidate CLI ----
+          if CLI == "1.16.6":
+              rc, o = run(["terraform", "fmt", "-check", "-recursive", "-no-color", "terraform/"], SRC)
+              res["fmt"] = {"rc": rc, "tail": tail(o)}
+              mods = sorted(os.path.dirname(os.path.relpath(os.path.join(r, "versions.tf"), SRC))
+                            for r, _, fs in os.walk(os.path.join(SRC, "terraform")) if "versions.tf" in fs)
+              for mod in mods:
+                  e = {"module": mod, "problems": []}
+                  D = copy_mod(mod, "ALL")
+                  rc, o = run(INIT, D); e["init_rc"] = rc
+                  if rc: e["problems"].append("init failed: " + tail(o))
+                  rc, o = run(["terraform", "validate", "-no-color"], D); e["validate_rc"] = rc
+                  if rc: e["problems"].append("validate failed: " + tail(o))
+                  lf = os.path.join(D, ".terraform.lock.hcl")
+                  lk = parse_lock(lf) if os.path.exists(lf) else {}
+                  e["lock"] = {k: [v["version"], v["constraints"], v["h1"], v["zh"]] for k, v in lk.items()}
+                  p, ub = check_lock(mod, lk); e["problems"] += p; e["unbaselined"] = ub
+                  e["ok"] = not e["problems"]
+                  res["all34"].append(e)
+                  print(f"[{CLI}] all34 {mod}: {'OK' if e['ok'] else 'PROBLEMS'}")
+              shutil.rmtree(os.path.join(WORK, "ALL"), ignore_errors=True)
+
+          # --- report ------------------------------------------------------
+          tot = {
+              "tests": len(res["tests"]), "tests_ok": sum(t["ok"] for t in res["tests"]),
+              "all34": len(res["all34"]), "all34_ok": sum(e["ok"] for e in res["all34"]),
+          }
+          res["totals"] = tot
+          rep = json.dumps(res, sort_keys=True, separators=(",", ":")).encode()
+          import io
+          buf = io.BytesIO()
+          with gzip.GzipFile(fileobj=buf, mode="wb", mtime=0) as g: g.write(rep)
+          gzb = buf.getvalue(); b64 = base64.b64encode(gzb).decode()
+          chunks = [b64[i:i+CH] for i in range(0, len(b64), CH)]
+          man = {"cli": CLI, "json_bytes": len(rep), "json_sha256": S(rep), "gz_bytes": len(gzb), "gz_sha256": S(gzb),
+                 "b64_chars": len(b64), "b64_sha256": S(b64.encode()), "chunk_size": CH, "chunks": len(chunks),
+                 "chunk_sha256": [S(c.encode()) for c in chunks], "totals": tot}
+          open(f"{OUT}/report.json", "wb").write(rep)
+          open(f"{OUT}/report.json.gz", "wb").write(gzb)
+          open(f"{OUT}/manifest.json", "w").write(json.dumps(man, indent=1))
+          for i, c in enumerate(chunks): open(f"{OUT}/chunk-{i+1:02d}.txt", "w").write(c)
+          print(json.dumps({k: v for k, v in man.items() if k != "chunk_sha256"}, indent=1))
+          if len(chunks) > 20:
+              print("::error title=compat payload too large::chunks=%d exceeds 20 (two steps of 10)" % len(chunks))
+              sys.exit(1)
+          enc = lambda s: s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print(f"::notice title=compat {CLI} manifest::" + enc(json.dumps(man, separators=(",", ":"))))
+          PY
+          python3 -I "$RUNNER_TEMP/compat.py"
+
+      - name: Payload chunks 1 to 10
+        if: always()
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os
+          OUT = os.environ["OUT"]; K = int(os.environ["PER_STEP"]); cli = "${{ matrix.cli }}"
+          n = json.load(open(f"{OUT}/manifest.json"))["chunks"]
+          for i in range(1, min(K, n) + 1):
+              print(f"::notice title=compat {cli} chunk {i:02d} of {n:02d}::" + open(f"{OUT}/chunk-{i:02d}.txt").read())
+          PY
+
+      - name: Payload chunks 11 to 20
+        if: always()
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os
+          OUT = os.environ["OUT"]; K = int(os.environ["PER_STEP"]); cli = "${{ matrix.cli }}"
+          n = json.load(open(f"{OUT}/manifest.json"))["chunks"]
+          for i in range(K + 1, min(2 * K, n) + 1):
+              print(f"::notice title=compat {cli} chunk {i:02d} of {n:02d}::" + open(f"{OUT}/chunk-{i:02d}.txt").read())
+          PY
+
+      - name: Upload report (independent comparison source)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h1-compat-${{ matrix.cli }}
+          path: ${{ runner.temp }}/compat-out
+          if-no-files-found: warn
