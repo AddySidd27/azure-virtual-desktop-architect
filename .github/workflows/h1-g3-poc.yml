@@ -15,8 +15,8 @@ permissions:
   contents: read
 
 env:
-  CHUNK: "6000"
-  PER_STEP: "5"
+  CHUNK: "4000"
+  PER_STEP: "8"
 
 jobs:
   poc:
@@ -59,6 +59,7 @@ jobs:
           with gzip.GzipFile(fileobj=gz, mode="wb", mtime=0) as g: g.write(tar)
           gzb = gz.getvalue()
           b64 = base64.b64encode(gzb).decode()
+          assert CH <= 4000 and int(os.environ["PER_STEP"]) <= 10
           chunks = [b64[i:i+CH] for i in range(0, len(b64), CH)]
           S = lambda b: hashlib.sha256(b).hexdigest()
           filelist = "".join(f"{S(files[n])}  {n}\n" for n in sorted(files))
@@ -82,7 +83,7 @@ jobs:
           PY
           sha256sum "$POC/payload.tar.gz" "$POC/payload.tar" "$POC/payload.b64"
 
-      - name: Probes - special-character round trip and per-annotation size ladder
+      - name: Probe - special-character round trip
         run: |
           set -eu
           python3 - <<'PY'
@@ -92,16 +93,9 @@ jobs:
           probe = "100% done\r\nline two\nline three é ✓ \ttab, trailing space  \n"
           print("::notice title=g3poc encoding probe::" + enc(probe))
           print("encoding probe sha256", S(probe))
-          for n in (1000, 4000, 8000, 16000, 32000, 60000, 70000):
-              msg, h = "", b"ladder"
-              while len(msg) < n:
-                  h = hashlib.sha256(h).digest(); msg += h.hex()
-              msg = msg[:n]
-              print(f"ladder {n} sha256 {S(msg)}")
-              print(f"::notice title=g3poc ladder {n}::" + enc(msg))
           PY
 
-      - name: Chunks 1 to 5
+      - name: Chunks 1 to 8
         run: |
           set -eu
           python3 - <<'PY'
@@ -113,7 +107,7 @@ jobs:
               print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
           PY
 
-      - name: Chunks 6 to 10
+      - name: Chunks 9 to 16
         run: |
           set -eu
           python3 - <<'PY'
@@ -125,7 +119,7 @@ jobs:
               print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
           PY
 
-      - name: Chunks 11 and above
+      - name: Chunks 17 and above
         run: |
           set -eu
           python3 - <<'PY'
@@ -135,13 +129,8 @@ jobs:
           for i in range(2 * K + 1, n + 1):
               c = open(f"{POC}/chunk-{i:02d}.txt").read()
               print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
-          print("chunks above 10 emitted:", max(0, n - 2 * K))
+          print("chunks beyond step 2 emitted:", max(0, n - 2 * K))
           PY
-
-      - name: Count probe - 15 small notices in one step
-        run: |
-          set -eu
-          for i in $(seq -w 1 15); do echo "::notice title=g3poc count $i of 15::probe $i"; done
 
       - name: Upload test artifact (independent comparison source)
         if: always()
