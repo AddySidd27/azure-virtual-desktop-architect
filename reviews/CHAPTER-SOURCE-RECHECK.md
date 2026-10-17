@@ -29,9 +29,42 @@ Pages were read in full through the Learn fetch tool unless marked otherwise. "F
 
 Labs checked for contradiction by text search: `labs/LAB-DEPENDENCY-MATRIX.md` (corrected), Labs 3 and 11 (no conflicting statements found). Labs were not re-read in full.
 
+## Third pass, 17 October 2026 (documentation only)
+
+Single reviewer, no independent pass. Pages read in full through the Learn fetch tool unless marked. Nothing was executed in Azure and no Terraform command was run.
+
+| Chapter | Learn pages read | Scope of the check | Result |
+|---|---|---|---|
+| 1 | What's new in Azure Virtual Desktop (full), Classic retirement notices, Windows App and MSIX App Attach notices | Every row of the history table | Dates now match What's new. ARM integration announced June 2020 and GA July 2020 (previously tied to 2021). The 2019 WVD year rests on Learn's "Fall 2019 release" wording, now stated in the chapter |
+| 4 | Understanding AVD network connectivity (full), Required FQDNs and endpoints (full, Azure cloud tab) | Gateway selection (10 ms groups, then fewest connections), Front Door and Traffic Manager, TLS 1.2 minimum, endpoint table | No change needed. The chapter endpoint table matches the Azure cloud tab |
+| 5 | Windows Enterprise multi-session FAQ (full), Azure Local overview (full), Azure verification for VMs (full) | Who may provide multi-session access (Microsoft or Approved Providers), no RD IP Virtualization, KMS activation, Azure Local OS set, AD DS-only join, support boundary | Support-boundary sentence replaced with sourced statements. U7 (Azure Local OS set) stays open |
+| 6 | Windows App pages (full) | Platform, redirection, Shortpath claims | No new change. Quest still "(preview)" on one page only (U9) |
+| 7 | Prerequisites (full), Microsoft Entra joined session hosts (full), Entra Kerberos pages read earlier this day | One-identity rule, three join models, hybrid UPN or SID rule, Entra Domain Services hosts cannot be managed with Intune, Windows Server cannot be enrolled in Intune, role requirement for Entra joined hosts without a session host configuration, Azure Local AD DS-only | All matched. The Entra join prerequisite wording in the chapter is consistent with both pages. Cloud-only Azure Files conflict (CURRENCY FLAG) remains |
+| 10 | Built-in Azure RBAC roles for AVD (full), Deploy AVD with session host configuration (search excerpts of prerequisites), Configure managed identity (search excerpt) | All 15 role descriptions, session host configuration role scope | Table matches. The unresolved session host configuration role scope is now sourced: the host pool managed identity needs Desktop Virtualization Virtual Machine Contributor on the resource group or subscription |
+| 11 | Set up Private Link (full, read from the saved page by search), Private Link overview (search excerpt) | One global endpoint, global DNS zone name, UDP opt-in with public Shortpath disabled, supported clients, ignored private-only setting on the global workspace | Matched. The Learn overview page and setup page disagree on client lists, so the chapter's client caution stays |
+| 12 | Define an Azure network topology, Virtual WAN topology, ExpressRoute gateway pages, Azure Firewall and Bastion subnet pages, Bastion SKU page (all read earlier this day) | Gateway subnet sizes, Firewall and Bastion /26 minimum, Bastion Developer SKU | Sizes confirmed. Bastion Developer note added. The Private Link pricing page was not read, so the private endpoint peering-charge statement rests on the Virtual WAN pricing pages only |
+
+### Labs read in full this pass
+
+Labs 1, 2, 3, 4, 5, 7, 8, 10 and 11, with the dependency matrix. Terraform for Labs 3 and 5 was read for names, tags and variables. Nothing was run.
+
+| Lab | Finding | Action |
+|---|---|---|
+| 1 | Validation checklist required capstone-only providers that the text says to skip. Cost note said Lab 8 was the first expensive lab but Lab 4 starts compute. Tag table showed six tags while the modules apply seven | Checklist split into required, check-only and optional. Cost note and tag table corrected |
+| 2 | Expected resource count presented as fact | Marked as not observed |
+| 3 | Validation said four subnets while the module also creates `AzureBastionSubnet` by default | Checklist and expected output corrected |
+| 4 | Interview answer priced Bastion at about $140 for setup while the lab elsewhere recommends free Bastion Developer. U24 note did not reflect the provider source reading | Both corrected. U24 stays open |
+| 5 | Storage account name in the errors list did not match the Terraform default (`stfslogixlabeus201`). A Step 4 error entry described a managed identity that the procedure does not use. A Step 4 entry told readers to install AzFilesHybrid from the Gallery. The interview answer said the lab uses a group-wide Modify grant, which Step 6 does not | All four corrected |
+| 7 | No contradictions found | None |
+| 8 | Cost warning said it was the first compute cost, contradicting Lab 4 | Corrected |
+| 10 | Teardown used `terraform destroy -auto-approve`, which skips plan review. No warning about VNet DNS pointing at a deleted domain controller | Replaced with a reviewed destroy plan and a DNS reset note |
+| 11 | Stated regional host pools are preview only and do not support App Attach. Learn now documents regional App Attach packages and What's new lists regional host pools as GA, while two other pages still say preview. Validation required both VNets to have empty DNS, but Lab 4 sets `eastus2` DNS. Prerequisite said Labs 1 to 3 only | Note rewritten as a disagreement between Learn pages, validation and prerequisites corrected. The Labs 11 to 20 plan still holds the older claim |
+
+Earlier text in this file said Lab 11 had no conflicting statements. That was a text search and it missed the items above.
+
 ## Not re-read in this pass
 
-Chapter 1's history table beyond spot checks; the parts of Chapters 4 and 11 not listed above; the gateway subnet figures in Chapter 12; and the parts of Chapters 7 and 10 not listed in the first table. They keep their 16 October 2026 status and caveats from [REVIEW-REGISTER](../REVIEW-REGISTER.md).
+Chapter 4 and 11 sections beyond those in the table, the Azure Local activation edge cases, the Private Link pricing page, and Labs 6, 9 and 12 onward (Lab 6 and 9 are outside the Chapter 1 to 12 and 15 scope, and Labs 12 onward belong to the held part of the book). They keep their earlier status and caveats from [REVIEW-REGISTER](../REVIEW-REGISTER.md).
 
 ## Follow-up outside Chapters 1 to 12
 

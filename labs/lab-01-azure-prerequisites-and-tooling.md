@@ -21,7 +21,7 @@ Prepare your Azure subscription and your workstation so that every later lab run
 | **Total for Lab 1** | **$0.00** |
 | **Cost if left running** | **$0.00** - nothing billable is created |
 
-Later labs do create billable resources. Lab 3 (network) is a few dollars a month. **Lab 8 (session hosts) is the first genuinely expensive lab** and will carry a clear warning before you start it.
+Later labs do create billable resources. Lab 3 (network) is free in its base build. **Lab 4 adds the first running compute (one domain controller VM)**, and **Lab 8 (session hosts) is the first genuinely expensive lab**; each carries a cost warning before you start it.
 
 ## Prerequisites
 
@@ -202,7 +202,7 @@ Every lab and every Terraform module in this book uses this standard. Consistenc
 
 ## Step 6 - Fix the tagging standard
 
-Apply these to every resource group in every lab.
+Apply these to every resource group in every lab. The Terraform modules apply the tags below to resources through `common_tags`.
 
 | Tag | Example value | Why |
 |---|---|---|
@@ -212,8 +212,9 @@ Apply these to every resource group in every lab.
 | `costCenter` | `learning` | Cost reporting |
 | `autoShutdown` | `true` | Marks resources safe to power off |
 | `deletionDate` | `2026-12-31` | Prevents lab sprawl |
+| `managedBy` | `terraform` | Shows which resources are code-managed. The Terraform modules add this tag themselves, so it is the seventh tag you will see |
 
-The `autoShutdown` and `deletionDate` tags are not decoration. They are how you will keep the lab bill under control when you have 12 labs' worth of resources sitting around.
+The `autoShutdown` and `deletionDate` tags are not decoration. They are how you will keep the lab bill under control when you have several labs' worth of resources sitting around.
 
 ---
 
@@ -245,7 +246,9 @@ Do not move to Chapter 3 until every box is ticked.
 
 - [ ] `az account show` returns the correct subscription
 - [ ] `Microsoft.DesktopVirtualization` provider shows `Registered`
-- [ ] `Microsoft.Compute`, `Microsoft.Network`, `Microsoft.Storage`, `Microsoft.Insights`, `Microsoft.OperationalInsights`, `Microsoft.KeyVault`, `Microsoft.Consumption`, `Microsoft.RecoveryServices`, `Microsoft.Management`, `Microsoft.PolicyInsights` show `Registered`
+- [ ] `Microsoft.Compute`, `Microsoft.Network`, `Microsoft.Storage`, `Microsoft.Insights` and `Microsoft.OperationalInsights` show `Registered` (needed by the numbered labs)
+- [ ] `Microsoft.Authorization` and `Microsoft.Resources` show `Registered` (check with `az provider show`)
+- [ ] Optional: `Microsoft.KeyVault`, `Microsoft.Consumption`, `Microsoft.RecoveryServices` and `Microsoft.Management` show `Registered` (capstone modules only), and `Microsoft.PolicyInsights` (precaution only)
 - [ ] `az vm list-usage` shows at least 20 vCPUs of available quota in your chosen region
 - [ ] Azure CLI installed and `desktopvirtualization` extension added
 - [ ] `Az` and `Az.DesktopVirtualization` PowerShell modules installed, versions recorded

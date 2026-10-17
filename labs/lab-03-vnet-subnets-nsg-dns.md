@@ -184,7 +184,7 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-**Expected output:** VNet, four subnets, three NSGs and their rules created, with the NSG-to-subnet associations.
+**Expected output (not observed, plan and apply have never been run):** the plan should list the VNet, four subnets plus the Bastion subnet (default `deploy_bastion_subnet = true`), three NSGs, their rules and the NSG-to-subnet associations. Read the plan and compare it with `terraform/lab03-network` before applying.
 
 ---
 
@@ -246,7 +246,7 @@ az network nic list-effective-nsg \
 ## Validation Checklist
 
 - [ ] VNet `vnet-avd-lab-eus2-01` exists with address space `10.10.0.0/16`
-- [ ] Four subnets created with the planned CIDRs
+- [ ] Four subnets created with the planned CIDRs (identity, hosts, storage, mgmt), plus the reserved `AzureBastionSubnet` if the module's Bastion-subnet variable is left on
 - [ ] Subnet address ranges do not overlap, and none overlaps your home or corporate network if you plan to VPN later
 - [ ] NSG associated with the hosts subnet (verify in the portal, not just in code)
 - [ ] Outbound rule for service tag `WindowsVirtualDesktop` on TCP 443 present

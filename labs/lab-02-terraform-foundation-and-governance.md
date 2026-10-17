@@ -233,7 +233,7 @@ terraform apply tfplan
 
 **Always use `-out`.** Running `terraform apply` on its own re-plans at apply time, so what you approve may not be what you reviewed. On a shared environment that is how accidents happen.
 
-**Expected output:** `Apply complete! Resources: 6 added, 0 changed, 0 destroyed.`
+**Expected output (not observed; plan and apply have never been run, so check the count against the plan you read):** `Apply complete! Resources: 6 added, 0 changed, 0 destroyed.`
 
 ---
 

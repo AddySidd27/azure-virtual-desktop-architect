@@ -119,7 +119,7 @@ terraform apply tfplan
 
 - *Account kind cannot be changed after creation.* If you created a `StorageV2` account by hand first and are now trying to import it, delete and recreate rather than trying to convert it.
 - *Private endpoint cannot be created in the subnet.* Confirm the storage subnet from Lab 3 has free addresses and no conflicting delegation. Separately, note that NSG rules on that subnet are not applied to private endpoint traffic while the subnet's private endpoint network policies are disabled (the default), see [Lab 3 Step 2](lab-03-vnet-subnets-nsg-dns.md) and U23. The exact provider argument was not verified.
-- *Quota errors on the storage account name.* Storage account names are globally unique; if `stfslogixlabeus01` is taken, adjust the name in `storage.tf`.
+- *Quota errors on the storage account name.* Storage account names are globally unique; if `stfslogixlabeus201` is taken, adjust the name in `storage.tf`.
 
 ---
 
@@ -194,8 +194,8 @@ Verify, per Learn: `(Get-AzStorageAccount -ResourceGroupName <rg> -Name <account
 
 **Common errors:**
 
-- *Access denied joining the domain.* Confirm the DC's managed identity has Contributor on the storage account, not just Reader.
-- *Module not found.* The `Install-Module` step needs outbound internet from the DC, which Lab 3's NSG should already permit for PowerShell Gallery; if it is blocked, install offline or temporarily relax the outbound rule for this step.
+- *Access denied joining the domain.* Two accounts are involved. The Azure account you pass to `Connect-AzAccount` needs Contributor or Owner on the storage account, and the AD account running the cmdlet needs the right to create a computer object (a domain admin in this lab). The Learn procedure signs in with `Connect-AzAccount`, not with a managed identity on the DC.
+- *Module not found.* `AzFilesHybrid` is not installed from the PowerShell Gallery. Download the release from the Azure-Samples GitHub releases page and run its `CopyToPSPath.ps1`. The DC needs outbound internet for that download and for any `Az` module installs. Check the hosts and identity NSG outbound rules, and the Lab 3 note that the storage subnet NSG is not enforced, before assuming a network block.
 
 ---
 
@@ -311,7 +311,7 @@ Premium file shares, which this lab and the underlying chapter recommend for FSL
 
 **Q. What would you change about this lab's NTFS permissions for a production deployment?**
 
-Move from a blanket group-wide Modify grant at the share root to per-user folder permissions, so a user can access only their own profile folder rather than every colleague's. This lab keeps the simpler group-wide grant to keep the validation step short; production identity design should not.
+This lab already applies the Learn-recommended pattern: `CREATOR OWNER` Modify on subfolders and files, the administrative group Full Control, and the users group Modify on the root folder only, so each user reaches only the folder they create. For production I would add a separate group for administrators, review who holds the Elevated Contributor role, disable the storage account key once identity access is proven, and test a user who is not in the profile group to confirm access is denied.
 
 ---
 

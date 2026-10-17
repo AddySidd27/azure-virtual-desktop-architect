@@ -8,7 +8,7 @@
 
 ## ⚠️ Cost warning. Read this before you start.
 
-This is the first lab in the sequence with a real, ongoing compute cost while the VM runs. Everything through Lab 7 was free or near-free. From here on, deallocate session hosts (`az vm deallocate`, or the Terraform output `deallocate_all_command`) whenever you are not actively using them.
+This is the first lab with session host compute, the largest running cost so far. Lab 4's domain controller is the first running VM and Labs 2, 3, 5 and 7 are free or low cost. From here on, deallocate session hosts (`az vm deallocate`, or the Terraform output `deallocate_all_command`) whenever you are not actively using them.
 
 ## Objective
 
@@ -55,7 +55,7 @@ Labs 3, 4, 5, 6 and 7 complete. Lab 7's registration token retrieved and not yet
 | One `Standard_D2s_v5` host, running | ~$70-90/month if left running continuously |
 | Deallocated | Disk cost only, a few dollars/month |
 
-**Deallocate when not actively working through this lab.** This is the first lab where forgetting to do so has a real cost.
+**Deallocate when not actively working through this lab.** Forgetting to do so here costs more than for the Lab 4 domain controller.
 
 ## Required tools
 

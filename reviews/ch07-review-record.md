@@ -50,3 +50,7 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Lab 4 Step 7 now documents the selected identity-sync design (U30, U32); Lab 4 objective corrected to AD DS join.
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Prerequisites and Entra joined session hosts pages read in full. The one-identity rule, three join models, UPN or SID rule, Entra Domain Services hosts not manageable with Intune, Server not enrollable in Intune and the Virtual Machine User Login requirement (not needed with a session host configuration) all match. The cloud-only Azure Files conflict flag remains. Lab 4 read in full: Bastion cost wording and the U24 note corrected, U24 stays open. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

@@ -56,3 +56,7 @@ Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSE
 Session-host-only licence scope, Intune enrolment prerequisites (device credentials, agent 1.0.2944.1400 or later, pooled ARM-deployed host pool, no cloned enrolled images, FSLogix RoamIdentity disabled) and per-user pricing limits added. Azure verification page re-read at its azure-stack path and still supports the chapter's statements. Baseline line updated.
 
 Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Multi-session FAQ and Azure Local pages read in full. Added Approved Providers (Citrix, Omnissa) and the RD IP Virtualization limit. The old verify flag on the Azure Local support boundary was replaced with sourced statements and a narrower residual flag. U7 (Azure Local OS set) stays open. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

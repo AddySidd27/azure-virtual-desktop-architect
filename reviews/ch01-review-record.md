@@ -131,3 +131,7 @@ Inline source links added under the "How AVD got here" table and the classic ret
 Control plane list, outage behaviour, licensing limits (per-user pricing not for Windows Server, not supported for Citrix or Omnissa), contractor licence note, Hybrid row, Windows 365 Flex wording, Store app dates and Q1 answers corrected against full Learn pages. Baseline line updated.
 
 Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Every row of the history table re-checked against What's new. ARM integration is now dated June 2020 announce and July 2020 GA (the earlier text tied it to 2021). The 2019 WVD year is stated as resting on Learn's 'Fall 2019 release' wording. Single reviewer. No Azure execution. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

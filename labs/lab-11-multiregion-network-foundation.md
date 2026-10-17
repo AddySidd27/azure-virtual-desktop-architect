@@ -27,7 +27,7 @@ Two virtual networks, one per region, each with the same four-subnet layout Lab 
 
 ## A note on product accuracy before you start
 
-Microsoft's Regional Host Pools feature (a newer host pool deployment scope with per-region metadata storage) is currently in **public preview**, and while in preview it does not support Dynamic Autoscaling, Private Link, or App Attach - all of which Labs 14-19 use. This lab set deliberately uses classic (geographical) host pools throughout, not Regional Host Pools, for that reason. See the [Labs 11-20 plan](../appendices/labs-11-20-plan.md) section 1 for the full research behind this decision, with Microsoft Learn sources. If you're reading this after Regional Host Pools reaches general availability, re-check [learn.microsoft.com/azure/virtual-desktop/regional-host-pools](https://learn.microsoft.com/en-us/azure/virtual-desktop/regional-host-pools) before assuming the constraint still applies.
+Regional host pools store host pool metadata in a regional database instead of the geographical one. Learn's pages disagree on their status as retrieved 17 October 2026: the What's new page lists them as generally available (September 2026), while the Regional host pools page and the multiregion BCDR page still say preview. The older claim in this lab that regional host pools do not support App Attach is no longer safe to repeat, because the App Attach page now says packages inherit the host pool's deployment scope. Whether regional host pools work with Private Link and dynamic autoscaling was not re-verified. This lab set uses classic (geographical) host pools throughout. The reasons that still hold are that deployment scope cannot be changed after creation, regional and geographical objects cannot be associated with each other, and the Labs 14 to 19 Terraform was written for geographical pools. Re-check [Regional host pools](https://learn.microsoft.com/en-us/azure/virtual-desktop/regional-host-pools) before choosing for a real design. The [Labs 11-20 plan](../appendices/labs-11-20-plan.md) section 1 holds the earlier research and has the same stale claim, which is not corrected in this pass. `[VERIFY BEFORE IMPLEMENTATION]`
 
 ---
 
@@ -39,18 +39,18 @@ Microsoft's Regional Host Pools feature (a newer host pool deployment scope with
 | Subnets | **$0.00** |
 | Network security groups | **$0.00** |
 | VNet peering (both directions) | **$0.00** hourly charge - billed only on data transferred |
-| Peering data transfer (lab validation traffic) | **under $1.00/month** |
+| Peering data transfer (lab validation traffic) | **under $1.00/month** (approximate, not verified against the pricing page) |
 | **Total** | **under $1.00/month** |
 
 No compute is deployed in this lab. The cost stays negligible until Lab 12 (domain controller) and Lab 14 (session hosts).
 
 ## Prerequisites
 
-- Labs 1-3 complete: `eastus2` VNet, subnets, and NSGs exist and `terraform apply` reports no pending changes
+- Labs 1 to 10 complete, or at least Labs 1 to 4: the `eastus2` VNet, subnets and NSGs exist, and Lab 12 needs the Lab 4 domain controller
 - Your Terraform identity (the credentials `terraform apply` runs as) has write access to both the existing `eastus2` network resource group and permission to create new resource groups in `centralus`
 - Lab 3's Terraform state re-applied at least once since this book added a `resource_group_name` output - see the note below
 
-> ⚠️ **If you built Lab 3 before this lab existed:** Lab 3's `outputs.tf` gained a new output (`resource_group_name`) to support this lab's cross-region peering. Run `terraform apply` in `terraform/lab03-network` once before starting this lab, even though nothing about your `eastus2` network actually changes - Terraform needs to refresh state to populate the new output value.
+> ⚠️ **If you built Lab 3 before this lab existed:** Lab 3's `outputs.tf` gained a new output (`resource_group_name`) to support this lab's cross-region peering. Run `terraform apply` in `terraform/lab03-network` once before starting this lab, even though nothing about your `eastus2` network actually changes - Terraform needs to refresh state to populate the new output value. If you have already done Lab 4, read the `terraform plan` first: Lab 4 set the VNet DNS server outside Terraform, and whether a Lab 3 apply reverts it is open issue U24 (a source reading suggests it will not, but no plan has been observed). Do not apply if the plan shows `dns_servers` being changed.
 
 ---
 
@@ -159,7 +159,7 @@ az network vnet show \
   --output tsv
 ```
 
-**Expected output:** empty, meaning Azure-provided DNS. This is correct at this stage, for the same reason Lab 3 left `eastus2` on Azure-provided DNS until Lab 4's domain controller existed. Setting DNS server IPs before the servers they point to exist breaks name resolution for every VM in the VNet, not just the ones you're testing. Lab 12 configures both regions' DNS server settings once both domain controllers exist and can actually answer queries.
+**Expected output:** empty, meaning Azure-provided DNS, for the new `centralus` VNet. This is correct at this stage, for the same reason Lab 3 left `eastus2` on Azure-provided DNS until Lab 4's domain controller existed. The `eastus2` VNet is different: Lab 4 already points it at `10.10.1.4`, so do not expect it to be empty. Setting DNS server IPs before the servers they point to exist breaks name resolution for every VM in the VNet, not just the ones you're testing. Lab 12 configures both regions' DNS server settings once both domain controllers exist and can actually answer queries.
 
 ---
 
@@ -171,7 +171,7 @@ az network vnet show \
 - [ ] `peer-eus2-to-cus` reports `Connected`
 - [ ] `nsg-identity-lab-cus-01` includes `Allow-AD-Replication-From-Eastus2` with source `10.10.0.0/16`
 - [ ] All six `centralus` resource groups carry the same tag set as their `eastus2` equivalents
-- [ ] VNet DNS servers on both VNets remain empty (Azure-provided) - not yet pointed at anything
+- [ ] `centralus` VNet DNS servers are empty (Azure-provided), and the `eastus2` VNet still shows `10.10.1.4` from Lab 4
 - [ ] `terraform plan` in `lab11-multiregion-network` reports no changes after apply
 
 ## Troubleshooting

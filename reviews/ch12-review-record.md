@@ -57,3 +57,7 @@ Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSE
 Topology triggers, Virtual WAN shared-services limit, CAF deprecation (removal 30 October 2026), five reserved addresses and the hub /24 minimum confirmed. Added hub sizing recommendations and a peering-versus-Private-Link billing caveat. U33 unchanged.
 
 Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Gateway subnet sizes, Firewall and Bastion /26 minimum, vWAN hub sizes and Bastion Developer SKU confirmed. The Private Link pricing page was not read. Lab 11 corrected, see Chapter 11. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

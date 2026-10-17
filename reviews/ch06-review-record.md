@@ -49,3 +49,7 @@ Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSE
 All Windows App platform, redirection, Shortpath, Multipath and browser statements match the full comparison and get-started pages. Store app wording and the stale status header corrected. U8, U9 and U12 unchanged.
 
 Single reviewer, no independent pass. Scope and pages: [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Windows App platform, redirection and Shortpath claims re-read. No new edit. U9 (Quest label) stays open. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

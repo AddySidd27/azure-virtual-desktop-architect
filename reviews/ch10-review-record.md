@@ -37,3 +37,7 @@ Issue dispositions affecting this chapter (details and Learn URLs in [UNRESOLVED
 Changes: Service-role scope table added (autoscale subscription scope, Start VM on Connect any containing scope).
 
 Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSET-VERIFICATION.md). Source verification only; no Azure, Terraform, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+All role descriptions re-read against the RBAC page and match. The session host configuration role scope is sourced: the host pool managed identity needs Desktop Virtualization Virtual Machine Contributor on the resource group or subscription. Lab 10 read in full: destroy loop changed from auto-approve to a reviewed plan. Lab 8 cost wording corrected. U35 stays open. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

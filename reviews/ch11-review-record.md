@@ -47,3 +47,7 @@ Checks rerun on the final local state are listed in [ASSET-VERIFICATION.md](ASSE
 ## Learn re-check, 17 October 2026
 
 Full re-read of [Required FQDNs and endpoints for Azure Virtual Desktop](https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint). Ports and the platform address rows match. Error corrected: the chapter (and Lab 3) said `oneocsp.microsoft.com` and `catalogartifact.azureedge.net` had no service tag, but Learn lists `AzureFrontDoor.FirstParty` and `AzureFrontDoor.Frontend`; `azkms.core.windows.net` carries only the generic `Internet` tag. Private Link section not re-read. Details in [CHAPTER-SOURCE-RECHECK](CHAPTER-SOURCE-RECHECK.md).
+
+## Third documentation pass, 17 October 2026
+
+Private Link setup page re-read: one global endpoint, global DNS zone, UDP opt-in with public Shortpath off, ignored private-only setting on the global workspace. Matches. Lab 11 corrected: regional host pool status note, DNS validation and prerequisites. The Labs 11 to 20 plan still has the older claim. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

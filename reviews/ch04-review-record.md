@@ -50,3 +50,7 @@ Source re-read: [RDP Shortpath for Azure Virtual Desktop](https://learn.microsof
 Corrections: the opening now says Shortpath is set up alongside the reverse connect connection and replaces it when it succeeds (Learn's connection sequence); the client firewall row now gives the destination Learn states (public IPs of the NAT gateway or Azure Firewall); "Learn expects the managed path to win" changed to Learn's "likely"; symmetric NAT (Azure Firewall, Azure NAT Gateway) and TURN added; two unsupported frequency claims reworded or marked as judgement. Inline source link added. First-use acronym expansions added.
 
 Not verified: the RDP Multipath statements (unchanged from the 16 October flag). No Azure, CLI, PowerShell or KQL execution.
+
+## Third documentation pass, 17 October 2026
+
+Gateway selection (10 ms groups then fewest connections), Front Door and Traffic Manager, TLS 1.2 minimum and the endpoint table re-read against the Azure cloud tab. No change needed. Lab 3 read in full: validation checklist and expected output corrected for the reserved Bastion subnet. Evidence level: official-source verified for the claims named, static check only for labs. Not independently reviewed. Not executed in Azure.

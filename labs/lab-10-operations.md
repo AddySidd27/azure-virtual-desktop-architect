@@ -175,9 +175,13 @@ If you are finished with the lab sequence:
 
 ```bash
 for lab in lab10-operations lab09-app-delivery lab09-remoteapp-host lab08-session-hosts lab07-avd-core lab05-storage; do
-  echo "Destroying $lab"
-  (cd "terraform/$lab" && terraform destroy -auto-approve)
+  echo "Reviewing destroy plan for $lab"
+  # lab09-remoteapp-host exists only if you created it by copying lab08 in Lab 9. The loop skips a missing folder.
+  (cd "terraform/$lab" && terraform plan -destroy -out=destroy.tfplan && read -p "Apply this destroy plan for $lab? (yes/no) " ans && [ "$ans" = "yes" ] && terraform apply destroy.tfplan)
 done
+# Read each destroy plan before you answer yes. Nothing here has been run.
+# Before destroying Lab 4, set the VNet DNS servers back to Azure-provided DNS (Lab 4 Step 5 mistake note)
+# so that remaining VMs do not point at a deleted domain controller.
 # Labs 2-4 (foundation, network, identity) are usually kept longer as a base
 # to rebuild from; destroy them too only if you are done with the book entirely.
 ```
