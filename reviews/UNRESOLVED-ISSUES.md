@@ -20,3 +20,5 @@ Maintained during the 2026-10-16 chapter review. Each item lists what is in conf
 | U14 | Cloud-only profile permissions | Entra Kerberos intro says Azure RBAC with no NTFS ACLs; FSLogix page configures permissions via Manage access tab | Ch7, Ch20 | Unresolved |
 | U15 | VM User Login role with session host configuration | Learn says not required for SHC pools; reason not stated | Ch5, Ch7, Ch8 | Unverified mechanism |
 | U16 | Entra Domain Services limits (Domain Admin, schema) | Not checked | Ch7 | Unverified |
+| U17 | Ch8 identity architecture SVG/drawio | Draws Conditional Access at first sign-in only; with SSO, Windows Cloud Login is also a CA target. Caption note added, diagram not redrawn | Ch8, Ch9 | Open (diagram work, Phase 5) |
+| U18 | KDC proxy with Windows App | Learn's KDC proxy page names the Windows Desktop client only | Ch8 | Unverified |
