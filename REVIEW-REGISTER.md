@@ -47,7 +47,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 | [Chapter 4 - The Connection Flow, End to End](chapters/ch04-connection-flow-end-to-end.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch4 record](reviews/ch04-review-record.md) |
 | [Chapter 5 - Operating Systems, Multi-session and Licensing](chapters/ch05-operating-systems-multisession-licensing.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch5 record](reviews/ch05-review-record.md) |
 | [Chapter 6 - Clients and the Endpoint Story](chapters/ch06-clients-and-the-endpoint-story.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch6 record](reviews/ch06-review-record.md) |
-| [Chapter 7 - Identity Architecture Foundations](chapters/ch07-identity-architecture-foundations.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 7 - Identity Architecture Foundations](chapters/ch07-identity-architecture-foundations.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch7 record](reviews/ch07-review-record.md) |
 | [Chapter 8 - Authentication Flows in Detail](chapters/ch08-authentication-flows-in-detail.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 9 - Conditional Access, MFA and Zero Trust Access](chapters/ch09-conditional-access-mfa-zero-trust.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 10 - RBAC, Delegation and the Administrative Model](chapters/ch10-rbac-delegation-administrative-model.md) | Not Reviewed | Not Reviewed | None |

@@ -16,3 +16,7 @@ Maintained during the 2026-10-16 chapter review. Each item lists what is in conf
 | U10 | WVDConnections State values | Not enumerated on table reference | Ch4 | Unverified |
 | U11 | Event 3701 / URL checker tool page | Page not fetched | Ch4 | Unverified |
 | U12 | Intune version pinning for Windows App | Not verified | Ch6 | Unverified |
+| U13 | Cloud-only identities with Azure Files/FSLogix: status | Entra joined page says fully supported; same page's profile section says hybrid; Entra Kerberos intro says Preview; Azure Files/FSLogix pages say public cloud only | Ch7, Ch20, Ch21 | Conflict |
+| U14 | Cloud-only profile permissions | Entra Kerberos intro says Azure RBAC with no NTFS ACLs; FSLogix page configures permissions via Manage access tab | Ch7, Ch20 | Unresolved |
+| U15 | VM User Login role with session host configuration | Learn says not required for SHC pools; reason not stated | Ch5, Ch7, Ch8 | Unverified mechanism |
+| U16 | Entra Domain Services limits (Domain Admin, schema) | Not checked | Ch7 | Unverified |

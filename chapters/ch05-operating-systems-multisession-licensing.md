@@ -167,7 +167,7 @@ Activation differs by where the session host runs, and it is a common source of 
 
 Worth flagging here because the OS choice and the join model interact.
 
-Learn's prerequisites page itself only says Entra-joined session hosts need Entra tenant membership and that account permissions to join devices are required; the additional sign-in steps (single sign-on or earlier authentication protocols, an RBAC role for users, and a review of MFA policies) are documented in the Entra-joined session hosts articles, which Chapters 7 and 8 verify. Treat the next paragraph as a forward reference until those chapters are reviewed.
+Learn's prerequisites page itself only says Entra-joined session hosts need Entra tenant membership and that account permissions to join devices are required; the additional sign-in steps (single sign-on or earlier authentication protocols, an RBAC role for users, and a review of MFA policies) are documented in the Entra-joined session hosts articles, which Chapters 7 and 8 verify. Chapter 7's review adds that Learn requires the Virtual Machine User Login role only for Entra joined pools without a session host configuration, and says the additional role assignment is not required when a session host configuration is used.
 
 That RBAC requirement catches people out. On a domain-joined host, being assigned to the application group is enough. On an Entra-joined host, the user also needs an Azure RBAC role - Virtual Machine User Login or Virtual Machine Administrator Login - on the session hosts. Miss it and the user connects and is then rejected at Windows logon, which looks like an authentication fault rather than a missing role assignment.
 
