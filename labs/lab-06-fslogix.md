@@ -38,6 +38,7 @@ This lab does not change the architecture diagram from Lab 5. It configures beha
 
 - Lab 5 complete and validated
 - Domain controller running
+- An interactive session on the DC as a domain user for Steps 2 and 4 (see the [journey guide, section 3](JOURNEY-LABS-3-8.md#3-hidden-dependency-an-interactive-session-on-the-domain-controller)). The `az vm run-command` form below runs as SYSTEM and is expected to fail the NTFS layer
 
 ## Estimated cost
 
@@ -58,7 +59,7 @@ This is the configuration you will apply in Lab 8. Save it now so Lab 8 can refe
 
 ```powershell
 # Save as: fslogix-profile-config.ps1
-# Applied in Lab 8, Step 5, after the AVD agent registers and before user testing.
+# Applied in Lab 8, Step 4, after the AVD agent registers and before the Lab 8 Step 5 sign-in.
 
 $VHDLocations = "\\<storage_account_name>.file.core.windows.net\profiles"
 

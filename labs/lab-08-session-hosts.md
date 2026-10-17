@@ -44,7 +44,7 @@ If the Lab 7 registration token has expired, regenerate it before starting: `cd 
 
 ## Prerequisites
 
-Labs 3, 4, 5, 6 and 7 complete. Lab 7's registration token retrieved and not yet expired.
+Labs 3, 4, 5, 6 and 7 complete. Lab 7's registration token retrieved and not yet expired. Before Step 1, confirm each gate in the [journey guide](JOURNEY-LABS-3-8.md#5-stage-gates-do-not-continue-until-each-one-passes): the DC is **running**, VNet DNS points at it, the Lab 4 Step 5b forwarder is in place, the storage account is joined to AD DS (Lab 5 Step 4), and the NTFS permissions are set (Lab 5 Step 6). For the Step 5 sign-in you also need your Lab 4 path to be full sign-in. Start Virtual Machine on Connect has no role assignment in this lab (Lab 7 Step 2b), so start the host yourself.
 
 ## Estimated cost
 
@@ -59,7 +59,7 @@ Labs 3, 4, 5, 6 and 7 complete. Lab 7's registration token retrieved and not yet
 
 ## Required tools
 
-Azure CLI, Terraform, `az vm run-command` (no RDP needed, consistent with every prior lab).
+Azure CLI, Terraform, `az vm run-command` for Steps 2 to 4 (no RDP needed on the session host), and a client device with Windows App or a browser for Step 5.
 
 ---
 
@@ -143,11 +143,13 @@ az desktopvirtualization sessionhost list \
 ## Step 4 - Apply the FSLogix configuration from Lab 6
 
 ```bash
-# Copy the script produced in Lab 6, then run it
+# Applies five of the nine Lab 6 values inline (see the note below). Run the full Lab 6 script for the complete set.
 az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1 \
   --command-id RunPowerShellScript \
   --scripts "\$VHDLocations = '\\\\<storage_account_name>.file.core.windows.net\profiles'; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name Enabled -PropertyType dword -Value 1 -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name VHDLocations -PropertyType MultiString -Value \$VHDLocations -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name VolumeType -PropertyType string -Value 'VHDX' -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name DeleteLocalProfileWhenVHDShouldApply -PropertyType dword -Value 1 -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name FlipFlopProfileDirectoryName -PropertyType dword -Value 1 -Force"
 ```
+
+This inline command sets `Enabled`, `VHDLocations`, `VolumeType`, `DeleteLocalProfileWhenVHDShouldApply` and `FlipFlopProfileDirectoryName`. The Lab 6 script also sets `SizeInMBs`, `ProfileType`, `LockedRetryCount` and `LockedRetryInterval`. For the configuration Lab 6 describes, apply the whole Lab 6 script instead (for example by passing its contents to `--scripts`).
 
 Learn states that FSLogix comes pre-installed on the Windows Enterprise multi-session marketplace images, but the administrator is still responsible for configuring it, and the preinstalled version may not be the latest ([Windows Enterprise multi-session FAQ](https://learn.microsoft.com/azure/virtual-desktop/windows-multisession-faq), [FSLogix FAQ](https://learn.microsoft.com/fslogix/overview-faq)). Confirm with `Get-Service frxsvc` and `& "C:\Program Files\FSLogix\Apps\frx.exe" version`; if the service is missing, install FSLogix from the Microsoft download (`https://aka.ms/fslogix-latest`) before the registry values have any effect. In a production build FSLogix configuration belongs in the golden image per Chapter 23. These commands are `[UNTESTED]`: they were not run against an Azure host.
 

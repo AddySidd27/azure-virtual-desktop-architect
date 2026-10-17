@@ -10,6 +10,19 @@ I'm a Senior Cloud/Solutions Architect with 15 years of enterprise IT experience
 
 This repository is part of my transition toward AI-augmented cloud architecture roles, building portfolio evidence through real projects rather than certifications alone.
 
+> **Status notice (17 October 2026): implementation validation is pending.** The documentation was reviewed against Microsoft Learn (retrieved 16 and 17 October 2026) by a single reviewer with no independent pass. No lab procedure, command or Terraform `plan`/`apply` in this repository has been executed as part of that review. Terraform `fmt`, `init -backend=false` and `validate` passed in GitHub CI on `main` at `86e083d`; this review branch's Terraform edits have not been through CI. This repository is not endorsed by Microsoft and implies no MVP status or certification for the content. Start with the [readiness assessment](reviews/READINESS-ASSESSMENT.md), the [open issues](reviews/UNRESOLVED-ISSUES.md) and the [decisions that need approval](reviews/DECISIONS-REQUIRED.md).
+
+**How to read the evidence in this repository**
+
+| Label | Meaning |
+|---|---|
+| Official source | Read on Microsoft Learn, URL and retrieval date recorded |
+| Engineering recommendation / Judgement | The author's design choice or assumption, not a Microsoft statement |
+| Static check | Files read and cross-checked, or HCL/XML/Mermaid parsed |
+| CI validated | Terraform schema validation only, not behaviour |
+| `[UNTESTED]` | Not executed in Azure |
+| `[VERIFY BEFORE IMPLEMENTATION]` | Learn conflict or gap; check before relying on it |
+
 ## How to use this repository
 
 This repository serves two different readers:
@@ -201,6 +214,8 @@ This is a learning and portfolio reference, not a production deployment package.
 ## Navigation
 
 - [Full table of contents](SUMMARY.md)
+- [Labs 3 to 8 guided journey](labs/JOURNEY-LABS-3-8.md) and [lab dependency matrix](labs/LAB-DEPENDENCY-MATRIX.md)
+- [Test plans](reviews/TEST-PLANS.md), [readiness assessment](reviews/READINESS-ASSESSMENT.md) and [decisions that need approval](reviews/DECISIONS-REQUIRED.md)
 - [Validation status](VALIDATION-STATUS.md)
 - [Final architecture and operations review](FINAL-REVIEW.md)
 - [Terraform validation record](TERRAFORM-VALIDATION.md)

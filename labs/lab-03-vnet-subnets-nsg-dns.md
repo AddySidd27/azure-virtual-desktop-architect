@@ -41,6 +41,7 @@ Four subnets in one virtual network. Session hosts reach Azure and the internet 
 
 - [Lab 2](lab-02-terraform-foundation-and-governance.md) complete: remote state, resource groups, naming and tagging standards
 - Terraform initialised against your azurerm backend
+- Read the [Labs 3 to 8 journey guide](JOURNEY-LABS-3-8.md) once before you start. It lists the tenant, permission and interactive-access dependencies that appear in later labs, and the stage gates between them
 
 ---
 
@@ -93,7 +94,9 @@ Refer to [Chapter 4, section 3](../chapters/ch04-connection-flow-end-to-end.md#3
 
 **Important limitation.** NSGs work with IP addresses, ports and **service tags** - not FQDNs. Some required endpoints (`azkms.core.windows.net`, `oneocsp.microsoft.com`, `catalogartifact.azureedge.net`) can only be filtered by FQDN in Azure Firewall or an NGFW. In this lab, the NSG allows the service tags explicitly and permits the remaining outbound traffic; Chapter 13 covers proper egress control with Azure Firewall and the AVD FQDN tag.
 
-**Private endpoint subnet caveat (U23, Learn verified 16 October 2026).** Network policies for private endpoints are disabled by default on a subnet, and while they are disabled, NSG rules are bypassed for traffic to private endpoints in that subnet ([Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy); [Azure Firewall scenarios to inspect traffic destined to a private endpoint](https://learn.microsoft.com/azure/private-link/inspect-traffic-with-azure-firewall)). This lab's `nsg-storage` is attached to the subnet that holds the Lab 5 private endpoint, and `azurerm_subnet.storage` does not set the private endpoint network policy argument. Treat the `Allow-SMB-From-Session-Hosts` rule as documentation of intent, **not** as an enforced control, until policies are enabled on that subnet. The module was not changed because the exact AzureRM argument name and value were not verified against the provider documentation in this review, and the behaviour was not tested. Test plan: `reviews/TEST-PLANS.md`, U23.
+**Private endpoint subnet caveat (U23, Learn retrieved 17 October 2026).** Network policies for private endpoints are disabled by default on a subnet, and while they are disabled, NSG rules are bypassed for traffic to private endpoints in that subnet ([Manage network policies for private endpoints](https://learn.microsoft.com/azure/private-link/disable-private-endpoint-network-policy); [Azure Firewall scenarios to inspect traffic destined to a private endpoint](https://learn.microsoft.com/azure/private-link/inspect-traffic-with-azure-firewall)). This lab's `nsg-storage` is attached to the subnet that holds the Lab 5 private endpoint, and `azurerm_subnet.storage` does not set the private endpoint network policy argument. Treat the `Allow-SMB-From-Session-Hosts` rule as documentation of intent, **not** as an enforced control, until policies are enabled on that subnet. The module was not changed, because the behaviour has not been tested and the AzureRM 5.0 argument could not be confirmed. What is verified: Learn's Terraform provider history records that `azurerm_subnet` deprecated `private_endpoint_network_policies_enabled` in favour of `private_endpoint_network_policies` (AzureRM 3.103.0). Whether 5.0 keeps that name and which values it accepts is **unverified**. Learn's Azure CLI reference documents the portable alternative, `az network vnet subnet update --disable-private-endpoint-network-policies false` (the parameter takes true or false), and the ARM property accepts `Disabled`, `NetworkSecurityGroupEnabled`, `RouteTableEnabled` and `Enabled`. A CLI change would be undone or reported as drift by a later Terraform run, so prefer a Terraform change once the argument is confirmed.
+
+**How to confirm the argument before you change anything** (standard Terraform CLI, not from Learn): after `terraform init`, run `terraform providers schema -json` and look for the private endpoint policy attribute under `azurerm_subnet`. Then run `terraform plan` to see the change. **Reader impact until then:** the storage subnet NSG is documentation of intent only. Rely on the storage account's own controls (`public_network_access_enabled = false`, the private endpoint, and identity-based access) and not on `nsg-storage`. Test plan: `reviews/TEST-PLANS.md`, U23. Tracked as U23 (open).
 
 ---
 
@@ -201,6 +204,8 @@ DNS is the single most common cause of failed domain joins in Lab 4, so set it d
 6. Only then join session hosts to the domain.
 
 **The mistake to avoid:** changing VNet DNS before the DC is actually resolving. Every VM in the VNet then loses name resolution, including the DC itself if it was mid-configuration.
+
+**Do not re-apply this lab blindly after Lab 4 (U24, open).** Lab 4 sets the VNet DNS server with the CLI, outside Terraform, and this module has no `dns_servers` argument. Whether a later `terraform apply` here reverts that setting is **not verified**. After Lab 4 Step 5, run `terraform plan` in this folder and read it first. If it shows `dns_servers` going to empty, do not apply. Lab 4 Step 5 lists two documented options. Test plan: `reviews/TEST-PLANS.md`, U24.
 
 ```bash
 # Verify current DNS configuration on the VNet

@@ -22,7 +22,7 @@ Without Step 7, Labs 4 to 8 still complete up to the Lab 8 sign-in step (domain 
 | # | Prerequisite | Configured in | Needed by | How to validate (as written in the lab) | Typical failure signal | Test status |
 |---|---|---|---|---|---|---|
 | 1 | Subscription, roles to create resources and role assignments, resource providers registered | [Lab 1](lab-01-azure-prerequisites-and-tooling.md) | All labs. Labs 5 and 7 create role assignments, so the deploying identity needs Owner or User Access Administrator as well as Contributor | `az provider show --namespace Microsoft.DesktopVirtualization --query registrationState` returns `Registered` (Lab 1) | Terraform reports a missing resource provider. Role assignment returns authorization failed | Source verified for `Microsoft.DesktopVirtualization` only. Full list not tested (U26) |
-| 2 | Resource groups, tags, remote state | [Lab 2](lab-02-terraform-foundation-and-governance.md) | Labs 3 to 10 | Lab 2 validation checklist | `terraform init` cannot reach backend | Not tested (U25) |
+| 2 | Resource groups, tags, remote state | [Lab 2](lab-02-terraform-foundation-and-governance.md) | Labs 3 to 10 | Lab 2 validation checklist | `terraform init` cannot reach backend | CI `validate` passed on `main`; `plan` never run (U25) |
 | 3 | VNet, subnets, NSGs | [Lab 3](lab-03-vnet-subnets-nsg-dns.md) | Labs 4, 5, 8 | Lab 3 Step 6, effective NSG rules | NIC has no effective rules, or NSG not associated | Not tested |
 | 4 | Outbound path from the hosts subnet to the AVD service (443, UDP 3478 service tag rules, FQDNs) | Lab 3 hosts NSG | Lab 8 agent registration | Lab 8 Step 3 (host `Available`, WVD-Agent event log). Chapter 4 explains event ID 3701, which names a blocked FQDN | Host shows Unavailable | Source verified (Ch4, U11) |
 | 5 | Domain controller with a static IP, AD DS and DNS roles | [Lab 4](lab-04-identity-integration.md) Steps 1 to 4 | Labs 5, 6, 8 | Lab 4 Step 4 | Promotion errors, DNS role not running | Not tested |
@@ -62,6 +62,6 @@ Lab 1 (subscription, roles, providers)
 ## What this matrix does not prove
 
 - It does not prove any lab succeeds. No lab was executed.
-- It does not prove that the Terraform plans are valid. `terraform fmt`, `init`, `validate` and `plan` were NOT RUN.
+- It does not prove that the Terraform plans are valid. `plan` and `apply` were never run. `fmt`, `init -backend=false` and `validate` passed in GitHub CI on `main` at `86e083d`, which does not cover this branch's Terraform edits, and nothing was run locally (U25).
 - Row 9 depends on a tenant and domain the author could not provision here.
 - Rows 18 and 23 are documented manual steps. Adding them to Terraform needs explicit approval because they are role assignments.

@@ -24,6 +24,7 @@
 
 - [Chapter 1 - What Azure Virtual Desktop Actually Is](chapters/ch01-what-avd-actually-is.md)
 - [Chapter 2 - Control Plane, Management Plane and Data Plane](chapters/ch02-control-plane-management-plane-data-plane.md)
+  - [Labs 3 to 8 guided journey](labs/JOURNEY-LABS-3-8.md)
   - [Lab 1 - Azure Prerequisites, Subscription, Quota and Tooling](labs/lab-01-azure-prerequisites-and-tooling.md)
 - [Chapter 3 - The AVD Object Model](chapters/ch03-avd-object-model.md)
   - [Lab 2 - Terraform Foundation, Resource Groups and Governance](labs/lab-02-terraform-foundation-and-governance.md)

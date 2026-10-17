@@ -17,6 +17,19 @@ The [Terraform structural check](.github/workflows/terraform-check.yml) runs `te
 
 The `terraform fmt -check -recursive` step and the `terraform init and validate every module` step both completed successfully in each run. On the earlier `main` commit `2d97b45` the same check failed in the `terraform init and validate every module` step (run 38354030287).
 
+### Update, 17 October 2026 (read-only check of GitHub run metadata)
+
+After the table above, the workflow was changed to pin Terraform 1.16.6 and the provider lock files were committed (pull requests #7 to #9). `gh run list` and `gh run view` were used read-only on 17 October 2026 to read run conclusions; logs were not downloaded.
+
+| Run | Event | Commit | Result |
+|---|---|---|---|
+| 38991596213 | push to `main` | `86e083d` | success (both jobs: format and per-module validate; secret scan) |
+| 38994438927 | manual dispatch on the remote branch `docs/review-register-ch01-remediation` | `a0ed80a` | success |
+
+Terraform version at `86e083d`: pinned to 1.16.6 by the workflow file. AzureRM version: the committed lock files select 5.10.0 (5.9.0 in `blog-post07-profile-storage`).
+
+**Not covered by those runs.** The local branch is 16 commits ahead of `main`. Twelve Terraform files differ from `main` (excluding lock files), including changes to `terraform/lab05-storage/storage.tf` (the `azure_files_authentication` block replaced by `lifecycle { ignore_changes }`) and `license_type` and image SKU changes in the four session-host files. None of that has been through CI or any local Terraform. To check it, push the branch to trigger CI (needs approval), or run `tools/terraform-validate-all.sh` where Terraform is available. Plan, apply and deployment remain unrun.
+
 ### Read-only diagnostic workflow
 
 A separate read-only diagnostic workflow (branch `diag/tf-module-validation`, not part of `main`) validates each module in its own job without stopping at the first failure.
@@ -30,7 +43,7 @@ That workflow resolved Terraform 1.16.6 in every module job, AzureRM 5.10.0 in 3
 
 ### Evidence limits
 
-- The Terraform and provider versions used by the repository CI runs are **not recorded** here. The CI workflow does not pin a Terraform version, so the diagnostic workflow's versions are not assumed to match.
+- *(Superseded for runs from `86e083d` on, see the 17 October 2026 update: Terraform is pinned to 1.16.6 and the provider is locked. It still applies to the three runs in the first table.)* The Terraform and provider versions used by the repository CI runs are **not recorded** here. The CI workflow does not pin a Terraform version, so the diagnostic workflow's versions are not assumed to match.
 - This is a schema, formatting and initialization check. It is **not** a Terraform plan, an apply, a deployment, or runtime testing. The status in [VALIDATION-STATUS.md](VALIDATION-STATUS.md) therefore stays at *provider validated* for the Terraform; no lab is marked lab validated by this record.
 
 ### Checks still required before deployment

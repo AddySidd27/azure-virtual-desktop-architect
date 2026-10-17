@@ -14,7 +14,7 @@ Process note: one reviewer/process (Claude, in-session) performed every pass, so
 | SVG render in headless Chromium, then visual inspection | diagrams listed per chapter below | rendered; defects fixed where listed |
 | XML well-formedness of edited `.svg` and `.drawio` | edited diagrams | OK |
 | HCL syntax parse (python-hcl2) | every `.tf` file under `terraform/` | 0 parse failures |
-| `terraform fmt`, `init`, `validate`, `plan`, `apply` | any module | **Not run.** Terraform and OpenTofu are not installable here (U25) |
+| `terraform fmt`, `init`, `validate`, `plan`, `apply` | any module | **Not run locally.** Terraform and OpenTofu are not installable here (U25). GitHub CI ran `fmt`, `init -backend=false` and `validate` on `main` at `86e083d` (passed); see TERRAFORM-VALIDATION. `plan` and `apply` were never run |
 | Azure CLI, PowerShell and KQL commands in chapters and labs | all | **Not run.** Marked untested |
 
 ## Matrix
@@ -47,7 +47,7 @@ Process note: one reviewer/process (Claude, in-session) performed every pass, so
 | Repo grep, `win11-23h2-avd` in `.tf` | Static | 1 hit, a comment in Lab 8 listing the SKUs Learn offers; no resource uses it |
 | Repo grep, `Join-AzStorageAccountForAuth` | Static | Only in places that cite it as obsolete or as a corrected record |
 | Repo grep, autoscale role scope | Static | Project 07 corrected to subscription scope; Project 08 corrected to a scope containing the VMs |
-| `terraform fmt`, `init`, `validate`, `plan` | **NOT RUN** | Terraform and OpenTofu cannot be installed here (U25) |
+| `terraform fmt`, `init`, `validate`, `plan` | **NOT RUN locally** | Terraform and OpenTofu cannot be installed here (U25). CI passed fmt, init and validate on `main` at `86e083d` but has not seen this branch's Terraform edits |
 | Azure CLI, PowerShell, KQL, Cloud Sync, lab execution | **NOT RUN** | No Azure access; all such commands are marked `[UNTESTED]` |
 
 Terraform files changed in this pass: `session-hosts.tf` in `lab14-active-active-hostpools`, `lab19-dr-failover` and `capstone-northwind/avd-platform/host-pools` (SKU `win11-25h2-avd`, `license_type = "Windows_Client"`). No provider, lock file or role assignment was changed.

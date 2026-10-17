@@ -1,7 +1,8 @@
 > **Part of:** [Azure Virtual Desktop - Architect to Hands-on Implementation](../README.md)
 > **Chapter:** [Chapter 7 - Identity Architecture Foundations](../chapters/ch07-identity-architecture-foundations.md)
 > **Terraform:** [`terraform/lab04-identity`](../terraform/lab04-identity/)
-> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Technical baseline:** Microsoft Learn as retrieved 16 and 17 October 2026 (see [Review register](../REVIEW-REGISTER.md))
+> **Status:** not executed. Implementation validation is pending. See the [Labs 3 to 8 journey guide](JOURNEY-LABS-3-8.md).
 
 # LAB 4 - Identity Integration
 
@@ -63,12 +64,14 @@ One domain controller with a static private IP and no public IP. All configurati
 - [Lab 3](lab-03-vnet-subnets-nsg-dns.md) complete. VNet and subnets exist
 - Terraform initialised against your azurerm backend
 - A strong local administrator password ready. It goes in `terraform.tfvars`, which is gitignored
+- **Decide your path now, not at Step 7.** The Lab 8 Step 5 sign-in needs a test Entra tenant with a **verified custom domain**, Hybrid Identity Administrator in it, and Entra Cloud Sync from Step 7. Without them you can finish Labs 4 to 8 up to host registration, but not a user sign-in. The three paths are in the [journey guide](JOURNEY-LABS-3-8.md#1-choose-your-path-before-you-start)
+- **Plan for an interactive session on the DC.** Steps 2 to 7 here use `az vm run-command`, but Lab 5 Steps 4 to 6 need an interactive session and this lab deploys no RDP path. The [journey guide](JOURNEY-LABS-3-8.md#3-hidden-dependency-an-interactive-session-on-the-domain-controller) lists the options. Azure Bastion Developer is free and lists East US 2 as supported (Learn, 17 October 2026, not tested here)
 
 ## Lab design decisions
 
 Two choices in this lab are deliberate and worth understanding.
 
-**No public IP address and no Azure Bastion.** The DC has no public exposure at all. You configure it entirely through `az vm run-command`, which sends PowerShell to the VM through the Azure control plane. No RDP, no inbound rules, no Bastion cost. This is also a good habit. Production domain controllers should not have public IPs.
+**No public IP address and no dedicated Azure Bastion host.** The DC has no public exposure at all. You configure it in this lab entirely through `az vm run-command`, which sends PowerShell to the VM through the Azure control plane. No RDP, no inbound rules, no Bastion cost. This is also a good habit. Production domain controllers should not have public IPs.
 
 **Static private IP.** A domain controller's IP becomes the DNS server for the whole VNet. It cannot change. Terraform sets it explicitly to `10.10.1.4`, the first usable address in the identity subnet.
 
@@ -147,7 +150,7 @@ terraform apply tfplan
 
 ## Step 2 - Install the AD DS role
 
-Everything from here uses `az vm run-command`. No RDP session is needed.
+Everything in this lab from here uses `az vm run-command`. No RDP session is needed in Lab 4. Lab 5 does need one (see Prerequisites).
 
 ```bash
 az vm run-command invoke \
@@ -221,7 +224,7 @@ az network vnet update \
 
 **What this does:** every VM in the VNet will now receive `10.10.1.4` as its DNS server through DHCP.
 
-**Then restart the VMs.** VMs cache DNS settings from DHCP and will not pick up the change until they restart.
+**Then restart the VMs.** VMs cache DNS settings from DHCP and will not pick up the change until they restart. Learn says the same: VMs and other resources that inherit DNS servers keep their current settings until they restart ([Create, change, or delete a virtual network](https://learn.microsoft.com/azure/virtual-network/manage-virtual-network), Change DNS servers, retrieved 17 October 2026). Session hosts you create in Lab 8 are created after this step and pick the setting up at deployment.
 
 ```bash
 az vm restart \
@@ -232,6 +235,8 @@ az vm restart \
 **Why the DC itself needs restarting too:** it is a VM in the same VNet and it also caches its DNS setting.
 
 **The mistake to avoid.** Do not set VNet DNS before the DC is resolving. If you do, every VM in the VNet loses name resolution, including the DC while it is mid-configuration. If that happens, set the DNS servers back to empty, restart, fix the DC, and try again.
+
+> **Re-applying Lab 3 afterwards (U24, open).** The Lab 3 module has no `dns_servers` argument. Whether `terraform apply` there would reset the DNS server you just set is **not verified**. Run `terraform plan` in `terraform/lab03-network` and read it before any apply. Two documented options if it shows a reset, both `[UNTESTED]`: (1) add `lifecycle { ignore_changes = [dns_servers] }` to `azurerm_virtual_network.avd` (a standard Terraform meta-argument; the module was not changed); or (2) manage the setting with the separate `azurerm_virtual_network_dns_servers` resource, which exists in the provider (Learn's provider history records it from AzureRM 2.69.0). Do not combine both ways of setting DNS on one VNet without testing. Test plan: `reviews/TEST-PLANS.md`, U24.
 
 > **Terraform note.** This lab sets DNS with the CLI so that you can see the ordering clearly. In production this belongs in Terraform, on the `azurerm_virtual_network` resource using the `dns_servers` argument. The reason it is not in the Terraform here is that Terraform would try to set it during the same apply that creates the DC, before the DC exists. Ordering problems like this are exactly why some steps stay imperative. [Project 03](../scenarios/project-03-global-enterprise-governance.md) covers how to handle this properly with separate applies at scale.
 
@@ -246,12 +251,14 @@ az vm run-command invoke \
   --resource-group rg-avd-identity-lab-eus2-01 \
   --name vm-avdlab-dc01 \
   --command-id RunPowerShellScript \
-  --scripts "Add-DnsServerConditionalForwarderZone -Name 'file.core.windows.net' -MasterServers 168.63.129.16; Add-DnsServerForwarder -IPAddress 168.63.129.16; Get-DnsServerZone -Name 'file.core.windows.net' | Select-Object ZoneName, ZoneType; Get-DnsServerForwarder | Select-Object IPAddress"
+  --scripts "Add-DnsServerConditionalForwarderZone -Name 'file.core.windows.net' -MasterServers 168.63.129.16 -ForwarderTimeout 5; Set-DnsServerForwarder -IPAddress 168.63.129.16 -Timeout 5; Get-DnsServerZone -Name 'file.core.windows.net' | Format-List *; Get-DnsServerForwarder | Format-List *"
 ```
 
-**What this does:** creates a conditional forwarder for the Azure Files namespace (the pattern in Microsoft's Azure Files DNS forwarding guidance) and a general forwarder so public Azure and internet names resolve through Azure DNS rather than only through root hints. The command was not executed in the review. `[VERIFY BEFORE IMPLEMENTATION]` Check the verification output and run `Resolve-DnsName` against a public name before moving on.
+**What this does:** creates a conditional forwarder for the Azure Files namespace with a 5 second forwarder timeout, and sets a server-level forwarder to Azure DNS, also with a 5 second timeout, so public Azure and internet names resolve through Azure DNS rather than only through root hints. **`Set-DnsServerForwarder -IPAddress` overwrites any existing server-level forwarders**, so read `Get-DnsServerForwarder` first if this DC has been configured before. The parameters are confirmed in Learn's DnsServer module reference (`-ForwarderTimeout` on `Add-DnsServerConditionalForwarderZone`, `-Timeout` on `Set-DnsServerForwarder`, retrieved 17 October 2026). The command was not executed. `[VERIFY BEFORE IMPLEMENTATION]` Read the `Format-List *` output for the timeout properties, then run `Resolve-DnsName` against a public name before moving on. Expected, if it works: the zone and forwarder are listed with the Azure DNS address, and a public name resolves.
 
-**Forwarding timeout (Learn, retrieved 16 October 2026).** Learn says that when Windows DNS servers forward to Azure DNS, the forwarding timeout should be more than four seconds so Azure's recursive resolvers can finish, and that too short a timeout can make private DNS zone names resolve to public IP addresses ([Configure DNS name resolution for Azure virtual networks](https://learn.microsoft.com/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances), Name resolution that uses your own DNS server). Check `(Get-DnsServer).ServerForwarder.Timeout` or the forwarder properties and raise it if it is four seconds or less. Also per that page, once custom DNS servers are set, port 53 traffic bypasses the subnet and NIC NSGs, and if a VPN gateway is later used with custom DNS, the Azure DNS IP must stay in the VNet DNS list. Not executed (U27).
+**Zone name (Learn pages differ).** This lab forwards `file.core.windows.net`, the Azure Files namespace, which matches the Azure Files site-to-site VPN page and the Private Endpoint DNS integration page's advice to forward the public zone rather than `privatelink.*`. The "Configure DNS forwarding for Azure Files" page instead forwards the whole storage suffix, `core.windows.net`, and warns that doing so breaks access to private-endpoint storage accounts in other tenants. A troubleshooting page for custom DNS on domain controllers shows a `privatelink.*` forwarder. Learn does not reconcile these. Judgement: the narrower `file.core.windows.net` zone avoids the cross-tenant warning and covers this lab, and the lab never uses blob or other storage endpoints. Tracked in U27.
+
+**Forwarding timeout (Learn, retrieved 17 October 2026).** Learn says that when Windows DNS servers forward to Azure DNS, the forwarding timeout should be more than four seconds so Azure's recursive resolvers can finish, and that too short a timeout can make private DNS zone names resolve to public IP addresses ([Configure DNS name resolution for Azure virtual networks](https://learn.microsoft.com/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances), Name resolution that uses your own DNS server). The command above sets 5 seconds on both the conditional forwarder zone and the server-level forwarder. Learn's forwarding page lists these as separate settings (`ForwarderTimeout` for conditional forwarder zones, `ForwardingTimeout` for server-level forwarders), so check both in the `Format-List *` output. Also per that page, once custom DNS servers are set, port 53 traffic bypasses the subnet and NIC NSGs, and if a VPN gateway is later used with custom DNS, the Azure DNS IP must stay in the VNet DNS list. Not executed (U27).
 
 **Common error:** a forwarder already exists. Read the list with `Get-DnsServerForwarder` first.
 
@@ -271,7 +278,7 @@ az vm run-command invoke \
 
 **What this does:** creates an OU structure, one group, and three test users in that group.
 
-**Why a separate OU for session hosts:** so that GPO can be scoped to them without affecting anything else. You will use this in Lab 6 for FSLogix settings.
+**Why a separate OU for session hosts:** so that GPO can be scoped to them without affecting anything else. Labs 4 to 8 do not use it: Lab 8 joins the host with an empty `OUPath`, so it lands in the default Computers container, and FSLogix is configured through the registry in Lab 8. The OU is kept for later GPO scoping.
 
 **Verify:**
 
@@ -320,7 +327,8 @@ Tracked as U30 and U32.
 - [ ] ADWS, DNS and NTDS services all Running
 - [ ] VNet DNS servers set to `10.10.1.4`
 - [ ] DC restarted after the DNS change
-- [ ] Conditional forwarder for `file.core.windows.net` and the Azure DNS forwarder present on the DC (Step 5b)
+- [ ] Conditional forwarder for `file.core.windows.net` and the Azure DNS forwarder present on the DC, both with a timeout above four seconds (Step 5b)
+- [ ] Path decided: full sign-in (Step 7 completed), infrastructure only, or Entra-only. See the [journey guide](JOURNEY-LABS-3-8.md)
 - [ ] OU structure created: `OU=AVD`, with `Users` and `SessionHosts` beneath it
 - [ ] Three test users created and in the `AVD-Task-Users` group
 - [ ] All resources tagged with the seven standard tags
@@ -335,6 +343,8 @@ Tracked as U30 and U32.
 | `Get-ADDomain` fails after promotion | Promotion did not finish | Check the Directory Service event log before re-running |
 | Other VMs cannot resolve `avdlab.local` | VMs not restarted after the DNS change | Restart them. DNS comes from DHCP and is cached |
 | Domain join fails in Lab 8 | VNet DNS not pointing at the DC, or the DC is deallocated | Check both. A deallocated DC is the most common cause |
+| A Lab 3 plan wants to change `dns_servers` | The VNet DNS was set outside Terraform (U24) | Do not apply. See the Step 5 re-apply note |
+| A storage name resolves to a public IP from a host | Forwarder missing, timeout of four seconds or less, or hosts not restarted after the DNS change | `Get-DnsServerForwarder`, `Format-List *` on the zone, restart the host |
 | Terraform wants to replace the VM | `source_image_reference` version drift or a size change | Read the plan carefully. Replacing a promoted DC means rebuilding the domain |
 | Password rejected | Complexity rules | 12 to 123 characters, three of the four character classes |
 
@@ -342,7 +352,7 @@ Tracked as U30 and U32.
 
 **Do not delete this VM.** Labs 5, 6, 8 and 12 depend on it.
 
-**Do deallocate it at the end of every session.**
+**Do deallocate it at the end of every session.** If you created a `labadmin` account or a Bastion Developer connection for the journey guide, remove them when you finish the whole sequence (see the [journey guide, section 7](JOURNEY-LABS-3-8.md#7-cost-and-cleanup)).
 
 ```bash
 az vm deallocate \

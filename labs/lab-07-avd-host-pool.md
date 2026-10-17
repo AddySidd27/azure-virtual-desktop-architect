@@ -42,7 +42,7 @@ This is deliberately the object model from Chapter 3, section 1, with the layers
 
 ## Prerequisites
 
-Lab 2 applied. An Entra group for AVD users (reuse from Lab 5/6, or create one).
+Lab 2 applied. An Entra group for AVD users (reuse from Lab 5/6, or create one). Terraform creates a role assignment here, so the deploying identity needs Owner or User Access Administrator as well as Contributor (Lab 1). For the Lab 8 sign-in the group must contain users that exist in both AD DS and Entra ID, which is Lab 4 Step 7 (see the [journey guide](JOURNEY-LABS-3-8.md)). A group with no synced members gives nobody access.
 
 ## Estimated cost
 

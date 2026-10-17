@@ -36,22 +36,24 @@ Common environment for every plan: an Azure subscription you own for lab use, th
 | Failure indicator | Plan shows `dns_servers` going to empty. Applying it would break name resolution for every VM, including domain join in Lab 8 |
 | Cleanup | None for `plan` |
 | Azure resources, billable | No new resources |
-| Executed | **No**. Blocked by U25 (no Terraform) |
+| Executed | **No**. Needs Terraform with registry access (U25) |
 
 ## U25. Terraform execution
 
 | Item | Detail |
 |---|---|
-| Objective | Run `fmt`, `init`, `validate` and `plan` on every module and record exact results |
-| Prerequisites | A machine that can install Terraform 1.9.0 or later (or OpenTofu) and reach the Terraform registry |
-| Permissions | None for `fmt` and `validate`. Reader or Contributor on a lab subscription for `plan`, depending on the data sources a module reads |
-| Steps per module | `terraform fmt -check -recursive`, then `terraform init -backend=false`, then `terraform validate`. For `plan`, supply `terraform.tfvars` from the module's `terraform.tfvars.example` and a backend, then `terraform plan` |
-| Order | Follow the lab order: Lab 2, 3, 4, 5, 7, 8, 10, then Labs 11 to 20 and the capstone |
-| Expected | `validate` reports success for every module, or lists the exact argument errors to fix. Provider schema errors are the most likely finding, because `azurerm ~> 5.0` argument names were not verified against provider documentation in this review |
-| Failure indicators | Unsupported argument, missing required argument, deprecated attribute, provider version constraint conflicts between modules |
-| Cleanup | None for `fmt`, `init -backend=false` and `validate`. Remove `.terraform/` directories |
-| Azure resources, billable | None until `apply` |
-| Executed | **No**. Terraform and OpenTofu cannot be installed in the authoring environment, and the download restriction was not bypassed. Only python-hcl2 syntax parsing was run (232 files, 0 failures), which is not Terraform validation |
+| Objective | (1) Confirm `fmt`, `init -backend=false` and `validate` pass for every module **at this branch's commit**, which includes Terraform edits that CI has not seen. (2) Later, run `plan` per layer |
+| Already recorded | GitHub CI passed these three steps in all 34 modules on `main` at `86e083d` (run 38991596213, Terraform 1.16.6). See [TERRAFORM-VALIDATION](../TERRAFORM-VALIDATION.md). Not a plan, apply or deployment |
+| Not yet checked | The twelve Terraform files that differ between `main` and this branch (list in UNRESOLVED-ISSUES U25) |
+| Prerequisites | Terraform 1.9.0 or later (CI uses 1.16.6) or OpenTofu, and access to the Terraform registry and release hosts. No Azure credentials are needed for part 1 |
+| Permissions | None for part 1. Reader or Contributor on a lab subscription for `plan`, depending on the data sources a module reads |
+| Exact commands, part 1 | From the repository root: `tools/terraform-validate-all.sh`. It runs `terraform fmt -check -recursive -diff terraform/`, then for each of the 34 directories containing `versions.tf` it copies the module to a temporary directory and runs `terraform init -backend=false -input=false` and `terraform validate`. Tracked lock files and the working tree are not modified. Add `TF_PLUGIN_CACHE_DIR=<dir>` to download the provider once. Equivalent by hand for one module: `cd terraform/lab05-storage && terraform init -backend=false -input=false && terraform validate` (this updates that module's lock file only if the lock does not match the constraints) |
+| Exact commands, part 2 (plan) | Per module in lab order: copy `terraform.tfvars.example` to `terraform.tfvars`, replace every example value, configure a remote state backend (see Lab 2), `terraform init`, `terraform plan -out=tfplan`. Read the plan. Do not apply without an authorised subscription |
+| Expected | Part 1: `Failures: 0` and 34 PASS lines plus a `fmt` PASS line in `summary.tsv`. If a file fails, the log names the argument |
+| Failure indicators | `Unsupported argument`, `Missing required argument`, deprecated attribute errors, `fmt` diff output, provider version conflicts |
+| Cleanup | None. The script removes its temporary copies. `rm -rf` the output directory if kept |
+| Azure resources, billable | None for part 1. Part 2 reads Azure only through data sources and creates nothing until `apply` |
+| Executed | **No.** The author's environment cannot install Terraform or OpenTofu and the restriction was not bypassed. The script was checked with `bash -n` and `shellcheck`, run once without Terraform (it exited 2 as designed), and its control flow was exercised once with a stub program that is not Terraform (34 modules enumerated, working tree and lock files unchanged). That proves the script logic only |
 
 ## U26. Required resource providers
 
@@ -77,7 +79,7 @@ Common environment for every plan: an Azure subscription you own for lab use, th
 | Learn says (retrieved 17 October 2026, [Configure DNS name resolution for Azure virtual networks](https://learn.microsoft.com/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances)) | A DC in Azure can forward other queries to Azure DNS at `168.63.129.16`. When Windows DNS forwards to Azure DNS, set the forwarding timeout above four seconds, or private zone names can resolve to public IPs. Once custom DNS is set, port 53 traffic bypasses the subnet and NIC NSGs |
 | Prerequisites | Lab 4 Steps 1 to 5b done. Lab 5 Step 1 applied for the storage check |
 | Permissions | Local administrator on the DC (via `az vm run-command` as in the labs) |
-| Steps | 1. `Get-DnsServerForwarder` and `Get-DnsServerZone -Name file.core.windows.net` on the DC. 2. Check the forwarder timeout. 3. From the DC and from a restarted VM in the VNet run `Resolve-DnsName <storage_account>.file.core.windows.net` and `Resolve-DnsName microsoft.com` |
+| Steps | 0. Lab 4 Step 5b now sets `-ForwarderTimeout 5` on the zone forwarder and `Set-DnsServerForwarder -Timeout 5`; confirm both. 1. `Get-DnsServerForwarder` and `Get-DnsServerZone -Name file.core.windows.net` on the DC. 2. Check the forwarder timeout. 3. From the DC and from a restarted VM in the VNet run `Resolve-DnsName <storage_account>.file.core.windows.net` and `Resolve-DnsName microsoft.com` |
 | Expected | The storage name returns the private endpoint IP in `10.10.4.0/24`. The public name returns public addresses. The timeout is above four seconds |
 | Failure indicators | Storage name returns a public IP. Lookups time out |
 | Cleanup | None. Deallocate the DC to stop compute cost |
@@ -99,6 +101,34 @@ Common environment for every plan: an Azure subscription you own for lab use, th
 | Failure indicators | Connection fails with no VM start. Scaling plan enabled with no power change. Activity log shows an authorization failure for the service principal |
 | Cleanup | Remove both role assignments. Deallocate or destroy hosts |
 | Azure resources, billable | Yes, VM compute and storage while the host runs |
+| Executed | **No** |
+
+## U35. Autoscale role scope
+
+| Item | Detail |
+|---|---|
+| Objective | Find out whether autoscale works with the role below subscription scope, since two Learn pages disagree |
+| Learn says (retrieved 17 October 2026) | Create and assign a scaling plan: the role needs the subscription as assignable scope, and a lower scope "prevents autoscale from working properly". Troubleshoot autoscale: the role is assigned at host pool, resource group or subscription scope |
+| Prerequisites | Lab 10 applied, one registered host, Owner or User Access Administrator |
+| Steps | 1. Assign Power On Off Contributor to the AVD service principal at host pool scope only. 2. Wait through a ramp-down window and record whether the host changes power state. 3. Repeat at resource group scope, then subscription scope. 4. Record the activity log result for each |
+| Expected | Unknown. Subscription scope is the baseline the repository uses |
+| Failure indicators | Scaling plan enabled, no power change, authorization failure for the service principal in the activity log |
+| Cleanup | Remove all three role assignments. Deallocate or destroy hosts |
+| Azure resources, billable | Yes, host compute while running |
+| Executed | **No** |
+
+## U36 (U-ACCESS). Interactive session on the domain controller
+
+| Item | Detail |
+|---|---|
+| Objective | Prove a documented route gives an interactive domain-admin session on the DC for Lab 5 Steps 4 to 6 and Lab 6 |
+| Learn says (retrieved 17 October 2026) | Bastion Developer SKU: free, shared, one VM at a time in the same virtual network, no AzureBastionSubnet or public IP, East US 2 supported. Managed Run Command has `--run-as-user`; the user must exist on the VM and Secondary Logon must run |
+| Prerequisites | Lab 4 Step 4 done (DC promoted), a domain admin account (for example `labadmin`, created over run-command) |
+| Steps | 1. Create a Bastion Developer connection to the DC in the portal and sign in as `AVDLAB\labadmin`. Record whether the connection times out. If it does, read the DC NIC effective security rules. 2. In that session run `whoami` and `Get-ADDomain`. 3. Separately test `az vm run-command create --run-as-user AVDLAB\labadmin` with `whoami` and record whether a domain account works |
+| Expected | Step 1 gives an interactive session as the domain admin. Step 3 is unknown |
+| Failure indicators | Connection timeout, credential rejection, `whoami` returns SYSTEM |
+| Cleanup | Delete the Bastion resource and the `labadmin` account |
+| Azure resources, billable | DC compute while running. Bastion Developer is $0 |
 | Executed | **No** |
 
 ## E2E-1. Lab 4 to 8 chain: sign in and mount a profile

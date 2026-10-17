@@ -47,6 +47,9 @@ This is the storage half of [Chapter 20](../chapters/ch20-profile-storage-archit
 - Lab 4's domain controller reachable (running, not deallocated) for Steps 4-6
 - An Entra ID security group to receive share permissions: reuse the test group from Lab 4, or create one: `az ad group create --display-name "avd-lab-users" --mail-nickname "avd-lab-users"`
 - Azure CLI signed in with Storage Account Contributor and User Access Administrator on the storage resource group
+- **An interactive session on the domain controller** for Steps 4 to 6. The labs so far use `az vm run-command` (SYSTEM) and deploy no RDP path. See the [journey guide, section 3](JOURNEY-LABS-3-8.md#3-hidden-dependency-an-interactive-session-on-the-domain-controller) for options (Azure Bastion Developer is free and lists East US 2, Learn 17 October 2026, not tested here) and for a lab administrator account
+- **Your path from Lab 4** (full sign-in, infrastructure only, or Entra-only), because it decides whether the share-level RBAC in Step 3 can take effect. See the [journey guide](JOURNEY-LABS-3-8.md#1-choose-your-path-before-you-start)
+- The Entra group object ID for `avd_users_group_object_id`: the group Cloud Sync creates from `AVD-Task-Users` (preferred), or a cloud group that contains the synced users. A group with no synced members grants nobody access (Judgement, not tested)
 
 ## Estimated cost
 
@@ -62,7 +65,7 @@ This is the storage half of [Chapter 20](../chapters/ch20-profile-storage-archit
 
 ## Required tools
 
-Azure CLI, Terraform, and (for Steps 4-6) a way to run commands against the domain-joined VM from Lab 4 (`az vm run-command`, no RDP needed, consistent with Lab 4).
+Azure CLI, Terraform, and for Steps 2 and 3 `az vm run-command`. Steps 4 to 6 need an **interactive** session on the Lab 4 domain controller (see Prerequisites), plus PowerShell 5.1 with the AzFilesHybrid module on it.
 
 ---
 
@@ -206,6 +209,8 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
   --scripts "New-Item -Path '\\\\<storage_account_name>.file.core.windows.net\\profiles\\testfolder' -ItemType Directory"
 ```
 
+> **What this test can and cannot prove.** `az vm run-command` runs as SYSTEM, which authenticates to the share as the DC's computer account. That account is not a member of `AVD-Task-Users`, so this test is expected to be denied even after Step 6, and a denial here does not show which layer is missing (Judgement from the ACLs in Step 6, not tested). For a meaningful before-and-after, run the same command as a domain user (for example `AVDLAB\avdtest01`) in an interactive session. Use the same user after Step 6.
+
 **Expected output at this point: Access Denied.** The share-level RBAC in Step 3 permits reaching the share. There is no NTFS permission yet granting write access inside it. This is exactly the symptom [Chapter 20](../chapters/ch20-profile-storage-architecture.md#5-the-two-layer-permission-model) describes: both layers must be correct, and this is what "correct on layer one, missing on layer two" looks like from the client's side: indistinguishable from getting both layers wrong.
 
 ---
@@ -218,7 +223,7 @@ Learn constraints that shape this step ([Configure SMB storage permissions for F
 - Mount with `net use`, not PowerShell, or Windows tools will not see the share.
 - The key is a sensitive credential. This lab leaves `shared_access_key_enabled = true` for exactly this step; Step 7 turns it off afterwards. Do not paste the key into a script that is logged or committed.
 
-Learn's recommended FSLogix ACLs are: `CREATOR OWNER` Modify on subfolders and files only; the administrative group Full Control on this folder, subfolders and files; and the users group Modify on **this folder only** (so users can create their own profile folder but not read others'). From a domain-joined Windows machine (sign in interactively on the Lab 4 DC as a domain admin, in an elevated Command Prompt), with the key from the portal (Security + networking > Access keys):
+Learn's recommended FSLogix ACLs are: `CREATOR OWNER` Modify on subfolders and files only; the administrative group Full Control on this folder, subfolders and files; and the users group Modify on **this folder only** (so users can create their own profile folder but not read others'). From a domain-joined Windows machine (sign in interactively on the Lab 4 DC as a domain admin, in an elevated Command Prompt; see the [journey guide, section 3](JOURNEY-LABS-3-8.md#3-hidden-dependency-an-interactive-session-on-the-domain-controller)), with the key from the portal (Security + networking > Access keys):
 
 ```
 net use Z: \\<storage_account_name>.file.core.windows.net\profiles /user:localhost\<storage_account_name> <storage_account_key>
@@ -259,7 +264,8 @@ Leave this until after Lab 6 confirms FSLogix mounts correctly using identity-ba
 - [ ] DNS resolution of the storage account FQDN from inside the VNet returns the private endpoint IP, not a public IP
 - [ ] Share-level RBAC assignment exists and targets the correct group
 - [ ] Domain join for AD authentication (`Join-AzStorageAccount`) completed without error
-- [ ] Write access to the share fails before NTFS permissions are applied (Step 5), and succeeds after (Step 6)
+- [ ] Write access to the share, **as a domain user**, fails before NTFS permissions are applied (Step 5), and succeeds after (Step 6)
+- [ ] You noted in writing that `nsg-storage` is not an enforced control on the private endpoint subnet (U23)
 
 ## Common errors
 

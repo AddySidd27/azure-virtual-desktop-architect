@@ -90,5 +90,13 @@ Chapter 1 was reviewed by one assistant doing both passes in sequence, so neithe
 
 ## Close-out pass, 2026-10-16
 
-Chapters 1 to 12 were re-reviewed against 34 tracked issues. 21 are closed (U29 to U32 and U34 in text or code only, none executed), 13 remain open: U3, U4, U9 (Learn conflicts), U8, U12, U15, U18 (evidence unavailable or undocumented), U23 to U28 (not tested). Terraform fmt, init, validate and plan were NOT RUN. Chapters 1 to 12 are **not** marked complete. See [UNRESOLVED-ISSUES](reviews/UNRESOLVED-ISSUES.md) and [ASSET-VERIFICATION](reviews/ASSET-VERIFICATION.md).
+Chapters 1 to 12 were re-reviewed against 34 tracked issues. 21 are closed (U29 to U32 and U34 in text or code only, none executed), 13 remain open: U3, U4, U9 (Learn conflicts), U8, U12, U15, U18 (evidence unavailable or undocumented), U23 to U28 (not tested). Terraform was not run locally. GitHub CI passed `fmt`, `init -backend=false` and `validate` on `main` at `86e083d`, which does not cover this branch's Terraform edits (see U25 and [TERRAFORM-VALIDATION](TERRAFORM-VALIDATION.md)); `plan` and `apply` were never run. Chapters 1 to 12 are **not** marked complete. See [UNRESOLVED-ISSUES](reviews/UNRESOLVED-ISSUES.md) and [ASSET-VERIFICATION](reviews/ASSET-VERIFICATION.md).
 
+
+## Portfolio release preparation, 17 October 2026
+
+- Added [Labs 3 to 8 guided journey](labs/JOURNEY-LABS-3-8.md): tenant, identity, DNS, interactive DC access, stage gates, cost and teardown. Not executed.
+- Lab 3 to 8 edits: prerequisites, U23 and U24 wording, DNS forwarder timeouts in Lab 4 Step 5b, the Lab 5 Step 5 SYSTEM-context limitation, Lab 6 and Lab 8 step references.
+- New U36 (no documented route to an interactive DC session). U35 re-confirmed against two Learn pages.
+- U25 corrected: CI had already validated Terraform on `main`. `plan` and `apply` still never run; this branch's 12 changed Terraform files not CI-checked. Added `tools/terraform-validate-all.sh` (syntax-checked only).
+- Added [DECISIONS-REQUIRED](reviews/DECISIONS-REQUIRED.md) for items needing approval. README now carries a status notice and an evidence legend.
