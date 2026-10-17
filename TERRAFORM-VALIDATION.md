@@ -130,7 +130,19 @@ Commit `c123676f4f6a0a93651c74e7f69f3cf3c59405ad` (source rechecks and issue rea
 | Repository check | 39008586968 | success |
 | Markdown link check | 39008588332 | success |
 
-Scope is unchanged and still structural: no `plan`, `apply`, Azure behaviour or lab execution. Commits made after `c123676` have not had a CI run.
+Scope is unchanged and still structural: no `plan`, `apply`, Azure behaviour or lab execution.
+
+### Re-run on `b1ef26d`, 17 October 2026
+
+Commit `b1ef26d95f4a969c72878ba74b9e9c6b269c856e` (second Learn source pass, Chapters 1 to 3, 5, 6 and 12, and the U23/U24 provider reading; documentation only, no Terraform change). Pushed to the existing branch with approval and the same three workflows dispatched manually. Each run reports this exact SHA:
+
+| Workflow | Run | Result |
+|---|---|---|
+| Terraform structural check | 39009291886 | success |
+| Repository check | 39009293198 | success |
+| Markdown link check | 39009294575 | success |
+
+Scope is unchanged and still structural. Commits made after `b1ef26d` (including the one that records this table) have not had a CI run.
 
 ### Terraform tooling in the authoring environment, 17 October 2026
 

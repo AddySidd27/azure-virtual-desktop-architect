@@ -113,7 +113,7 @@ Single reviewer, not independent. Gap analysis of all twelve chapters found them
 
 Mermaid blocks in Chapters 1 to 12 (8) render without error with mmdc and the Playwright Chromium. Rendered output was not visually inspected in this pass. No issue was closed. U23 to U28, U35 and U36 are unchanged.
 
-CI on `c123676` (dispatched manually on the pushed branch, 17 October 2026, runs report SHA `c123676f4f6a0a93651c74e7f69f3cf3c59405ad`): Terraform structural check 39008585420, Repository check 39008586968, Markdown link check 39008588332, all success. Earlier: CI on `b95af3f`: Terraform structural check 39007931570, Repository check 39007932741, Markdown link check 39007933846, all success. Structure, links, formatting and schema validation only. It does not validate chapter accuracy, Azure behaviour or lab execution.
+CI on `b1ef26d` (dispatched manually on the pushed branch, 17 October 2026, runs report SHA `b1ef26d95f4a969c72878ba74b9e9c6b269c856e`): Terraform structural check 39009291886, Repository check 39009293198, Markdown link check 39009294575, all success. Earlier: CI on `c123676` (dispatched manually on the pushed branch, 17 October 2026, runs report SHA `c123676f4f6a0a93651c74e7f69f3cf3c59405ad`): Terraform structural check 39008585420, Repository check 39008586968, Markdown link check 39008588332, all success. Earlier: CI on `b95af3f`: Terraform structural check 39007931570, Repository check 39007932741, Markdown link check 39007933846, all success. Structure, links, formatting and schema validation only. It does not validate chapter accuracy, Azure behaviour or lab execution.
 
 ## Source recheck and issue reassessment, 17 October 2026
 
