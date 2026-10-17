@@ -25,3 +25,4 @@ Maintained during the 2026-10-16 chapter review. Each item lists what is in conf
 | U19 | Microsoft Remote Desktop app (a4a365df) as CA target | Removed from Ch9 because current Learn set-up-mfa page lists only AVD and Windows Cloud Login; `appendices/audit-01-chapter-contract.md` still lists it | Ch9, appendices | Unverified, cross-doc follow-up |
 | U20 | Who requests the session host SSO token | Learn set-up-mfa says the gateway initiates SSO via Windows Cloud Login; Ch8 mermaid shows client requesting RDP token | Ch8 | Unverified, diagram wording |
 | U21 | Per-feature scope guidance for AVD service roles (Power On, Power On Off, DV VM Contributor) not independently fetched | Role definitions verified on rbac page only | Ch10 | Unverified |
+| U22 | Private Link setup page, private endpoint DNS and Entra join private-connectivity statements not fetched in Ch11 review | Overview page verified only | Ch11 | Unverified |

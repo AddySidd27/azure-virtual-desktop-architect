@@ -51,7 +51,7 @@ Every completed pass needs all of these in its evidence record. If one is missin
 | [Chapter 8 - Authentication Flows in Detail](chapters/ch08-authentication-flows-in-detail.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch8 record](reviews/ch08-review-record.md) |
 | [Chapter 9 - Conditional Access, MFA and Zero Trust Access](chapters/ch09-conditional-access-mfa-zero-trust.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch9 record](reviews/ch09-review-record.md) |
 | [Chapter 10 - RBAC, Delegation and the Administrative Model](chapters/ch10-rbac-delegation-administrative-model.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch10 record](reviews/ch10-review-record.md) |
-| [Chapter 11 - Network Fundamentals and Required Connectivity](chapters/ch11-network-fundamentals-required-connectivity.md) | Not Reviewed | Not Reviewed | None |
+| [Chapter 11 - Network Fundamentals and Required Connectivity](chapters/ch11-network-fundamentals-required-connectivity.md) | Verified with caveats, 2026-10-16 | Reviewed with caveats, 2026-10-16 | [Ch11 record](reviews/ch11-review-record.md) |
 | [Chapter 12 - Enterprise Topologies and IP Address Planning](chapters/ch12-enterprise-topologies-ip-planning.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 13 - Hybrid Connectivity and Egress Control](chapters/ch13-hybrid-connectivity-egress-control.md) | Not Reviewed | Not Reviewed | None |
 | [Chapter 14 - Protocol Optimisation and Network Performance](chapters/ch14-protocol-optimisation-network-performance.md) | Not Reviewed | Not Reviewed | None |

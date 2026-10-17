@@ -2,7 +2,7 @@
 
 > **Book:** Azure Virtual Desktop - Architect to Hands-on Implementation
 > **Part III:** Network Architecture
-> **Technical baseline:** August 2026
+> **Technical baseline:** Microsoft Learn as retrieved 16 October 2026 (see [Review register](../REVIEW-REGISTER.md))
 
 ---
 
@@ -51,23 +51,23 @@ The required list is in [Chapter 4, section 3](ch04-connection-flow-end-to-end.m
 
 **The architect's point.** Optional does not mean unimportant. It means it depends on your design. If you use Event Hubs for diagnostics, that endpoint is required for you. If you deploy OneDrive, so is the OneDrive one. Work through the optional list against your actual design rather than skipping it, because these are the endpoints that produce strange partial failures months later.
 
-**What the list does not cover.** This article doesn't include FQDNs and endpoints for other services such as Microsoft Entra ID, Office 365, custom DNS providers or time services. Microsoft Entra FQDNs and endpoints can be found under ID 56, 59 and 125 in Office 365 URLs and IP address ranges. Budget real time for this. Entra and Microsoft 365 endpoints are a bigger list than the AVD one.
+**What the list does not cover.** This article doesn't include FQDNs and endpoints for other services such as Microsoft Entra ID, Office 365, custom DNS providers or time services. Microsoft Entra FQDNs and endpoints can be found under ID 46, 56, 59 and 125 in Office 365 URLs and IP address ranges. Learn says these may be required in restricted network environments. Budget real time for this. Entra and Microsoft 365 endpoints are a bigger list than the AVD one.
 
-`CURRENCY FLAG - verified August 2026. The FQDN list changes. Build rules from the live Microsoft page every time, including when you re-read this chapter.`
+`CURRENCY FLAG - verified against the Learn page retrieved 16 October 2026. The list above describes the Azure public cloud. Azure for US Government has a different table (for example `*.wvd.azure.us` and UDP 3478 to `20.140.236.0/22`). The FQDN list changes. Build rules from the live Microsoft page every time, including when you re-read this chapter.`
 
 ---
 
 ## 2. The Two Addresses That Behave Differently
 
-Two entries in the required list are not normal internet endpoints, and treating them as such causes confusion.
+Two entries in the required list are not normal internet endpoints, and treating them as such causes confusion. Learn lists them as: `169.254.169.254` TCP 80 (IMDS), and `168.63.129.16` TCP 80 and 32526, plus 53 (TCP/UDP) only when using Azure-provided DNS. Microsoft states this traffic must not be intercepted, proxied or redirected.
 
 169.254.169.254, the Instance Metadata Service, is a link-local address that provides VM metadata and identity information. Traffic is accessible only from within the VM and never leaves the host. 168.63.129.16, WireServer, is used by the Azure VM agent for health signals and core platform communication, including DNS when using Azure-provided DNS, and DHCP. These addresses are available in all Azure regions and clouds. Azure platform routing protects this traffic at the fabric layer, so standard network security group rules and user-defined routes do not affect connectivity by default.
 
 Two practical consequences.
 
-**You do not need to route them.** They work by default. An engineer who adds NSG rules for these addresses has usually misdiagnosed something else.
+**You do not need to route them.** They work by default. An engineer who adds NSG rules for these addresses has usually misdiagnosed something else. The exception is a restrictive deny-all outbound rule: Learn says to include explicit allows for the `AzurePlatformIMDS` and `AzurePlatformDNS` service tags, and to remove any deny rule that targets them.
 
-**You can still break them.** The protection is at the fabric layer by default, which is not the same as being unbreakable. Host based firewalls, proxy configuration applied at the operating system level, and certain forced tunnelling setups can block them. When a session host reports health problems and everything else looks correct, check whether something inside Windows is interfering with these two addresses.
+**You can still break them.** The protection is at the fabric layer by default, which is not the same as being unbreakable. Learn names the in-VM causes: VPN clients and secure web gateway agents in forced-tunnel mode, proxy or PAC settings, host firewalls, and endpoint security or DLP software. These addresses cannot be proxied and cannot traverse VPN tunnels. Use split tunnelling or explicit bypass rules for both addresses. Source: [Azure fabric communication IPs](https://learn.microsoft.com/en-us/azure/virtual-desktop/azurecommunicationips). When a session host reports health problems and everything else looks correct, check whether something inside Windows is interfering with these two addresses.
 
 ---
 
@@ -106,7 +106,7 @@ flowchart TB
 
 > This is a decision flow diagram, so it uses the reduced explanation set defined in the [diagram standard](../DIAGRAM-STANDARD.md): what it shows, step by step, architect's interpretation, and the official reference. Failure points do not apply to a decision tree.
 
-**What the diagram shows.** Three different enforcement points, decided by whether the endpoint has a service tag. NSGs handle the service tag entries. Everything else needs FQDN filtering somewhere. The platform addresses need nothing at all.
+**What the diagram shows.** Three different enforcement points, decided by whether the endpoint has a service tag. NSGs handle the service tag entries. Everything else needs FQDN filtering somewhere. The platform addresses need no NSG or firewall rule by default, but must not be proxied or tunnelled (section 2).
 
 **Step by step.** Take each endpoint from the required and optional tables. If it has a service tag, an NSG rule is enough. If it does not, the rule has to live in Azure Firewall or an equivalent that understands FQDNs. The two platform addresses are handled by Azure itself. Whatever you build, prove it from the session host rather than from the firewall configuration, because a rule that looks right and a path that works are different claims.
 
@@ -126,7 +126,7 @@ This is exactly the boundary [Lab 3](../labs/lab-03-vnet-subnets-nsg-dns.md) hit
 
 ### Proxies
 
-Microsoft publishes separate proxy guidelines for AVD. Read them before agreeing to a proxy, because the common failure is not the proxy itself. It is TLS inspection breaking certificate validation on AVD service traffic, which produces intermittent registration failures that look like a platform fault. See Scenario 2 in [Chapter 4](ch04-connection-flow-end-to-end.md#10-production-scenarios).
+Microsoft publishes separate proxy guidelines for AVD. Read them before agreeing to a proxy, because the common failure is not the proxy itself. It is TLS inspection on AVD service traffic, which Microsoft's proxy guidance says not to do (see [Chapter 4](ch04-connection-flow-end-to-end.md)). The chapter's earlier description of the failure as intermittent registration problems is field judgement, not a Learn statement. See Scenario 2 in [Chapter 4](ch04-connection-flow-end-to-end.md#10-production-scenarios).
 
 ---
 
@@ -141,6 +141,8 @@ So three things:
 1. **Session hosts need working name resolution.** If they are domain joined, that means your domain controllers, as built in [Lab 4](../labs/lab-04-identity-integration.md). If they are Entra joined, Azure-provided DNS or your own resolvers.
 2. **Private DNS zones where you use private endpoints.** Lab 5 applies this pattern to FSLogix profile storage.
 3. **Nothing AVD-specific is required.** There is no special AVD DNS zone unless you deploy Private Link.
+
+[VERIFY BEFORE IMPLEMENTATION] The DNS quotations in this section and the Entra join statement below were not re-fetched in the 16 October 2026 review. Source pages not confirmed.
 
 Also worth knowing for user onboarding: you can optionally configure email-based feed discovery to simplify user onboarding, and modern Azure Virtual Desktop clients can also subscribe directly using workspace discovery via the service without DNS-based email discovery. Email discovery used to be a standard step. It is now optional, and most deployments can skip the DNS records entirely.
 
@@ -158,7 +160,9 @@ Private Link keeps AVD service traffic off the public internet by routing it thr
 
 ### The three connection types
 
-Initial feed discovery lets the client discover all workspaces assigned to a user. To enable this you must create a single private endpoint to the global sub-resource of any workspace. Feed download is where the client downloads all connection details for a specific user for the workspaces hosting their application groups, and you create a private endpoint for the feed sub-resource for each workspace you want to use with Private Link. Connections to host pools have two sides, clients and session hosts.
+Initial feed discovery lets the client discover all workspaces assigned to a user. To enable this you must create a single private endpoint to the global sub-resource of any workspace. Feed download is where the client downloads all connection details for a specific user for the workspaces hosting their application groups, and you create a private endpoint for the feed sub-resource for each workspace you want to use with Private Link. Connections to host pools have two sides, clients and session hosts, and you create a private endpoint for the connection sub-resource for each host pool.
+
+**Initial feed discovery is optional.** Learn lists four supported scenarios: (1) everything private, with the global, feed and connection endpoints; (2) feed download and connections private, discovery public, so no global endpoint; (3) only host pool connections private, so only connection endpoints; (4) no Private Link. Clients also need a VPN or ExpressRoute path to the virtual network. Private Link must be enabled on each subscription first.
 
 ### The constraints that shape the design
 
@@ -169,6 +173,10 @@ Initial feed discovery lets the client discover all workspaces assigned to a use
 Read that last sentence again. Deleting one workspace stops feed discovery for the entire deployment. Put a resource lock on it and document why it exists, or someone will tidy up an empty workspace during a cleanup exercise.
 
 **You cannot restrict access to that workspace.** You can't control access to the workspace used for the initial feed discovery. If you configure this workspace to only allow private access, the setting is ignored. That is worth raising with a security team up front rather than being discovered during an assessment.
+
+**Port range.** If you restrict ports to the host pool connection private endpoint, allow the entire TCP range 1 to 65535. Learn says users may be unable to connect otherwise.
+
+**UDP is opt-in.** UDP over Private Link, including Shortpath for managed networks, is blocked unless you tick the UDP option on the host pool Networking page, and RDP Shortpath for public networks (STUN and TURN) must then be disabled.
 
 **Agent restart required after changes.** After you've changed a private endpoint to a host pool, you must restart the Remote Desktop Agent Loader service on each session host in the host pool. You also need to restart this service whenever you change a host pool's network configuration. Instead of restarting the service, you can restart each session host.
 
@@ -183,9 +191,9 @@ az vm run-command invoke \
   --scripts "Restart-Service RDAgentBootLoader; Start-Sleep -Seconds 10; Get-Service RDAgentBootLoader | Select-Object Name, Status"
 ```
 
-**The DNS zone change.** Early in the preview, the private endpoint for initial feed discovery shared the private DNS zone name privatelink.wvd.microsoft.com with other private endpoints for workspaces and host pools. In this configuration, users are unable to establish private endpoints exclusively for host pools and workspaces. Starting September 1, 2023, sharing the private DNS zone in this configuration is no longer supported. If you inherit an environment built during the preview, this needs migrating.
+**The DNS zone change.** Early in the preview, the private endpoint for initial feed discovery shared the private DNS zone name privatelink.wvd.microsoft.com with other private endpoints for workspaces and host pools. In this configuration, users are unable to establish private endpoints exclusively for host pools and workspaces. Starting September 1, 2023, sharing the private DNS zone in this configuration is no longer supported. The global endpoint must use the zone `privatelink-global.wvd.microsoft.com`; workspace feed and host pool endpoints use `privatelink.wvd.microsoft.com`. If you inherit an environment built during the preview, this needs migrating.
 
-`CURRENCY FLAG - verified August 2026. Private Link for AVD has changed since preview. [VERIFY BEFORE IMPLEMENTATION] confirm current sub-resource behaviour, DNS zone names and supported topologies before designing with it.`
+`CURRENCY FLAG - overview page retrieved 16 October 2026. The setup page (private-link-setup) and DNS zone documentation were not fetched in full. Private Link for AVD has changed since preview. [VERIFY BEFORE IMPLEMENTATION] confirm current sub-resource behaviour, DNS zone names and supported topologies before designing with it.`
 
 ### Architect's view
 
@@ -238,12 +246,12 @@ Use it when a regulator or a security standard requires service traffic to stay 
 ```bash
 az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
   --command-id RunPowerShellScript \
-  --scripts "Get-Service RDAgentBootLoader, RDAgent | Select-Object Name, Status; Resolve-DnsName <workspace>.privatelink.wvd.microsoft.com"
+  --scripts "Get-Service RDAgentBootLoader, RDAgent | Select-Object Name, Status; Resolve-DnsName <workspaceId>.privatelink.wvd.microsoft.com"
 ```
 
 Then check *Event Viewer > Windows Logs > Application > WVD-Agent* for connection errors after the change window.
 
-**Evidence.** DNS resolves privately, which proves the endpoint works, and the agent is still trying to reach the old path. Restarting the service on one host brings it back.
+**Evidence.** DNS resolves privately, which proves the endpoint works. The chapter infers the agent is still on the old path; this is a hypothesis to confirm on the host, not a Learn statement. Restarting the service on one host brings it back. Commands in this scenario were not executed.
 
 **Root cause.** A documented post-change step was missed because the change plan was written from the private endpoint documentation rather than the AVD Private Link page.
 
@@ -327,7 +335,7 @@ az monitor activity-log list --resource-group rg-avd-service-lab-eus2-01 \
 ### Q29. What outbound access do AVD session hosts need?
 
 **Simple answer**
-A specific set of FQDNs over 443, plus KMS on 1688 and certificate checks on 80. All outbound. No inbound ports are needed. Microsoft does not support deployments where the required endpoints are blocked.
+A specific set of FQDNs over 443, plus KMS on 1688, certificate checks on 80, and UDP 3478 to `51.5.0.0/16` for relayed RDP in the public cloud. All outbound. No inbound ports are needed. Microsoft does not support deployments where the required endpoints are blocked.
 
 **Strong senior architect answer**
 "There is a required list and an optional list, and both matter. The required list is non-negotiable, because Microsoft does not support a deployment where those are blocked, and that is the sentence that usually settles the conversation with a security team. The optional list depends on your design, so if you use Event Hubs for diagnostics or deploy OneDrive, those endpoints become required for you. The important architectural point is that AVD publishes no static IP ranges, so the supported approach is service tags in NSGs and Azure Firewall, and the AVD FQDN tag in Azure Firewall. Some required endpoints have no service tag at all, which is where NSGs stop being sufficient and you need FQDN filtering. And you must use wildcards for service traffic, although agent traffic can be narrowed to specific FQDNs once the hosts have registered."
@@ -341,7 +349,7 @@ A specific set of FQDNs over 443, plus KMS on 1688 and certificate checks on 80.
 "Only where a regulator or a security standard requires service traffic to stay off the public internet. The default model already gives outbound-only session hosts with no public IPs and no inbound rules, which meets most requirements. Private Link adds real constraints, so I would not deploy it just because it sounds more secure."
 
 **2 minute answer**
-Explain the constraints, because that is where the answer gets credible. One private endpoint for the global sub-resource across the entire deployment, hosted on a dedicated workspace that must not be deleted, and whose access cannot be restricted even if you configure it to be private. A private endpoint for the feed sub-resource per workspace. And an operational step where the agent loader service has to be restarted on every session host after a host pool network configuration change. Then the design consequence: you now have a single component whose deletion stops feed discovery for everyone, so it needs a resource lock, a self-explanatory name and a line in the handover.
+Explain the constraints, because that is where the answer gets credible. If you use initial feed discovery over Private Link, one private endpoint for the global sub-resource across the entire deployment, hosted on a dedicated workspace that must not be deleted, and whose access cannot be restricted even if you configure it to be private. A private endpoint for the feed sub-resource per workspace. And an operational step where the agent loader service has to be restarted on every session host after a host pool network configuration change. Then the design consequence: you now have a single component whose deletion stops feed discovery for everyone, so it needs a resource lock, a self-explanatory name and a line in the handover.
 
 **Deep dive answer**
 There is an assessment conversation worth having here. A security team asking for Private Link is usually trying to satisfy a control about data not traversing the public internet. Walk them through what the default model already provides, then be honest that the discovery workspace cannot be made private, because that will come up in an assessment and it is far better raised by you at design time than found by an auditor. Then cost and operations: endpoints per workspace, DNS zones, and a restart step that has to be in the runbook. If the control genuinely requires it, deploy it properly. If it does not, you have documented why the default model meets the intent.
@@ -362,7 +370,7 @@ There is an assessment conversation worth having here. A security team asking fo
 - AVD publishes no static IP ranges. Use service tags and the Azure Firewall FQDN tag.
 - Wildcards are required for service traffic. Agent traffic can be narrowed after hosts register.
 - DNS for AVD is ordinary IaaS DNS, plus private DNS zones where you use private endpoints.
-- Private Link has one global discovery endpoint for the whole deployment, on a workspace that must not be deleted and cannot be made private.
+- Private Link has at most one global discovery endpoint for the whole deployment (it is optional), on a workspace that must not be deleted and cannot be made private.
 - Restart RDAgentBootLoader after any host pool network configuration change.
 
 ---
@@ -370,6 +378,7 @@ There is an assessment conversation worth having here. A security team asking fo
 ## 11. Official References
 
 - Required FQDNs and endpoints for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/required-fqdn-endpoint
+- Azure fabric communication IPs - https://learn.microsoft.com/en-us/azure/virtual-desktop/azurecommunicationips
 - Proxy service guidelines for Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/proxy-server-support
 - Azure Private Link with Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/private-link-overview
 - Set up Private Link with Azure Virtual Desktop - https://learn.microsoft.com/en-us/azure/virtual-desktop/private-link-setup
@@ -408,7 +417,7 @@ There is an assessment conversation worth having here. A security team asking fo
 You can build an egress design AVD supports, explain why an IP allow list is impossible, design DNS correctly, and decide whether Private Link is justified.
 
 **What you should test**
-Run the AVD Agent URL Tool against a lab session host once Lab 8 exists. Before then, review your Lab 3 NSG rules against the required and optional endpoint tables and note which endpoints your NSG cannot express.
+Run the AVD Agent URL Tool against a session host built in [Lab 8](../labs/lab-08-session-hosts.md). Not executed in this review. Before then, review your Lab 3 NSG rules against the required and optional endpoint tables and note which endpoints your NSG cannot express.
 
 **What comes next**
 Chapter 12 covers enterprise topologies. Hub and spoke, Virtual WAN, landing zone alignment, and the IP address planning that has to be right the first time.

@@ -85,9 +85,9 @@ Refer to [Chapter 4, section 3](../chapters/ch04-connection-flow-end-to-end.md#3
 | Service tag `AzureCloud` | TCP 443 | Agent and SxS stack updates, portal support |
 | Service tag `AzureFrontDoor.Frontend` | TCP 443 | Marketplace |
 | Service tag `AzureActiveDirectory` | TCP 443 | Authentication |
-| Internet | UDP 3478 | STUN/TURN for public-network RDP Shortpath |
+| Service tag `WindowsVirtualDesktop` (`51.5.0.0/16` in the public cloud) | UDP 3478 | Relayed RDP connectivity (TURN). Direct Shortpath over public networks additionally needs outbound UDP 1024 to 65535 from the host subnet per Chapter 4; this lab's NSG does not add that rule, so sessions relay or fall back to TCP |
 | Internet | TCP 1688 | Windows activation (KMS) |
-| Internet | TCP 80 | Certificate checks, IMDS, health monitoring |
+| Internet | TCP 80 | Certificate checks. IMDS (169.254.169.254) uses TCP 80 and WireServer (168.63.129.16) uses TCP 80 and 32526 plus DNS 53 with Azure-provided DNS; these are handled at the fabric layer by default |
 
 **Inbound - required from the internet:** none. This is the point of reverse connect.
 
