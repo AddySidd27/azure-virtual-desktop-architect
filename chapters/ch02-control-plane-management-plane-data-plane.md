@@ -47,7 +47,7 @@ This chapter gives you that component model. It is also the foundation for Chapt
 
 People say "control plane" to mean everything Microsoft runs. That is close enough for a conversation, but for design and troubleshooting you want three distinct ideas.
 
-**Control plane.** The Microsoft-run services that get a user connected: the web service, the broker, the gateway, the resource directory and the diagnostics service. You do not deploy or scale these. Microsoft does.
+**Control plane.** The Microsoft-run services that get a user connected: the web service, the broker, the gateway and the resource directory, plus the diagnostics service that records connection telemetry. You do not deploy or scale these. Microsoft does.
 
 **Management plane.** Azure Resource Manager. This is how *you* create and change AVD objects - host pools, application groups, workspaces, scaling plans, App Attach packages. Portal, PowerShell, Azure CLI, Terraform and Bicep all talk to ARM. This is also where RBAC, tags, policy and activity logs apply.
 
@@ -71,7 +71,7 @@ That table alone answers a very common interview question: *"If Microsoft's AVD 
 > Microsoft publishes an official high-level diagram of these components and their responsibilities. Open it alongside this section:
 > https://learn.microsoft.com/en-us/azure/virtual-desktop/service-architecture-resilience
 >
-> Per that documentation, the Azure Virtual Desktop control plane includes the web, broker, gateway, resource directory, and diagnostics services. Microsoft manages the control plane and supports regional failover.
+> That page lists the web service, broker service, gateway service and resource directory (with the geographical and regional databases) as Microsoft-managed components. The Azure Architecture Center multiregion BCDR guidance additionally describes the control plane as including a diagnostics service. Microsoft manages these components and handles regional failover.
 
 The original diagram below expresses the same architecture in this book's visual style.
 
@@ -88,16 +88,16 @@ Azure Resource Manager sits apart because it is how you administer the environme
 
 ### Step by step flow
 
-1. The user authenticates and requests their feed from the **web service** over HTTPS 443. The web service reads entitlements from the **resource directory**.
-2. The user launches a desktop or app. The request goes to the **broker service**, which reads host pool configuration from the resource directory.
+1. The user authenticates and requests their feed from the **web service** over HTTPS 443. The resource directory identifies which database holds the user's data, and the feed is built from the host pool, application group and workspace metadata held there.
+2. The user launches a desktop or app. The request goes to the **broker service**, which reads host pool configuration from the metadata store.
 3. The broker selects a session host and instructs it through the AVD agent already running on it.
-4. The heavy arrows are the important ones. The session host holds a persistent **outbound** TCP 443 connection to the **gateway service**, established before any user connects. The client opens its own outbound 443 connection. The gateway relays RDP between the two.
+4. The heavy arrows are the important ones. The broker tells the session host agent which gateway the client is using, and the session host opens an **outbound** TCP 443 connection to that **gateway service** at connect time. The client opens its own outbound 443 connection. The gateway relays RDP between the two (unless RDP Shortpath is in use, which bypasses the gateway).
 5. Inside the customer boundary, the session host authenticates the user against identity, mounts the FSLogix profile over SMB 445, and sends telemetry to the diagnostics service.
 6. Diagnostic settings forward data into your Log Analytics workspace, which is where AVD Insights reads from.
 
 ### Architect's interpretation
 
-The dotted line at the bottom is the design point. There is no inbound path to a session host. No public IP, no open 3389. That property comes from the persistent outbound connection in step 4, and it is the strongest single security argument in an AVD business case.
+The dotted line at the bottom is the design point. There is no inbound path to a session host. No public IP, no open 3389. That property comes from the outbound-only connection in step 4, and it is the strongest single security argument in an AVD business case.
 
 The second thing to read from this diagram is the split of effort. Microsoft's half needs no engineering from you. Your half needs image management, identity, storage, network and monitoring. That is where your design work goes.
 
@@ -134,7 +134,7 @@ Geographical host pools (the classic model) store host pool metadata in a geogra
 
 The practical difference: with regional host pools, a problem in one region affects only the host pools in that region, which removes the cross-region dependency that the geographical model has. Otherwise, the two models work the same way - they differ only in database architecture, metadata location and resiliency characteristics.
 
-`CURRENCY FLAG - verified August 2026. Regional host pools are a relatively recent addition. Confirm current availability, supported regions and any migration guidance on Microsoft Learn before committing to a model in a design document. [VERIFY BEFORE IMPLEMENTATION]`
+`CURRENCY FLAG - reviewed 16 October 2026. CONFLICT in Microsoft Learn: What's new lists regional host pools as generally available (September 2026), but the regional host pools article and the data locations page still describe a limited set of regions (Central US and East US 2) and the article still uses preview wording. Deployment scope is chosen at creation and cannot be changed later. The article also notes that errors and checkpoints are not reported into Log Analytics for regional session hosts. Confirm status, regions and monitoring gaps on Microsoft Learn before committing to a model in a design document. [VERIFY BEFORE IMPLEMENTATION]`
 
 **Why an architect cares.** Two reasons:
 
@@ -155,7 +155,7 @@ And for regional failure: when a region experiences an outage, control plane com
 
 **The honest architect position.** You cannot engineer around a service you do not operate. What you *can* do:
 
-- Design your own half - session hosts, storage, identity, network - to be resilient (Chapters 36-38).
+- Design your own half - session hosts, storage, identity, network - to be resilient (see the resilience and disaster recovery material in the later chapters and projects listed in [SUMMARY.md](../SUMMARY.md)).
 - Set expectations with the business in writing, so a control plane incident is a known, accepted risk rather than a surprise.
 - Have a communication runbook, so that on the day, someone can quickly say "this is a Microsoft service issue, here is the Azure Status link" rather than the team spending an hour proving it.
 
@@ -185,7 +185,7 @@ Notice the shape of it: **when the feed loads but the session does not start, th
 ## 6. Common Mistakes
 
 - **Calling a Microsoft outage before checking your own half.** Check host availability and agent status first. It is faster and it is usually the answer.
-- **Assuming the diagnostics service is a monitoring solution.** It provides connection telemetry. It is not a replacement for Azure Monitor, Log Analytics and proper alerting (Chapters 30-32).
+- **Assuming the diagnostics service is a monitoring solution.** It provides connection telemetry. It is not a replacement for Azure Monitor, Log Analytics and proper alerting (see the monitoring material listed in [SUMMARY.md](../SUMMARY.md)).
 - **Forgetting that the management plane is ARM.** People look for AVD-specific permissions when the real problem is a missing Azure RBAC role assignment at the right scope.
 - **Believing a session host with no outbound internet path will work.** It will not register, and this is a design decision that must be made deliberately (Chapter 11), not discovered during deployment.
 - **Promising control plane availability in an SLA you wrote.** Reference Microsoft's SLA, do not invent your own.
@@ -287,8 +287,6 @@ Update-AzWvdSessionHost -ResourceGroupName rg-avd-service-lab-eus2-01 `
 
 **Prevention.** Alert on host pools where no host accepts new sessions. Add "confirm drain mode cleared" to the maintenance runbook, with a named owner.
 
-**Architect lesson.** Feed loads plus session fails equals your problem. That heuristic prevents premature support cases.
-
 **Interview lesson.** Opening a triage answer with a single eliminating question, rather than a list of checks, is what makes it sound like experience.
 
 **Architect's lesson.** Feed loads plus session fails equals your problem. That one heuristic saves hours and stops premature support cases.
@@ -323,8 +321,6 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 
 **Prevention.** Give the network team the service tag and FQDN tag names in writing. Add AVD connectivity to the firewall change checklist. Run the AVD Agent URL Tool after any egress change.
 
-**Architect lesson.** Reverse connect trades inbound exposure for an outbound dependency, and that dependency needs a named owner.
-
 **Interview lesson.** Naming event 3701 as the first check demonstrates hands on troubleshooting rather than theory.
 
 **Architect's lesson.** Reverse connect trades inbound exposure for an outbound dependency. That dependency must be documented and owned, or a routine network change becomes a desktop outage.
@@ -350,8 +346,6 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n <vm> \
 **Validation.** The security and compliance owner accepts the statement in writing.
 
 **Prevention.** Add a data residency section to the standard AVD design document template. Regulated customers always ask, so answer it before they do.
-
-**Architect lesson.** Metadata placement is a sign off dependency, not trivia.
 
 **Interview lesson.** Very few candidates know where host pool metadata lives. Mentioning regional host pools stands out.
 
