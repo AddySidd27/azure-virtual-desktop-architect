@@ -13,11 +13,16 @@ resource "azurerm_storage_account" "fslogix" {
   public_network_access_enabled = false # reached only via private endpoint
   shared_access_key_enabled     = true  # required until AD/Entra Kerberos is fully configured; disable after Step 4 if desired
 
-  azure_files_authentication {
-    directory_type = "AD" # switches to Entra Kerberos in the Entra-only variant; see the chapter cross-reference in the lab notes
-  }
-
+  # azure_files_authentication is not declared. With directory_type = "AD" the
+  # provider (as understood from its docs; not run here) expects an
+  # active_directory block with domain GUID/SID values that only exist after the
+  # Lab 5 Step 4 join (Join-AzStorageAccount). The join sets them out of band, so
+  # Terraform ignores that block. See U29.
   tags = local.common_tags
+
+  lifecycle {
+    ignore_changes = [azure_files_authentication]
+  }
 }
 
 resource "azurerm_storage_share" "profiles" {

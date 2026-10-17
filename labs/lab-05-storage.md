@@ -87,8 +87,10 @@ resource "azurerm_storage_account" "fslogix" {
 
   public_network_access_enabled = false
 
-  azure_files_authentication {
-    directory_type = "AD"
+  # azure_files_authentication is deliberately not set here. Join-AzStorageAccount
+  # (Step 4) enables AD DS authentication and writes the domain properties.
+  lifecycle {
+    ignore_changes = [azure_files_authentication]
   }
 }
 ```
@@ -156,30 +158,34 @@ az role assignment list \
 
 **Expected output:** one role assignment, your AVD users group, role `Storage File Data SMB Share Contributor`.
 
-**This is layer one only.** At this point, a domain-joined identity in that group can reach the share. It cannot yet create or write to a profile folder inside it, because layer two (NTFS) is not configured. That is deliberate: Step 5 proves the failure this produces before Step 6 fixes it, which is a far better way to learn the two-layer model than being told about it.
+**Sync caveat (important for this lab).** Learn: granular share-level RBAC applies only to identities that exist in Microsoft Entra ID; AD DS users and groups must be synced with Entra Connect Sync or Cloud Sync, and role assignments for principals that are not synced are ignored ([Assign share-level permissions](https://learn.microsoft.com/azure/storage/files/storage-files-identity-assign-share-level-permissions), [AD DS overview](https://learn.microsoft.com/azure/storage/files/storage-files-identity-ad-ds-overview)). Lab 4 deliberately does not sync its `.local` domain, so the `avdtest01..03` accounts have no Entra identity and the role assignment above cannot match them. For this lab, use the documented alternative: a **default share-level permission** on the storage account (portal: storage account > Data storage > Classic file shares > Identity-based access > *Enable permissions for all authenticated users and groups*, role *Storage File Data SMB Share Contributor*; Learn notes it applies to every share in the account and is `None` at initialisation). Windows ACLs (Step 6) then do the fine-grained control. Keep the Terraform role assignment only if you sync a test group (Lab 4 Step 7). `[UNTESTED]`: neither path was run. Tracked as U30.
+
+**This is layer one only.** At this point, an authenticated domain identity that passes layer one can reach the share. It cannot yet create or write to a profile folder inside it, because layer two (NTFS) is not configured. That is deliberate: Step 5 proves the failure this produces before Step 6 fixes it, which is a far better way to learn the two-layer model than being told about it.
 
 ---
 
 ## Step 4 - Join the storage account to the domain for AD authentication
 
-This step cannot be done by the Terraform AzureRM provider: it requires running `Join-AzStorageAccountForAuth` from a domain-joined machine with the Az PowerShell module, which is exactly the kind of manual post-apply step this lab calls out explicitly rather than hiding.
+This step cannot be done by the Terraform AzureRM provider. Learn's current method is the `Join-AzStorageAccount` cmdlet from the **AzFilesHybrid** module (not part of Az.Storage), run in PowerShell 5.1 on a machine joined to your AD DS, by an account that can create a computer account in the domain and that holds Contributor (or Owner) on the storage account ([Enable AD DS authentication for Azure file shares](https://learn.microsoft.com/azure/storage/files/storage-files-identity-ad-ds-enable), [FSLogix on Azure Files with AD DS](https://learn.microsoft.com/fslogix/how-to-configure-profile-container-azure-files-active-directory)). Older material, including earlier versions of this lab, calls the cmdlet `Join-AzStorageAccountForAuth`; Learn's current pages use `Join-AzStorageAccount`.
 
-```bash
-az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
-  --command-id RunPowerShellScript \
-  --scripts "
-    Install-Module -Name Az.Storage -Force -AllowClobber -Scope AllUsers
-    Connect-AzAccount -Identity
-    Import-Module Az.Storage
-    Join-AzStorageAccountForAuth \
-      -ResourceGroupName 'rg-avd-storage-lab-eus2-01' \
-      -StorageAccountName '<storage_account_name>' \
-      -DomainAccountType 'ComputerAccount' \
-      -OrganizationalUnitDistinguishedName 'CN=Computers,DC=avdlab,DC=local'
-  "
+Prerequisites on the machine that runs it: .NET Framework 4.7.2 or later, Az.Storage 8.1.0 or later, the Active Directory PowerShell module, and the AzFilesHybrid release downloaded from the Azure-Samples GitHub releases page and installed with its `CopyToPSPath.ps1`. The lab's DC needs outbound access to the PowerShell Gallery and GitHub for that.
+
+The Learn procedure, adapted (`[UNTESTED]`: not run in this repository; running it through `az vm run-command` executes as SYSTEM, and whether that context can create the AD computer account and sign in with the VM's managed identity has not been verified, so an interactive session on the DC as a domain admin is the Learn-aligned route):
+
+```powershell
+# On vm-avdlab-dc01, elevated Windows PowerShell 5.1, after extracting AzFilesHybrid
+.\CopyToPSPath.ps1
+Import-Module -Name AzFilesHybrid
+Connect-AzAccount            # an account with Owner/Contributor on the storage account
+Select-AzSubscription -SubscriptionId '<subscription_id>'
+Join-AzStorageAccount `
+  -ResourceGroupName 'rg-avd-storage-lab-eus2-01' `
+  -StorageAccountName '<storage_account_name>' `
+  -DomainAccountType 'ComputerAccount'
+# Optional: -OrganizationalUnitDistinguishedName 'OU=...,DC=avdlab,DC=local' to choose the OU
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]`: the domain controller VM needs a system-assigned managed identity with Contributor on the storage account for `Connect-AzAccount -Identity` to work non-interactively; if it does not already have one, assign it first (`az vm identity assign` plus a role assignment) rather than embedding credentials in the script.
+Verify, per Learn: `(Get-AzStorageAccount -ResourceGroupName <rg> -Name <account>).AzureFilesIdentityBasedAuth.DirectoryServiceOptions` should be `AD` and `.ActiveDirectoryProperties` should list the domain values. Because the join sets the account's identity configuration outside Terraform, the module ignores changes to `azure_files_authentication` (see `storage.tf`).
 
 **Expected output:** command completes without error. This creates a computer account in AD representing the storage account, which is what makes Kerberos authentication to the share possible.
 
@@ -206,29 +212,28 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
 
 ## Step 6 - Apply NTFS permissions (permission layer two)
 
-```bash
-az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
-  --command-id RunPowerShellScript \
-  --scripts "
-    \$share = '\\\\<storage_account_name>.file.core.windows.net\\profiles'
-    \$acl = Get-Acl \$share
-    \$rule = New-Object System.Security.AccessControl.FileSystemAccessRule('AVDLAB\\avd-lab-users','Modify','ContainerInherit,ObjectInherit','None','Allow')
-    \$acl.SetAccessRule(\$rule)
-    Set-Acl -Path \$share -AclObject \$acl
-  "
+Learn constraints that shape this step ([Configure SMB storage permissions for FSLogix](https://learn.microsoft.com/fslogix/how-to-configure-storage-permissions), [Configure directory and file-level permissions](https://learn.microsoft.com/azure/storage/files/storage-files-identity-configure-file-level-permissions)):
+
+- Setting ACLs on the share root needs either the **Storage File Data SMB Share Elevated Contributor** role (with Full Control in the existing ACL) or a share mounted with the **storage account key**. A plain `Set-Acl` run as the computer account via `az vm run-command` (SYSTEM) does not meet either condition, which is why earlier versions of this step were unreliable.
+- Mount with `net use`, not PowerShell, or Windows tools will not see the share.
+- The key is a sensitive credential. This lab leaves `shared_access_key_enabled = true` for exactly this step; Step 7 turns it off afterwards. Do not paste the key into a script that is logged or committed.
+
+Learn's recommended FSLogix ACLs are: `CREATOR OWNER` Modify on subfolders and files only; the administrative group Full Control on this folder, subfolders and files; and the users group Modify on **this folder only** (so users can create their own profile folder but not read others'). From a domain-joined Windows machine (sign in interactively on the Lab 4 DC as a domain admin, in an elevated Command Prompt), with the key from the portal (Security + networking > Access keys):
+
+```
+net use Z: \\<storage_account_name>.file.core.windows.net\profiles /user:localhost\<storage_account_name> <storage_account_key>
+icacls Z: /inheritance:r
+icacls Z: /grant:r "CREATOR OWNER":(OI)(CI)(IO)(M)
+icacls Z: /grant:r "AVDLAB\Domain Admins":(OI)(CI)(F)
+icacls Z: /grant:r "AVDLAB\AVD-Task-Users":(M)
+net use Z: /delete
 ```
 
-Then repeat Step 5's test:
+`[UNTESTED]`: not run in this repository. `AVDLAB\AVD-Task-Users` is the AD group Lab 4 creates; the Entra group `avd-lab-users` used for AVD assignment is a different object. Then repeat Step 5's test as a real domain user (for example by signing in as `avdtest01` on a domain-joined machine), not as SYSTEM.
 
-```bash
-az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
-  --command-id RunPowerShellScript \
-  --scripts "New-Item -Path '\\\\<storage_account_name>.file.core.windows.net\\profiles\\testfolder' -ItemType Directory; Remove-Item -Path '\\\\<storage_account_name>.file.core.windows.net\\profiles\\testfolder'"
-```
+**Expected result:** the user can create their own folder; another user cannot open it. Both permission layers are now correct.
 
-**Expected output:** the folder is created and removed without error. Both permission layers are now correct.
-
-**Design note carried into Lab 6.** Production NTFS permissions should grant each user rights to their own profile folder only, not blanket Modify to the whole group at the share root: this lab uses a simpler group-wide grant to keep the validation step short. [Chapter 20](../chapters/ch20-profile-storage-architecture.md#5-the-two-layer-permission-model) covers the per-user model and why a blanket grant is a data protection problem at production scale.
+**Design note carried into Lab 6.** This matches the per-user model in [Chapter 20](../chapters/ch20-profile-storage-architecture.md#5-the-two-layer-permission-model): users create a folder, `CREATOR OWNER` gives each user Modify on their own folder only.
 
 ---
 
@@ -253,7 +258,7 @@ Leave this until after Lab 6 confirms FSLogix mounts correctly using identity-ba
 - [ ] `publicNetworkAccess` is `Disabled`
 - [ ] DNS resolution of the storage account FQDN from inside the VNet returns the private endpoint IP, not a public IP
 - [ ] Share-level RBAC assignment exists and targets the correct group
-- [ ] Domain join for AD authentication (`Join-AzStorageAccountForAuth`) completed without error
+- [ ] Domain join for AD authentication (`Join-AzStorageAccount`) completed without error
 - [ ] Write access to the share fails before NTFS permissions are applied (Step 5), and succeeds after (Step 6)
 
 ## Common errors
@@ -262,7 +267,7 @@ Leave this until after Lab 6 confirms FSLogix mounts correctly using identity-ba
 |---|---|---|
 | Portal will not offer a premium file share option | Account kind is `StorageV2`, not `FileStorage` | Recreate the account with the correct kind; it cannot be converted |
 | DNS resolves to a public IP | Private DNS zone not linked to the VNet, linked to the wrong VNet, or the domain controller (the VNet's custom DNS server) has no forwarder to Azure DNS | Check `azurerm_private_dns_zone_virtual_network_link`, then confirm [Lab 4 Step 5b](lab-04-identity-integration.md) was completed |
-| `Join-AzStorageAccountForAuth` fails with access denied | DC's managed identity lacks Contributor on the storage account | Assign the role, retry |
+| `Join-AzStorageAccount` fails with access denied | The signed-in Azure account lacks Contributor/Owner on the storage account, or the AD account cannot create computer objects | Assign the role / use a domain admin, retry |
 | Access Denied writing to the share after Step 6 | NTFS rule targeted the wrong group name, or `Set-Acl` silently failed | Re-run `Get-Acl` and inspect the returned rules before assuming the write succeeded |
 
 ## Troubleshooting

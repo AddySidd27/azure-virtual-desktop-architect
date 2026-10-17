@@ -7,7 +7,7 @@
         <mxCell id="title" value="Lab 8 - session host deployment and extension sequence" style="text;fontSize=20;fontStyle=1;fontColor=#243A5E;align=left;" vertex="1" parent="1">
           <mxGeometry x="40" y="20" width="900" height="30" as="geometry"/>
         </mxCell>
-        <mxCell id="sub" value="Lab 8 | Matches terraform/lab08-session-hosts exactly | rg-avd-hosts-lab-eus2-01. See Hero diagram 10 for the full environment." style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+        <mxCell id="sub" value="Lab 8 | Extension order matches terraform/lab08-session-hosts (image SKU and licence not drawn) | rg-avd-hosts-lab-eus2-01. See Hero diagram 10 for the full environment." style="text;fontSize=12;fontColor=#605E5C;align=left;" vertex="1" parent="1">
           <mxGeometry x="40" y="55" width="1200" height="20" as="geometry"/>
         </mxCell>
         <mxCell id="zHosts" value="RG-AVD-HOSTS-LAB-EUS2-01" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F9FD;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;fontColor=#0078D4;" vertex="1" parent="1">
@@ -61,7 +61,7 @@
         <mxCell id="f5" value="6  vm-avdlab-h1 -&gt; stfslogixlabeus201, SMB 445 (profile mount at first sign-in)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#243A5E;fontSize=11;fontColor=#243A5E;verticalAlign=middle;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="60" y="580" width="1380" height="32" as="geometry"/>
         </mxCell>
-        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Verified against terraform/lab08-session-hosts, August 2026. Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
+        <mxCell id="foot" value="Original architecture diagram created for this book. Not a Microsoft diagram. Reviewed against terraform/lab08-session-hosts on 16 October 2026 (not deployed). Self-contained shapes, no remote icon dependency." style="text;fontSize=10;fontColor=#605E5C;align=left;" vertex="1" parent="1">
           <mxGeometry x="40" y="640" width="1200" height="20" as="geometry"/>
         </mxCell>
       </root>

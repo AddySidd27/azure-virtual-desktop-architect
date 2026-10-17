@@ -70,7 +70,7 @@ sequenceDiagram
     B->>S: 7. Broker selects host, initializes via the persistent channel
     S->>G: 8. Session host opens outbound TLS 443 to the same gateway
     G-->>C: 9. Gateway relays: base reverse connect transport
-    C->>S: 10. RDP handshake, capabilities exchanged
+    C->>S: 10. RDP handshake via the gateway, capabilities exchanged
     C-->>S: 11. RDP Shortpath (UDP) attempted in parallel
     S->>S: 12. Windows logon, profile mount, shell
     S-->>C: 13. Desktop appears

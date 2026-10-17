@@ -73,6 +73,8 @@ Confirm all of these before assigning a single production policy. This feature s
 | Apps installed in **system context** | ✅ | Assigned to device groups |
 | Apps installed in **user context** | ❌ | App deployment must use system/device context and target devices. User-context PowerShell scripts are a separate supported capability. |
 | PowerShell scripts in user context | ✅ | Assigned to users |
+| Azure Virtual Desktop RemoteApp and MSIX app attach | ❌ | Learn: not currently supported in Microsoft Intune (they are delivered by AVD, not Intune) |
+| Apps with **Available** assignment intent, and web apps | ❌ | Only **Required** or **Uninstall** intent is supported; web apps apply in user context so do not apply |
 | Modern / UWP apps with FSLogix | ⚠️ | Microsoft notes that modern apps such as UWP apps may not work correctly when FSLogix is configured, and recommends not configuring modern apps when FSLogix is in use. Relevant to Chapters 21 and 25 |
 
 **Delivery strategy sits in Chapter 25.** Intune is one of four application delivery routes - image-baked, App Attach, Intune/Configuration Manager, and published RemoteApp - and the decision framework lives there.
@@ -104,7 +106,7 @@ This is the row most people get wrong.
 | Enrolment with device credentials | ✅ | Required for multi-session |
 | Enrolment with user credentials | ❌ | Causes enrolment failure on multi-session |
 | Out of Box Experience enrolment | ❌ | OOBE enrolment isn't supported for Windows Enterprise multi-session |
-| Windows Autopilot | ❌ | Autopilot and Commercial OOBE aren't supported; Autopilot self-deploying and pre-provisioning require a physical TPM |
+| Windows Autopilot | ❌ | Autopilot and Commercial OOBE aren't supported; the 'physical TPM' remark for Autopilot self-deploying and pre-provisioning is not on the multi-session page and is `[UNVERIFIED]` |
 | Enrollment Status Page | ❌ | Not supported |
 | Cloned image of an already-enrolled machine | ❌ | Intune does not support using a cloned image of a computer that is already enrolled. Enrol after deployment, never bake enrolment into the image |
 | Non-persistent VDI management | ⚠️ | Microsoft recommends **not** using Intune to manage on-demand, session-host virtual machines (non-persistent VDI). Each VM must be enrolled when created, and regularly deleting VMs creates orphaned device records until cleanup. |
@@ -146,6 +148,9 @@ The following actions are greyed out in the Intune UI and disabled in Graph for 
 | Cross-cloud enrolment (public tenant managing a sovereign-cloud VM, or vice versa) | ❌ Cross-cloud enrolments aren't supported |
 | Citrix DaaS | ❌ Intune support for AVD multi-session is not currently available for Citrix DaaS - direct questions to Citrix |
 | VMware / Omnissa Horizon Cloud | ❌ Not currently available |
+| Session host VM outside a host pool, or host pool not created through Azure Resource Manager | ❌ | Learn troubleshooting: Intune only supports VMs provisioned as part of a host pool created through ARM |
+| FSLogix with Intune token roaming | ⚠️ | Learn: Intune does not support token roaming between devices; ensure FSLogix does not roam or duplicate tokens (see the FSLogix `RoamIdentity` setting) |
+| Configuration profile templates | ⚠️ | Only Settings catalog, Trusted/SCEP/PKCS certificate templates and VPN (Device Tunnel only) are supported; other templates report Not applicable |
 | Hosts joined to Microsoft Entra Domain Services | ❌ Microsoft states that these session hosts can't be managed with Intune |
 | Personal / single-session AVD VMs | ✅ Intune treats AVD personal VMs the same as Windows Enterprise physical desktops, letting you reuse existing configurations and secure them with compliance policy and Conditional Access |
 

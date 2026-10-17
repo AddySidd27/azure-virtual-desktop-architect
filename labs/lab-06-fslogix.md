@@ -96,6 +96,8 @@ az vm run-command invoke -g rg-avd-identity-lab-eus2-01 -n vm-avdlab-dc01 \
   "
 ```
 
+`[UNTESTED]` caveats for this step and Step 4: (1) `New-VHD` and `Mount-VHD` belong to the Hyper-V PowerShell module, which a default Windows Server domain controller does not have installed, so install the Hyper-V management PowerShell feature first or use `diskpart` instead; (2) `az vm run-command` runs as SYSTEM, so the share is accessed as the DC's computer account, and that only works if the Lab 5 default share-level permission and the Step 6 ACLs allow it, which the Lab 5 per-user ACLs (users group: Modify on the root folder only) may not for a computer account; running the same commands interactively as a test domain user is the more representative test; (3) mounting a VHDX stored on an SMB share is not the same code path as the FSLogix driver, so a pass here supports, but does not prove, FSLogix will work.
+
 **Expected output:** the VHDX creates, mounts (visible as a File Backed Virtual disk), dismounts and deletes cleanly. This proves the share supports the exact mechanism FSLogix depends on: creating a VHDX on the share and mounting it as a local disk.
 
 **If this fails:** do not proceed to Lab 8 assuming the problem will resolve itself. Return to Lab 5 and re-check both permission layers, because a mechanics failure here will fail identically once an actual session host is involved, just with a less clear error message.

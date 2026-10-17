@@ -101,6 +101,10 @@ terraform apply -replace=azurerm_virtual_desktop_host_pool_registration_info.lab
 
 ---
 
+## Step 2b - Start VM on Connect needs a role assignment (not created by this module)
+
+The module sets `start_vm_on_connect = true`, but the setting only works once the **Desktop Virtualization Power On Contributor** role is assigned to the Azure Virtual Desktop service principal (or the host pool's managed identity) at a scope that contains the session hosts ([Configure Start VM on Connect](https://learn.microsoft.com/azure/virtual-desktop/start-virtual-machine-connect), [Assign roles to the AVD service principals](https://learn.microsoft.com/azure/virtual-desktop/service-principal-assign-roles)). This module does not create that assignment, and the portal flow in Learn says the setting cannot be enabled at host pool creation, so whether the provider's create path accepts it is `[UNTESTED]`. Until you have made the assignment yourself, treat Start VM on Connect as not working: start a deallocated host with `az vm start` before you sign in (Lab 8 deallocates between sessions). Tracked as U28.
+
 ## Step 3 - Validate the object model
 
 ```bash

@@ -10,8 +10,9 @@ resource "azurerm_network_interface" "host" {
     private_ip_address_allocation = "Dynamic"
   }
 
-  # Session hosts resolve the domain controller directly, so AD and the
-  # Lab 5 storage private endpoint resolve correctly. In production this is
+  # Session hosts resolve the domain controller directly, so AD resolves.
+  # The Lab 5 storage private endpoint name resolves only if the DC also
+  # forwards to 168.63.129.16 (Lab 4 Step 5b, not executed). In production this is
   # usually set at the VNet level, not per NIC; the lab sets it per NIC so
   # Terraform apply order does not depend on a VNet-level change landing first.
   dns_servers = var.dns_servers
@@ -30,6 +31,11 @@ resource "azurerm_windows_virtual_machine" "host" {
   admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.host[count.index].id]
 
+  # Multi-session client licensing. Learn: applied automatically only for hosts
+  # created through the AVD portal or ARM template; for VMs created outside that
+  # flow (as here) it must be set explicitly.
+  license_type = "Windows_Client"
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
@@ -38,11 +44,13 @@ resource "azurerm_windows_virtual_machine" "host" {
   # Windows 11 Enterprise multi-session, current marketplace image.
   # [VERIFY BEFORE IMPLEMENTATION] confirm the current SKU string against
   # `az vm image list --publisher MicrosoftWindowsDesktop --all -o table`,
-  # marketplace SKU names are updated as new versions release.
+  # marketplace SKU names are updated as new versions release. Learn lists
+  # win11-23h2-avd, win11-24h2-avd and win11-25h2-avd; 23H2 Enterprise
+  # multi-session updates end 2026-11-10, so 25H2 is used (retrieved 2026-10-16).
   source_image_reference {
     publisher = "MicrosoftWindowsDesktop"
     offer     = "windows-11"
-    sku       = "win11-23h2-avd"
+    sku       = "win11-25h2-avd"
     version   = "latest"
   }
 
@@ -63,7 +71,7 @@ resource "azurerm_virtual_machine_extension" "domain_join" {
 
   settings = jsonencode({
     Name    = "avdlab.local"
-    OUPath  = ""
+    OUPath  = "" # empty: hosts land in the default Computers container, not OU=SessionHosts (Lab 4)
     User    = "avdlabadmin@avdlab.local"
     Restart = "true"
     Options = "3"

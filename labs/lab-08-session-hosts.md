@@ -89,11 +89,13 @@ terraform apply tfplan
 
 **Expected output:** one VM, one NIC, domain join extension, and the AVD agent DSC extension all applied. This takes considerably longer than previous labs (eight to fifteen minutes) because it includes an OS boot, a domain join and restart, and the AVD agent installation and registration handshake.
 
+**Image and licensing.** The module uses the `win11-25h2-avd` SKU (Learn lists `win11-23h2-avd`, `win11-24h2-avd` and `win11-25h2-avd`; 23H2 Enterprise multi-session updates end 2026-11-10) and sets `license_type = "Windows_Client"`, because the multi-session licence is applied automatically only for hosts created through the AVD portal or an ARM template and must be set manually for VMs created outside that flow. `[VERIFY BEFORE IMPLEMENTATION]` the SKU string as of your deployment date. The domain join uses an empty `OUPath`, so the host lands in the default Computers container, not the `OU=SessionHosts` created in Lab 4.
+
 **Why the computer name and resource name differ**, as first flagged in Lab 4: `vm-avdlab-h1` is the Azure resource name; `AVDLABH1` is the Windows computer name, kept inside the 15-character NetBIOS limit deliberately.
 
 **Common errors:**
 
-- *`JsonADDomainExtension` times out or fails.* Almost always DNS. Confirm the NIC's `dns_servers` actually points at the Lab 4 domain controller's IP, and that the domain controller is running, not deallocated.
+- *`JsonADDomainExtension` times out or fails.* Almost always DNS. Confirm the NIC's `dns_servers` actually points at the Lab 4 domain controller's IP, and that the domain controller is running, not deallocated. The profile share's private endpoint name also needs the DC forwarder from Lab 4 Step 5b, otherwise FSLogix cannot resolve the storage account from the host.
 - *DSC extension fails with a download error.* The `modulesUrl` artifact is fetched over the internet; confirm the hosts subnet's NSG and any egress control from Lab 3/13 permits outbound HTTPS.
 - *Image SKU not found.* Marketplace SKU strings change. Run `az vm image list --publisher MicrosoftWindowsDesktop --all -o table` and update `source_image_reference` in `session-hosts.tf` to a current SKU.
 
@@ -147,7 +149,7 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1 \
   --scripts "\$VHDLocations = '\\\\<storage_account_name>.file.core.windows.net\profiles'; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name Enabled -PropertyType dword -Value 1 -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name VHDLocations -PropertyType MultiString -Value \$VHDLocations -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name VolumeType -PropertyType string -Value 'VHDX' -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name DeleteLocalProfileWhenVHDShouldApply -PropertyType dword -Value 1 -Force; New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles\ -Name FlipFlopProfileDirectoryName -PropertyType dword -Value 1 -Force"
 ```
 
-`[VERIFY BEFORE IMPLEMENTATION]` this host image does not include the FSLogix agent by default; if `frxsvc` is not present, install it first (`choco install fslogix` or the Microsoft-published MSI) before the registry configuration has any effect. In a production build this belongs in the golden image per Chapter 23; this lab installs it post-deployment for simplicity.
+Learn states that FSLogix comes pre-installed on the Windows Enterprise multi-session marketplace images, but the administrator is still responsible for configuring it, and the preinstalled version may not be the latest ([Windows Enterprise multi-session FAQ](https://learn.microsoft.com/azure/virtual-desktop/windows-multisession-faq), [FSLogix FAQ](https://learn.microsoft.com/fslogix/overview-faq)). Confirm with `Get-Service frxsvc` and `& "C:\Program Files\FSLogix\Apps\frx.exe" version`; if the service is missing, install FSLogix from the Microsoft download (`https://aka.ms/fslogix-latest`) before the registry values have any effect. In a production build FSLogix configuration belongs in the golden image per Chapter 23. These commands are `[UNTESTED]`: they were not run against an Azure host.
 
 Then apply the exclusions documented in Lab 6, Step 3, via `Add-MpPreference -ExclusionPath` for each path listed.
 
@@ -157,7 +159,9 @@ Then apply the exclusions documented in Lab 6, Step 3, via `Add-MpPreference -Ex
 
 This is the moment every prior lab has been building toward.
 
-1. Assign yourself (or a test account) to the `avd-lab-users` group from Lab 5/7, if not already a member.
+> **Prerequisite gap, read before this step.** The host is joined to the Lab 4 `avdlab.local` AD domain only. Learn requires users of AD DS joined session hosts to exist in both AD DS and Microsoft Entra ID (synced). Lab 4 deliberately does not sync, so the `avdtest01..03` accounts cannot sign in through the AVD service as the lab stands. To complete this step you need either a test tenant with Entra Cloud Sync or Connect (Lab 4 Step 7, including an alternative UPN suffix because `.local` cannot be verified in Entra), or the Entra-only variant in [Project 05](../scenarios/project-05-entra-only-cloud-native.md). `[UNTESTED]` either way. Tracked as U32.
+
+1. Assign yourself (or a synced test account) to the `avd-lab-users` group from Lab 5/7, if not already a member.
 2. Open [the Windows App](https://learn.microsoft.com/en-us/windows-app/get-started-connect-devices-desktops-apps) or the web client and subscribe using the workspace URL / feed discovery.
 3. Sign in and launch the desktop published from Lab 7's application group.
 
@@ -187,7 +191,7 @@ az vm run-command invoke -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1 \
 |---|---|---|
 | Session host never appears in `sessionhost list` | Registration token expired before the DSC extension ran | Regenerate in Lab 7, then re-run the `avd_agent` extension: `terraform apply -replace=azurerm_virtual_machine_extension.avd_agent` |
 | Session host shows `Unavailable` | Side-by-side stack failed to install, separate from agent registration | Reinstall per Chapter 18; in a lab, redeploying the VM is usually faster |
-| Sign-in succeeds but desktop is empty of personalisation, repeatedly | FSLogix not installed, or registry values not applied | Confirm `frxsvc` service exists before checking registry values |
+| Sign-in succeeds but desktop is empty of personalisation, repeatedly | FSLogix registry values not applied, or the share name does not resolve (DNS) | Confirm `frxsvc` exists, then the registry values, then `Resolve-DnsName <account>.file.core.windows.net` from the host |
 | Sign-in fails entirely, feed shows no desktop | Assignment not applied, or Windows App subscribed to the wrong workspace | Re-check Lab 7 Step 3's role assignment and the workspace URL used to subscribe |
 
 ## Troubleshooting
@@ -196,7 +200,7 @@ Work the isolation sequence from Chapter 18 in order: token validity, then boot 
 
 ## Cleanup versus keep
 
-**Deallocate between sessions**, always: `az vm deallocate -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1`, or the Terraform-output command.
+**Deallocate between sessions**, always: `az vm deallocate -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1`, or the Terraform-output command. Start the host again with `az vm start -g rg-avd-hosts-lab-eus2-01 -n vm-avdlab-h1` before signing in, because Start VM on Connect has no role assignment in this lab (Lab 7 Step 2b, U28).
 
 **Destroy** only when finished with the whole lab sequence, since Labs 9 and 10 both extend this host pool rather than replacing it.
 
