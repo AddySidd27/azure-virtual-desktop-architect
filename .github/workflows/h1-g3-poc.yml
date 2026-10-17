@@ -1,0 +1,152 @@
+name: H1 G3 annotation-transfer proof of concept (synthetic payload only)
+
+# TEMPORARY proof of concept. It exists only on branch chore/h1-g3-poc and is
+# never intended for main. Runs once per push to that branch.
+#
+# Synthetic, deterministic payload only: no Terraform, no lock-file generation,
+# no secrets, no Azure, no repository writes. It tests whether workflow-command
+# annotations can carry a base64 payload (size per annotation, count per step,
+# chunk ordering, special-character round trip) with SHA-256 integrity checks.
+on:
+  push:
+    branches: ["chore/h1-g3-poc"]
+
+permissions:
+  contents: read
+
+env:
+  CHUNK: "6000"
+  PER_STEP: "5"
+
+jobs:
+  poc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build synthetic payload (34 files, deterministic tar.gz, base64 chunks)
+        run: |
+          set -eu
+          echo "POC=$RUNNER_TEMP/poc-out" >> "$GITHUB_ENV"
+          export POC="$RUNNER_TEMP/poc-out"
+          mkdir -p "$POC"
+          python3 - <<'PY'
+          import base64, gzip, hashlib, io, json, os, tarfile
+
+          POC = os.environ["POC"]; CH = int(os.environ["CHUNK"])
+          def enc(s): return s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          def chain(seed, n):
+              out, h = [], seed.encode()
+              for _ in range(n):
+                  h = hashlib.sha256(h).digest(); out.append(h)
+              return out
+
+          files = {}
+          for i in range(34):
+              d = chain(f"g3poc-v1-{i}", 32)
+              body = ["# synthetic g3 poc file, not a real lock file", f'provider "example/p{i}" {{', f'  version = "1.{i}.0"', "  hashes = ["]
+              body += [f'    "h1:{base64.b64encode(x).decode()}",' for x in d[:8]]
+              body += [f'    "zh:{x.hex()}",' for x in d[8:32]]
+              body += ["  ]", "}"]
+              files[f"mod{i:02d}/synthetic.hcl"] = ("\n".join(body) + "\n").encode()
+
+          buf = io.BytesIO()
+          with tarfile.open(fileobj=buf, mode="w", format=tarfile.PAX_FORMAT) as t:
+              for name in sorted(files):
+                  ti = tarfile.TarInfo(name); ti.size = len(files[name]); ti.mtime = 0
+                  ti.mode = 0o644; ti.uid = ti.gid = 0; ti.uname = ti.gname = ""
+                  t.addfile(ti, io.BytesIO(files[name]))
+          tar = buf.getvalue()
+          gz = io.BytesIO()
+          with gzip.GzipFile(fileobj=gz, mode="wb", mtime=0) as g: g.write(tar)
+          gzb = gz.getvalue()
+          b64 = base64.b64encode(gzb).decode()
+          chunks = [b64[i:i+CH] for i in range(0, len(b64), CH)]
+          S = lambda b: hashlib.sha256(b).hexdigest()
+          filelist = "".join(f"{S(files[n])}  {n}\n" for n in sorted(files))
+          man = {
+              "raw_bytes": sum(len(v) for v in files.values()), "files": len(files),
+              "tar_bytes": len(tar), "tar_sha256": S(tar),
+              "gz_bytes": len(gzb), "gz_sha256": S(gzb),
+              "b64_chars": len(b64), "b64_sha256": S(b64.encode()),
+              "chunk_size": CH, "chunks": len(chunks),
+              "filelist_sha256": S(filelist.encode()),
+              "chunk_sha256": [S(c.encode()) for c in chunks],
+          }
+          open(f"{POC}/payload.tar.gz", "wb").write(gzb)
+          open(f"{POC}/payload.tar", "wb").write(tar)
+          open(f"{POC}/filelist.txt", "w").write(filelist)
+          open(f"{POC}/payload.b64", "w").write(b64)
+          json.dump(man, open(f"{POC}/manifest.json", "w"), indent=1)
+          for i, c in enumerate(chunks): open(f"{POC}/chunk-{i+1:02d}.txt", "w").write(c)
+          print(json.dumps({k: v for k, v in man.items() if k != "chunk_sha256"}, indent=1))
+          print("::notice title=g3poc manifest::" + enc(json.dumps(man, separators=(",", ":"))))
+          PY
+          sha256sum "$POC/payload.tar.gz" "$POC/payload.tar" "$POC/payload.b64"
+
+      - name: Probes - special-character round trip and per-annotation size ladder
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import hashlib
+          def enc(s): return s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          S = lambda s: hashlib.sha256(s.encode("utf-8")).hexdigest()
+          probe = "100% done\r\nline two\nline three é ✓ \ttab, trailing space  \n"
+          print("::notice title=g3poc encoding probe::" + enc(probe))
+          print("encoding probe sha256", S(probe))
+          for n in (1000, 4000, 8000, 16000, 32000, 60000, 70000):
+              msg, h = "", b"ladder"
+              while len(msg) < n:
+                  h = hashlib.sha256(h).digest(); msg += h.hex()
+              msg = msg[:n]
+              print(f"ladder {n} sha256 {S(msg)}")
+              print(f"::notice title=g3poc ladder {n}::" + enc(msg))
+          PY
+
+      - name: Chunks 1 to 5
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os
+          POC = os.environ["POC"]; K = int(os.environ["PER_STEP"])
+          n = json.load(open(f"{POC}/manifest.json"))["chunks"]
+          for i in range(1, min(K, n) + 1):
+              c = open(f"{POC}/chunk-{i:02d}.txt").read()
+              print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
+          PY
+
+      - name: Chunks 6 to 10
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os
+          POC = os.environ["POC"]; K = int(os.environ["PER_STEP"])
+          n = json.load(open(f"{POC}/manifest.json"))["chunks"]
+          for i in range(K + 1, min(2 * K, n) + 1):
+              c = open(f"{POC}/chunk-{i:02d}.txt").read()
+              print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
+          PY
+
+      - name: Chunks 11 and above
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os
+          POC = os.environ["POC"]; K = int(os.environ["PER_STEP"])
+          n = json.load(open(f"{POC}/manifest.json"))["chunks"]
+          for i in range(2 * K + 1, n + 1):
+              c = open(f"{POC}/chunk-{i:02d}.txt").read()
+              print(f"::notice title=g3poc chunk {i:02d} of {n:02d}::" + c)
+          print("chunks above 10 emitted:", max(0, n - 2 * K))
+          PY
+
+      - name: Count probe - 15 small notices in one step
+        run: |
+          set -eu
+          for i in $(seq -w 1 15); do echo "::notice title=g3poc count $i of 15::probe $i"; done
+
+      - name: Upload test artifact (independent comparison source)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h1-g3-poc
+          path: ${{ runner.temp }}/poc-out
+          if-no-files-found: warn
